@@ -5,9 +5,11 @@ import {
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 
-export const connectToWhatsApp = async () => {
+let sock: ReturnType<typeof makeWASocket>;
+
+export const connect = async () => {
   const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
-  const sock = makeWASocket({ printQRInTerminal: true, auth: state });
+  sock = makeWASocket({ printQRInTerminal: true, auth: state });
 
   sock.ev.on("creds.update", saveCreds);
 
@@ -17,26 +19,57 @@ export const connectToWhatsApp = async () => {
       const shouldReconnect =
         (lastDisconnect?.error as Boom)?.output?.statusCode !==
         DisconnectReason.loggedOut;
-      console.log(
+      console.error(
         "connection closed due to ",
         lastDisconnect?.error,
         ", reconnecting ",
         shouldReconnect
       );
+
       // reconnect if not logged out
       if (shouldReconnect) {
-        connectToWhatsApp();
+        connect();
       }
     } else if (connection === "open") {
       console.log("opened connection");
     }
   });
-  sock.ev.on("messages.upsert", async (m) => {
-    console.log(JSON.stringify(m, undefined, 2));
+  // sock.ev.on("messages.upsert", async (m) => {
+  //   console.log(JSON.stringify(m, undefined, 2));
 
-    console.log("replying to", m.messages[0].key.remoteJid);
-    // await sock.sendMessage(m.messages[0].key.remoteJid!, {
-    //   text: "Hello there!",
-    // });
+  //   const message = m.messages[0];
+  //   const senderId = message.key.remoteJid;
+  //   const fromMe = message.key.fromMe;
+
+  //   if (fromMe) return;
+
+  //   console.log("replying to");
+
+  //   await sock.sendMessage(senderId!, {
+  //     text: message.message?.conversation || "what was that?",
+  //   });
+  // });
+};
+
+export type Message = {
+  senderJid: string;
+  message: string | null | undefined;
+};
+export const onMessage = (cb: (message: Message) => void) => {
+  sock.ev.on("messages.upsert", (m) => {
+    const message = m.messages[0];
+    const senderJid = message.key.remoteJid;
+    const fromMe = message.key.fromMe;
+
+    if (fromMe || !senderJid) return;
+
+    cb({
+      senderJid,
+      message: message.message?.conversation,
+    });
   });
+};
+
+export const sendMessage = (toJid: string, message: string) => {
+  return sock.sendMessage(toJid, { text: message });
 };
