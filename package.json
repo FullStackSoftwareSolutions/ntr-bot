@@ -1,0 +1,27 @@
+{
+  "name": "ntr-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "migrate": "tsx src/db/migrate.ts",
+    "studio": "drizzle-kit studio"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.6.0",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.30.4",
+    "express": "^4.19.1",
+    "postgres": "^3.4.4",
+    "qrcode-terminal": "^0.12.0",
+    "tsx": "^4.7.1"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.14",
+    "pg": "^8.11.3"
+  }
+}
