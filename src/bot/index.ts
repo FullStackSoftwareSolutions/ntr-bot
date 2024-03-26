@@ -1,4 +1,8 @@
-import { Message, onMessage, sendMessage } from "../whatsapp/whatsapp.service";
+import {
+  type Message,
+  onMessage,
+  sendMessage,
+} from "../integrations/whatsapp/whatsapp.service";
 import { Command, getAllCommands } from "./commands";
 import help from "./commands/.help";
 import skaters from "./commands/.skaters";

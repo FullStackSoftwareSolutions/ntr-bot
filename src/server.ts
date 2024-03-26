@@ -1,6 +1,6 @@
 import "dotenv/config";
-import { connect } from "./whatsapp/whatsapp.service";
 import { initializeBot } from "./bot";
+import { connectToWhatsapp } from "./features/whatsapp/whatsapp.controller";
 
-await connect();
+await connectToWhatsapp();
 initializeBot();

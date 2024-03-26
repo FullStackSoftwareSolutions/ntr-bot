@@ -1,16 +1,25 @@
-import { db } from "../../db";
-import { sendMessage } from "../../whatsapp/whatsapp.service";
-import { users as usersTable } from "../../db/schema";
-import { stringJoin } from "../../utils";
+import { table } from "table";
+import { getAllSkaters } from "../../features/skaters/skaters.db";
+import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
+import {
+  formatTable,
+  stringJoin,
+} from "../../features/whatsapp/whatsapp.model";
 
 export default async function command(senderJid: string) {
-  const users = await db.select().from(usersTable);
+  const skaters = await getAllSkaters();
 
-  const messsage = stringJoin(
-    "⛸️ Skaters",
-    "───────────",
-    ...users.map((user) => `- ${user.fullName}`)
-  );
+  if (skaters.length === 0) {
+    sendMessage(senderJid, "No skaters found");
+    return;
+  }
 
-  sendMessage(senderJid, messsage);
+  const message = formatTable(skaters, {
+    header: {
+      content: "⛸️ Skaters",
+      alignment: "center",
+    },
+  });
+
+  sendMessage(senderJid, message);
 }

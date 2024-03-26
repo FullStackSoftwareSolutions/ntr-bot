@@ -1,6 +1,6 @@
 {
-  "id": "ccfd0aa6-14c4-4ffe-9364-43e989da84c2",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "d187890d-c228-4add-a12b-65d5560d2ad3",
+  "prevId": "ccfd0aa6-14c4-4ffe-9364-43e989da84c2",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -28,12 +28,6 @@
         },
         "phone_number": {
           "name": "phone_number",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "whatsapp_jid": {
-          "name": "whatsapp_jid",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -84,13 +78,6 @@
           "nullsNotDistinct": false,
           "columns": [
             "phone_number"
-          ]
-        },
-        "skaters_whatsapp_jid_unique": {
-          "name": "skaters_whatsapp_jid_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "whatsapp_jid"
           ]
         }
       }
