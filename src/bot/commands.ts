@@ -1,3 +1,7 @@
+import path from "path";
+import { readdir } from "fs/promises";
+import { commandsPath } from "~/paths";
+
 export enum Command {
   Help = "help",
   Seed = "seed",
@@ -9,6 +13,24 @@ export const commandDescriptions = {
   [Command.Players]: "List all players",
 };
 
-export const getAllCommands = () => Object.values(Command);
-export const getCommandDescription = (command: Command) =>
+export const commands = new Map<string, any>();
+export const loadCommands = async () => {
+  const files = await readdir(commandsPath);
+  for (const commandFile of files) {
+    const command = path.basename(commandFile, ".ts");
+    const filePath = `./${path.join("commands", command)}`;
+
+    const commandImport = await import(filePath);
+
+    if ("execute" in commandImport) {
+      commands.set(command, commandImport);
+    } else {
+      console.log(
+        `[WARNING] The command at ${filePath} is missing the required "execute" property.`
+      );
+    }
+  }
+};
+
+export const getCommandDescription = (command: string) =>
   commandDescriptions[command as keyof typeof commandDescriptions];

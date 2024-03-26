@@ -5,6 +5,12 @@ import {
   serial,
   json,
   boolean,
+  date,
+  time,
+  timestamp,
+  decimal,
+  numeric,
+  integer,
 } from "drizzle-orm/pg-core";
 
 export const players = pgTable(
@@ -23,6 +29,21 @@ export const players = pgTable(
     ),
   })
 );
+
+export const skates = pgTable("skates", {
+  id: serial("id").unique().primaryKey(),
+  scheduledOn: timestamp("scheduled_on"),
+  bookingId: integer("booking_id").references(() => bookings.id),
+});
+
+export const bookings = pgTable("bookings", {
+  id: serial("id").unique().primaryKey(),
+  location: varchar("location"),
+  cost: numeric("cost"),
+  scheduledTime: time("scheduled_time"),
+  startDate: date("start_date"),
+  endDate: date("end_date"),
+});
 
 export const whatsappAuth = pgTable(
   "whatsapp_auth",

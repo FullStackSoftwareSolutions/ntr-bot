@@ -1,33 +1,17 @@
 import {
-  type Message,
+  type TextMessage,
   onMessage,
   sendMessage,
 } from "../integrations/whatsapp/whatsapp.service";
-import path from "path";
-import { Command } from "./commands";
+import { commands, loadCommands } from "./commands";
+import { execute as helpCommand } from "./commands/help";
 
 export const initializeBot = async () => {
   await loadCommands();
-  onMessage(handleMessage);
+  //onMessage(handleMessage);
 };
 
-const commands = new Map<string, any>();
-const loadCommands = async () => {
-  for (const command of Object.values(Command)) {
-    const filePath = `./${path.join("commands", command)}`;
-    const commandImport = await import(filePath);
-
-    if ("execute" in commandImport) {
-      commands.set(command, commandImport);
-    } else {
-      console.log(
-        `[WARNING] The command at ${filePath} is missing the required "execute" property.`
-      );
-    }
-  }
-};
-
-const handleMessage = ({ senderJid, message }: Message) => {
+const handleMessage = async ({ senderJid, message }: TextMessage) => {
   console.log("received message", { senderJid, message });
 
   const command = message && commands.get(message);
@@ -35,5 +19,8 @@ const handleMessage = ({ senderJid, message }: Message) => {
     return command.execute(senderJid);
   }
 
-  sendMessage(senderJid, "Command not found");
+  await sendMessage(senderJid, {
+    text: "🤖 beep boop 🤖 i dunno that one... try one of these",
+  });
+  await helpCommand(senderJid);
 };

@@ -3,9 +3,13 @@ import {
   DisconnectReason,
   AuthenticationState,
   ConnectionState,
+  AnyMessageContent,
+  MiscMessageGenerationOptions,
+  WAProto,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
+import { WhatsAppMessage } from "~/features/whatsapp/whatsapp.model";
 
 let sock: ReturnType<typeof makeWASocket>;
 let state: AuthenticationState;
@@ -22,7 +26,7 @@ export const initialize = async (auth: {
 };
 
 const logger = pino({
-  //enabled: false,
+  enabled: false,
   name: "whatsapp",
 }) as any;
 
@@ -56,30 +60,28 @@ const handleConnectionUpdate = (update: Partial<ConnectionState>) => {
   }
 };
 
-export type Message = {
+export type TextMessage = {
+  key: WAProto.IMessageKey;
   senderJid: string;
   message: string | null | undefined;
 };
-export const onMessage = (cb: (message: Message) => void) => {
+
+export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
   sock.ev.on("messages.upsert", (m) => {
     const message = m.messages[0];
     if (!message) return;
 
-    const senderJid = message.key.remoteJid;
     const fromMe = message.key.fromMe;
+    if (fromMe) return;
 
-    if (fromMe || !senderJid) return;
-
-    cb({
-      senderJid,
-      message:
-        message.message?.conversation !== ""
-          ? message.message?.conversation
-          : message.message?.extendedTextMessage?.text,
-    });
+    cb(message);
   });
 };
 
-export const sendMessage = (toJid: string, message: string) => {
-  return sock.sendMessage(toJid, { text: message });
+export const sendMessage = (
+  toJid: string,
+  message: AnyMessageContent,
+  options?: MiscMessageGenerationOptions
+) => {
+  return sock.sendMessage(toJid, message, options);
 };

@@ -6,11 +6,11 @@ export const execute = async (senderJid: string) => {
   const players = await getAllPlayers();
 
   if (players.length > 0) {
-    sendMessage(senderJid, "Data exists, not seeding again.");
+    sendMessage(senderJid, { text: "Data exists, not seeding again." });
     return;
   }
 
   await seedData();
 
-  sendMessage(senderJid, "Seeded data.");
+  sendMessage(senderJid, { text: "Seeded data." });
 };

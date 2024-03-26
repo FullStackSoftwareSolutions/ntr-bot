@@ -1,23 +1,21 @@
-import { table, TableUserConfig } from "table";
+import {
+  AnyMessageContent,
+  MiscMessageGenerationOptions,
+  WAProto,
+} from "@whiskeysockets/baileys";
 
-export const stringJoin = (...args: string[]) => args.join("\n");
+export type WhatsAppMessage = WAProto.IWebMessageInfo;
+export type WhatsAppMessageContent = AnyMessageContent;
+export type WhatsAppMessageOptions = MiscMessageGenerationOptions;
 
-export const formatTable = (
-  rows: { [key: string]: any }[],
-  config?: TableUserConfig
-) => {
-  if (rows.length === 0) return "";
+export const getNumberFromJid = (jid: string) => jid.split("@")[0] as string;
 
-  const headers = Object.keys(rows[0]!);
-  const data = rows.map((row) =>
-    headers.map((header) => row[header].toString())
-  );
-  const tableString = table([headers.map(titleCase), ...data], config);
-
-  return `\`\`\`${tableString}\`\`\``;
+export const getTextFromMessage = (message: WhatsAppMessage) => {
+  return message.message?.conversation !== ""
+    ? message.message?.conversation
+    : message.message?.extendedTextMessage?.text;
 };
-
-const titleCase = (s: string) => {
-  const result = s.replace(/([A-Z])/g, " $1");
-  return result.charAt(0).toUpperCase() + result.slice(1);
-};
+export const getSenderNumberFromMessage = (message: WhatsAppMessage) =>
+  getNumberFromJid(getSenderFromMessage(message));
+export const getSenderFromMessage = (message: WhatsAppMessage) =>
+  message.key.participant ?? (message.key.remoteJid as string);

@@ -7,3 +7,8 @@ export const getAllAdmins = async () =>
   db.query.players.findMany({
     where: eq(players.admin, true),
   });
+
+export const getPlayerByPhoneNumber = async (number: string) =>
+  db.query.players.findFirst({
+    where: eq(players.phoneNumber, number),
+  });

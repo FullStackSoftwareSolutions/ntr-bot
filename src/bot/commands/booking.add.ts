@@ -1,5 +1,5 @@
-import { sendMessage } from "~/integrations/whatsapp/whatsapp.service";
 import { formatTable } from "../../features/whatsapp/whatsapp.formatting";
+import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
 import { commands, getCommandDescription } from "../commands";
 
 export const execute = (senderJid: string) => {
@@ -17,5 +17,10 @@ export const execute = (senderJid: string) => {
     }
   );
 
-  sendMessage(senderJid, { text: message });
+  sendMessage(senderJid, {
+    poll: {
+      name: "test",
+      values: ["option1", "option2", "option3"],
+    },
+  });
 };
