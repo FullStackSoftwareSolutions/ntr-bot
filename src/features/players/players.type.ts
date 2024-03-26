@@ -1,4 +1,4 @@
-export type Skater = {
+export type Player = {
   id: number;
   fullName: string;
   phoneNumber: string;

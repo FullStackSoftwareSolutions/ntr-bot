@@ -1,11 +1,11 @@
 {
-  "id": "ccfd0aa6-14c4-4ffe-9364-43e989da84c2",
+  "id": "ac57310b-8935-4b9d-9760-eb42a43eb389",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
   "tables": {
-    "skaters": {
-      "name": "skaters",
+    "players": {
+      "name": "players",
       "schema": "",
       "columns": {
         "id": {
@@ -32,12 +32,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "whatsapp_jid": {
-          "name": "whatsapp_jid",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "admin": {
           "name": "admin",
           "type": "boolean",
@@ -47,15 +41,15 @@
         }
       },
       "indexes": {
-        "skaters_email_idx": {
-          "name": "skaters_email_idx",
+        "players_email_idx": {
+          "name": "players_email_idx",
           "columns": [
             "email"
           ],
           "isUnique": false
         },
-        "skaters_phone_number_idx": {
-          "name": "skaters_phone_number_idx",
+        "players_phone_number_idx": {
+          "name": "players_phone_number_idx",
           "columns": [
             "phone_number"
           ],
@@ -65,32 +59,25 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "skaters_id_unique": {
-          "name": "skaters_id_unique",
+        "players_id_unique": {
+          "name": "players_id_unique",
           "nullsNotDistinct": false,
           "columns": [
             "id"
           ]
         },
-        "skaters_email_unique": {
-          "name": "skaters_email_unique",
+        "players_email_unique": {
+          "name": "players_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "email"
           ]
         },
-        "skaters_phone_number_unique": {
-          "name": "skaters_phone_number_unique",
+        "players_phone_number_unique": {
+          "name": "players_phone_number_unique",
           "nullsNotDistinct": false,
           "columns": [
             "phone_number"
-          ]
-        },
-        "skaters_whatsapp_jid_unique": {
-          "name": "skaters_whatsapp_jid_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "whatsapp_jid"
           ]
         }
       }

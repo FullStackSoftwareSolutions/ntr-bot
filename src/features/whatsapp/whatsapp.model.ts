@@ -1,12 +1,14 @@
 import { table, TableUserConfig } from "table";
 
-export const stringJoin = (...args) => args.join("\n");
+export const stringJoin = (...args: string[]) => args.join("\n");
 
 export const formatTable = (
   rows: { [key: string]: any }[],
   config?: TableUserConfig
 ) => {
-  const headers = Object.keys(rows[0]);
+  if (rows.length === 0) return "";
+
+  const headers = Object.keys(rows[0]!);
   const data = rows.map((row) =>
     headers.map((header) => row[header].toString())
   );

@@ -63,6 +63,8 @@ export type Message = {
 export const onMessage = (cb: (message: Message) => void) => {
   sock.ev.on("messages.upsert", (m) => {
     const message = m.messages[0];
+    if (!message) return;
+
     const senderJid = message.key.remoteJid;
     const fromMe = message.key.fromMe;
 

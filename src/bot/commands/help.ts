@@ -2,7 +2,7 @@ import { formatTable } from "../../features/whatsapp/whatsapp.model";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
 import { getAllCommands, getCommandDescription } from "../commands";
 
-export default function command(senderJid: string) {
+export const execute = (senderJid: string) => {
   const message = formatTable(
     getAllCommands().map((command) => ({
       Command: command,
@@ -17,4 +17,4 @@ export default function command(senderJid: string) {
   );
 
   sendMessage(senderJid, message);
-}
+};

@@ -2,6 +2,7 @@ import {
   AuthenticationCreds,
   BufferJSON,
   initAuthCreds,
+  SignalDataSet,
   SignalDataTypeMap,
   WAProto,
   type AuthenticationState,
@@ -73,9 +74,10 @@ export const useWhatsappAuth = async ({
         set: async (data) => {
           const tasks: Promise<void>[] = [];
           for (const category in data) {
-            for (const id in data[category]) {
-              const value = data[category][id];
+            for (const id in data[category as keyof SignalDataTypeMap]) {
+              const value = data[category as keyof SignalDataTypeMap]?.[id];
               const key = `${category}-${id}`;
+
               tasks.push(value ? writeData(key, value) : removeData(key));
             }
           }

@@ -7,8 +7,8 @@ import {
   boolean,
 } from "drizzle-orm/pg-core";
 
-export const skaters = pgTable(
-  "skaters",
+export const players = pgTable(
+  "players",
   {
     id: serial("id").unique().primaryKey(),
     fullName: varchar("full_name", { length: 256 }),
@@ -16,10 +16,10 @@ export const skaters = pgTable(
     phoneNumber: varchar("phone_number").unique(),
     admin: boolean("admin").default(false),
   },
-  (skaters) => ({
-    skatersEmailIdx: index("skaters_email_idx").on(skaters.email),
-    skatersPhoneNumberIdx: index("skaters_phone_number_idx").on(
-      skaters.phoneNumber
+  (players) => ({
+    playersEmailIdx: index("players_email_idx").on(players.email),
+    playersPhoneNumberIdx: index("players_phone_number_idx").on(
+      players.phoneNumber
     ),
   })
 );
