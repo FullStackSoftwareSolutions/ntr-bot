@@ -6,6 +6,30 @@ export type FormatTableConfig = {
   hideKeys?: boolean;
 } & TableUserConfig;
 
+const defaultConfig = {
+  border: {
+    topBody: `=`,
+    // topJoin: `-`,
+    // topLeft: ` `,
+    // topRight: ` `,
+    bottomBody: `=`,
+    // bottomJoin: `-`,
+    // bottomLeft: `|`,
+    // bottomRight: `|`,
+    // bodyLeft: `│`,
+    // bodyRight: `│`,
+    // bodyJoin: `│`,
+    joinBody: `-`,
+    // joinLeft: `|`,
+    // joinRight: `|`,
+    // joinJoin: `|`,
+    // joinMiddleUp: `-`,
+    // joinMiddleDown: `-`,
+    // joinMiddleLeft: `-`,
+    // joinMiddleRight: `-`,
+  },
+};
+
 export const formatTable = (
   rows: { [key: string]: any }[],
   config?: FormatTableConfig
@@ -25,7 +49,10 @@ export const formatTable = (
   const tableConfig = config ? { ...config } : {};
   delete tableConfig.hideKeys;
 
-  const tableString = table(tableData, tableConfig);
+  const tableString = table(tableData, {
+    ...defaultConfig,
+    ...tableConfig,
+  });
 
   return `\`\`\`${tableString}\`\`\``;
 };

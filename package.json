@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx watch src/server.ts",
+    "migrate:gen": "drizzle-kit generate:pg && npm run migrate",
     "migrate": "tsx src/db/migrate.ts",
     "studio": "drizzle-kit studio"
   },
@@ -13,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.6.0",
+    "dayjs": "^1.11.10",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.4",
     "express": "^4.19.1",

@@ -1,26 +1,47 @@
-import {
-  type TextMessage,
-  onMessage,
-  sendMessage,
-} from "../integrations/whatsapp/whatsapp.service";
+import { onAdminMessage } from "~/features/whatsapp/whatsapp.controller";
+import { sendMessage } from "../integrations/whatsapp/whatsapp.service";
 import { commands, loadCommands } from "./commands";
-import { execute as helpCommand } from "./commands/help";
+import {
+  getGroupOrSenderFromMessage,
+  getTextFromMessage,
+  isGroupMessage,
+  WhatsAppMessage,
+} from "~/features/whatsapp/whatsapp.model";
+import { Player } from "~/features/players/players.type";
 
 export const initializeBot = async () => {
   await loadCommands();
-  //onMessage(handleMessage);
+  onAdminMessage(handleAdminMessage);
 };
 
-const handleMessage = async ({ senderJid, message }: TextMessage) => {
-  console.log("received message", { senderJid, message });
+const activeCommandByPlayer: {
+  [playerId: number]: string;
+} = {};
 
-  const command = message && commands.get(message);
-  if (command) {
-    return command.execute(senderJid);
+const handleAdminMessage = async (message: WhatsAppMessage, player: Player) => {
+  const messageContent = getTextFromMessage(message);
+  const jid = getGroupOrSenderFromMessage(message);
+
+  if (!isGroupMessage(message)) {
+    const activeCommand = activeCommandByPlayer[player.id];
+    if (activeCommand) {
+      const command = commands.get(activeCommand);
+      return command.execute(message, player);
+    }
+
+    const command = messageContent && commands.get(messageContent);
+    if (command) {
+      if (command.onComplete) {
+        activeCommandByPlayer[player.id] = messageContent;
+        command.onComplete(() => {
+          delete activeCommandByPlayer[player.id];
+        });
+      }
+      return command.execute(message, player);
+    }
   }
 
-  await sendMessage(senderJid, {
-    text: "🤖 beep boop 🤖 i dunno that one... try one of these",
+  await sendMessage(jid, {
+    text: "🤖 beep boop 🤖 i dunno that one...",
   });
-  await helpCommand(senderJid);
 };

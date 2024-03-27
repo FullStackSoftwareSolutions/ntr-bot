@@ -1,4 +1,4 @@
-import { getAllPlayers } from "../../features/players/players.db";
+import { getAllBookings } from "../../features/bookings/bookings.db";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
 import { formatTable } from "../../features/whatsapp/whatsapp.formatting";
 import {
@@ -7,17 +7,17 @@ import {
 } from "~/features/whatsapp/whatsapp.model";
 
 export const execute = async (message: WhatsAppMessage) => {
-  const players = await getAllPlayers();
+  const bookings = await getAllBookings();
   const senderJid = getSenderFromMessage(message);
 
-  if (players.length === 0) {
-    sendMessage(senderJid, { text: "No players found" });
+  if (bookings.length === 0) {
+    sendMessage(senderJid, { text: "No bookings found" });
     return;
   }
 
-  const reply = formatTable(players, {
+  const reply = formatTable(bookings, {
     header: {
-      content: "🏒 Players",
+      content: "📆 Bookings",
       alignment: "center",
     },
   });

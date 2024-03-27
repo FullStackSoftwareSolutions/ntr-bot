@@ -6,6 +6,7 @@ import {
   AnyMessageContent,
   MiscMessageGenerationOptions,
   WAProto,
+  getAggregateVotesInPollMessage,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
@@ -76,6 +77,30 @@ export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
 
     cb(message);
   });
+
+  // sock.ev.on("messages.update", async (m) => {
+  //   for (const { key, update } of m) {
+  //     if (update.pollUpdates) {
+  //       const pollCreation = await this.getMessage(key);
+  //       if (pollCreation) {
+  //         const pollMessage = await getAggregateVotesInPollMessage({
+  //           message: pollCreation,
+  //           pollUpdates: update.pollUpdates,
+  //         });
+  //         const [messageCtx] = message;
+
+  //         let payload = {
+  //           ...messageCtx,
+  //           body:
+  //             pollMessage.find((poll) => poll.voters.length > 0)?.name || "",
+  //           from: utils.formatPhone(key.remoteJid, this.plugin),
+  //           voters: pollCreation,
+  //           type: "poll",
+  //         };
+  //       }
+  //     }
+  //   }
+  // });
 };
 
 export const sendMessage = (

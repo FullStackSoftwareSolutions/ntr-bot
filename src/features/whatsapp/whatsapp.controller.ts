@@ -2,7 +2,6 @@ import { useWhatsappAuth } from "../../integrations/whatsapp/whatsapp.auth";
 import {
   initialize,
   sendMessage as sendWhatsappMessage,
-  type TextMessage,
 } from "../../integrations/whatsapp/whatsapp.service";
 import {
   deleteWhatsappAuthData,
@@ -12,14 +11,15 @@ import {
 import { onMessage as onWhatsAppMessage } from "../../integrations/whatsapp/whatsapp.service";
 import { getPlayerByPhoneNumber } from "../players/players.db";
 import {
-  getNumberFromJid,
+  getGroupOrSenderFromMessage,
   getSenderFromMessage,
   getSenderNumberFromMessage,
   WhatsAppMessage,
   WhatsAppMessageContent,
   WhatsAppMessageOptions,
 } from "./whatsapp.model";
-import { WAProto } from "@whiskeysockets/baileys";
+import EventEmitter from "node:events";
+import { Player } from "../players/players.type";
 
 export const connectToWhatsapp = async () => {
   const auth = await useWhatsappAuth({
@@ -37,11 +37,10 @@ const handleMessage = async (message: WhatsAppMessage) => {
   const player = await getPlayerByPhoneNumber(
     getSenderNumberFromMessage(message)
   );
-  console.log(player);
 
   if (!player) {
     await sendMessage(
-      getSenderFromMessage(message),
+      getGroupOrSenderFromMessage(message),
       { text: "who the fuck are you?" },
       {
         quoted: message,
@@ -51,19 +50,34 @@ const handleMessage = async (message: WhatsAppMessage) => {
   }
 
   if (player.admin) {
-    await onAdminMessage(message);
+    await handleAdminMessage(message, player);
     return;
   }
 
-  await onPlayerMessage(message);
+  await handlePlayerMessage(message, player);
 };
 
-const onAdminMessage = async (message: WhatsAppMessage) => {
-  await sendMessage(getSenderFromMessage(message), { text: "admin" });
+const handleAdminMessage = async (message: WhatsAppMessage, player: Player) => {
+  messageEventEmitter.emit("admin-message", message, player);
+};
+const handlePlayerMessage = async (
+  message: WhatsAppMessage,
+  player: Player
+) => {
+  messageEventEmitter.emit("player-message", message, player);
 };
 
-const onPlayerMessage = async (message: WhatsAppMessage) => {
-  await sendMessage(getSenderFromMessage(message), { text: "player" });
+const messageEventEmitter = new EventEmitter();
+
+export const onAdminMessage = (
+  cb: (message: WhatsAppMessage, player: Player) => void
+) => {
+  messageEventEmitter.on("admin-message", cb);
+};
+export const onPlayerMessage = (
+  cb: (message: WhatsAppMessage, player: Player) => void
+) => {
+  messageEventEmitter.on("player-message", cb);
 };
 
 export const sendMessage = (

@@ -1,5 +1,5 @@
 export type Player = {
   id: number;
-  fullName: string;
-  phoneNumber: string;
+  fullName: string | null;
+  phoneNumber: string | null;
 };
