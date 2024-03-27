@@ -4,7 +4,11 @@ import {
   WAProto,
 } from "@whiskeysockets/baileys";
 
-export type WhatsAppMessage = WAProto.IWebMessageInfo;
+export type WhatsAppMessage = {
+  from: string | null | undefined;
+  message?: WAProto.IWebMessageInfo["message"] | null | undefined;
+  key?: WAProto.IMessageKey | undefined;
+};
 export type WhatsAppMessageContent = AnyMessageContent;
 export type WhatsAppMessageOptions = MiscMessageGenerationOptions;
 
@@ -19,9 +23,9 @@ export const getSenderNumberFromMessage = (message: WhatsAppMessage) =>
   getNumberFromJid(getSenderFromMessage(message));
 
 export const getGroupOrSenderFromMessage = (message: WhatsAppMessage) =>
-  message.key.remoteJid!;
+  message.key?.remoteJid!;
 export const getSenderFromMessage = (message: WhatsAppMessage) =>
-  message.key.participant ?? message.key.remoteJid!;
+  message.key?.participant ?? message.key!.remoteJid!;
 
 export const isGroupMessage = (message: WhatsAppMessage) =>
-  message.key.participant != null;
+  message.key?.participant != null;

@@ -7,13 +7,21 @@ import {
 import { Player } from "~/features/players/players.type";
 import { getAllBookings } from "~/features/bookings/bookings.db";
 
+let running = false;
 export const execute = async (message: WhatsAppMessage, player: Player) => {
   const senderJid = getSenderFromMessage(message);
 
-  console.log(JSON.stringify(message, null, 2));
-
   const bookings = await getAllBookings();
 
+  if (running) {
+    await sendMessage(senderJid, {
+      text: JSON.stringify(message, null, 2),
+    });
+    completed();
+    return;
+  }
+
+  running = true;
   await sendMessage(senderJid, {
     poll: {
       name: "Which booking would you like to view?",

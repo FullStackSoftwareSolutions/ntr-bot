@@ -1,6 +1,6 @@
 import { getAllPlayers } from "../../features/players/players.db";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
-import { formatTable } from "../../features/whatsapp/whatsapp.formatting";
+import { formatList } from "../../features/whatsapp/whatsapp.formatting";
 import {
   getSenderFromMessage,
   WhatsAppMessage,
@@ -15,12 +15,11 @@ export const execute = async (message: WhatsAppMessage) => {
     return;
   }
 
-  const reply = formatTable(players, {
+  const text = formatList(players, {
     header: {
-      content: "🏒 Players",
-      alignment: "center",
+      content: "🏒 *Players*",
     },
   });
 
-  sendMessage(senderJid, { text: reply });
+  await sendMessage(senderJid, { text });
 };

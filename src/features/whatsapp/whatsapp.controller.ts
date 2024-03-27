@@ -39,13 +39,9 @@ const handleMessage = async (message: WhatsAppMessage) => {
   );
 
   if (!player) {
-    await sendMessage(
-      getGroupOrSenderFromMessage(message),
-      { text: "who the fuck are you?" },
-      {
-        quoted: message,
-      }
-    );
+    await sendMessage(getGroupOrSenderFromMessage(message), {
+      text: "who the fuck are you?",
+    });
     return;
   }
 

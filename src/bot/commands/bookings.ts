@@ -1,6 +1,6 @@
 import { getAllBookings } from "../../features/bookings/bookings.db";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
-import { formatTable } from "../../features/whatsapp/whatsapp.formatting";
+import { formatList } from "../../features/whatsapp/whatsapp.formatting";
 import {
   getSenderFromMessage,
   WhatsAppMessage,
@@ -15,12 +15,10 @@ export const execute = async (message: WhatsAppMessage) => {
     return;
   }
 
-  const reply = formatTable(bookings, {
-    header: {
-      content: "📆 Bookings",
-      alignment: "center",
-    },
-  });
+  await sendMessage(senderJid, { text: "📆 *Bookings*" });
 
-  sendMessage(senderJid, { text: reply });
+  for (const booking of bookings) {
+    const text = formatList([booking]);
+    await sendMessage(senderJid, { text });
+  }
 };
