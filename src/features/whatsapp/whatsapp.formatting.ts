@@ -161,7 +161,7 @@ export const formatWideTable = (
   return `\`\`\`${tableString}\`\`\``;
 };
 
-const titleCase = (s: string) => {
+export const titleCase = (s: string) => {
   const result = s.replace(/([A-Z])/g, " $1");
   return result.charAt(0).toUpperCase() + result.slice(1);
 };

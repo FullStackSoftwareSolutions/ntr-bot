@@ -16,7 +16,7 @@ const playersPending: {
   [playerId: number]: Partial<PlayerCreate>;
 } = {};
 
-const playerStepPrompt: {
+export const playerStepPrompt: {
   [key in keyof PlayerCreate]?:
     | string
     | {
@@ -45,11 +45,11 @@ const playerStepPrompt: {
 
 const getPendingStep = (player: Partial<PlayerCreate>) => {
   return Object.keys(playerStepPrompt).find(
-    (key) => !player[key as keyof PlayerCreate]
+    (key) => player[key as keyof PlayerCreate] === undefined
   ) as keyof PlayerCreate;
 };
 
-const getPrompt = (
+export const getPrompt = (
   step: keyof PlayerCreate
 ): {
   prompt: string;
@@ -66,7 +66,12 @@ const getPrompt = (
       : prompt;
 
   if (!promptData.parse) {
-    promptData.parse = (value: string) => value;
+    promptData.parse = (value: string) => {
+      if (!promptData.required && value === "!") {
+        return null;
+      }
+      return value;
+    };
   }
 
   return promptData as {

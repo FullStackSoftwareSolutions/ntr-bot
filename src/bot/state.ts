@@ -4,6 +4,7 @@ import { WhatsAppMessageKey } from "~/features/whatsapp/whatsapp.model";
 import { produce } from "immer";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { LocalStorage } from "node-localstorage";
+import { PlayerCreate } from "~/features/players/players.type";
 
 type Commands = {
   activeCommand: string | null;
@@ -11,6 +12,11 @@ type Commands = {
     viewIndex?: number;
     viewPollKey?: WhatsAppMessageKey | null;
     playerMessageKeys?: WhatsAppMessageKey[];
+    edit: {
+      playerId?: number;
+      fieldPollKey?: WhatsAppMessageKey | null;
+      field?: keyof PlayerCreate;
+    };
   };
 };
 
@@ -28,17 +34,25 @@ type Actions = {
     playerId: number,
     players: (players: NonNullable<Commands["players"]>) => void
   ) => void;
+  reset: () => void;
 };
+
+const defaultState: State = { commands: {} };
 
 const stateStorage = new LocalStorage("./state");
 export const store = createStore<State & Actions>()(
   persist(
     immer((set, get) => ({
-      commands: {},
+      ...defaultState,
       registerPlayer: (playerId) =>
         set((state) => {
           if (state.commands[playerId]) return;
-          state.commands[playerId] = { activeCommand: null, players: {} };
+          state.commands[playerId] = {
+            activeCommand: null,
+            players: {
+              edit: {},
+            },
+          };
         }),
       setActiveCommand: (playerId, command) =>
         set((state) => {
@@ -58,6 +72,7 @@ export const store = createStore<State & Actions>()(
             update
           );
         }),
+      reset: () => set(defaultState),
     })),
     {
       name: "state.json",

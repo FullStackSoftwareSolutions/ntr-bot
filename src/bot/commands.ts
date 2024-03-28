@@ -6,6 +6,7 @@ export enum Command {
   Help = "help",
   Seed = "seed",
   Players = "players",
+  PlayersEdit = "players.edit",
 }
 
 export const commandDescriptions = {
@@ -16,6 +17,7 @@ export const commandDescriptions = {
 export const commands = new Map<string, any>();
 export const loadCommands = async () => {
   const files = await readdir(commandsPath);
+
   for (const commandFile of files) {
     const command = path.basename(commandFile, ".ts");
     const filePath = `./${path.join("commands", command)}`;

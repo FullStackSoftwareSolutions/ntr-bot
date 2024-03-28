@@ -3,6 +3,7 @@ import { sendMessage } from "../integrations/whatsapp/whatsapp.service";
 import { commands, loadCommands } from "./commands";
 import {
   getGroupOrSenderFromMessage,
+  getSenderFromMessage,
   getTextFromMessage,
   isGroupMessage,
   WhatsAppMessage,
@@ -21,11 +22,26 @@ const handleAdminMessage = async (message: WhatsAppMessage, player: Player) => {
     getActiveCommand,
     setActiveCommand,
     clearActiveCommand,
+    reset,
   } = usePlayerStore();
 
   registerPlayer(player.id);
 
-  const commandMessage = message.body?.trim().toLowerCase();
+  const messageCommands = message.body?.trim().toLowerCase().split(" ");
+  if (!messageCommands) {
+    return;
+  }
+
+  const messageCommand = messageCommands[0];
+  if (messageCommand === "!reset") {
+    await sendMessage(getSenderFromMessage(message), {
+      text: "⚠️⚠️⚠️ 🤖 beep boop 🤖 RESET!",
+    });
+    return reset();
+  }
+
+  const messageArgs = messageCommands.slice(1);
+
   const jid = getGroupOrSenderFromMessage(message);
 
   if (!isGroupMessage(message)) {
@@ -35,19 +51,21 @@ const handleAdminMessage = async (message: WhatsAppMessage, player: Player) => {
       return command.execute(message, player);
     }
 
-    const command = commandMessage && commands.get(commandMessage);
+    const command = messageCommand && commands.get(messageCommand);
+
     if (command) {
+      /// TODO: DELETE THIS
       if (command.onComplete) {
-        setActiveCommand(player.id, commandMessage);
+        setActiveCommand(player.id, messageCommand);
         command.onComplete(() => {
           clearActiveCommand(player.id);
         });
       }
-      return command.execute(message, player);
+      return command.execute(message, player, ...messageArgs);
     }
   }
 
   await sendMessage(jid, {
-    text: "🤖 beep boop 🤖 i dunno that one...",
+    text: "ayda eats poop 💩",
   });
 };
