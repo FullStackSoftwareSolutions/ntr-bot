@@ -9,7 +9,6 @@ import {
   date,
   time,
   timestamp,
-  decimal,
   numeric,
   integer,
   primaryKey,
@@ -20,6 +19,7 @@ export const players = pgTable(
   {
     id: serial("id").unique().primaryKey(),
     fullName: varchar("full_name", { length: 256 }),
+    nickname: varchar("nickname", { length: 256 }),
     email: varchar("email").unique(),
     phoneNumber: varchar("phone_number").unique(),
     admin: boolean("admin").default(false),
@@ -32,7 +32,6 @@ export const players = pgTable(
     ),
   })
 );
-console.log(players);
 
 export const playersRelations = relations(players, ({ many }) => ({
   bookings: many(playersToBookings),
@@ -58,6 +57,7 @@ export const playersToSkates = pgTable(
   {
     playerId: integer("player_id").references(() => players.id),
     skateId: integer("skate_id").references(() => skates.id),
+    team: varchar("team"),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.playerId, t.skateId] }),
@@ -84,6 +84,7 @@ export const bookings = pgTable("bookings", {
   numPlayers: integer("num_players"),
   location: varchar("location"),
   cost: numeric("cost"),
+  costPerPlayer: numeric("cost_per_player"),
   scheduledTime: time("scheduled_time"),
   startDate: date("start_date"),
   endDate: date("end_date"),
@@ -104,6 +105,7 @@ export const playersToBookings = pgTable(
   {
     playerId: integer("player_id").references(() => players.id),
     bookingId: integer("booking_id").references(() => bookings.id),
+    amountPaid: numeric("amount_paid"),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.playerId, t.bookingId] }),

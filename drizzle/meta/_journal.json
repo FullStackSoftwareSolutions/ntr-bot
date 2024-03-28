@@ -43,6 +43,13 @@
       "when": 1711598588017,
       "tag": "0005_last_captain_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1711634729516,
+      "tag": "0006_unknown_rogue",
+      "breakpoints": true
     }
   ]
 }

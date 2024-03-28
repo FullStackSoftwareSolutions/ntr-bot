@@ -15,11 +15,10 @@ export const execute = async (message: WhatsAppMessage) => {
     return;
   }
 
-  const text = formatList(players, {
-    header: {
-      content: "🏒 *Players*",
-    },
-  });
+  await sendMessage(senderJid, { text: "🏒 *Players*" });
 
-  await sendMessage(senderJid, { text });
+  for (const player of players) {
+    const text = formatList([player]);
+    await sendMessage(senderJid, { text });
+  }
 };

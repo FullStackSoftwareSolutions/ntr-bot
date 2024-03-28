@@ -1,6 +1,7 @@
 import { eq, getTableColumns } from "drizzle-orm";
 import { db } from "../../db";
 import { players, playersToBookings } from "../../db/schema";
+import { PlayerCreate } from "./players.type";
 
 export const getAllPlayers = async () => db.query.players.findMany();
 export const getAllAdmins = async () =>
@@ -19,3 +20,8 @@ export const getPlayersForBooking = async (bookingId: number) =>
     .from(players)
     .innerJoin(playersToBookings, eq(players.id, playersToBookings.playerId))
     .where(eq(playersToBookings.bookingId, bookingId));
+
+export const createPlayer = async (playerData: PlayerCreate) => {
+  const [player] = await db.insert(players).values(playerData).returning();
+  return player;
+};

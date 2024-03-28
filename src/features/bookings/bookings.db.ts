@@ -11,7 +11,7 @@ export const getBookingById = async (id: number) =>
     },
   });
 
-export const createBooking = async (booking: {
+export const createBooking = async (bookingData: {
   name: string;
   numPlayers: number;
   location: string;
@@ -19,4 +19,7 @@ export const createBooking = async (booking: {
   scheduledTime: string;
   startDate: string;
   endDate: string;
-}) => db.insert(bookings).values(booking).returning();
+}) => {
+  const [booking] = await db.insert(bookings).values(bookingData).returning();
+  return booking;
+};

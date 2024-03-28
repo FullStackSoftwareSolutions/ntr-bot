@@ -12,8 +12,7 @@ export const createBookingHandler = async (bookingData: {
   endDate: string;
   bookedById: number;
 }) => {
-  const bookings = await createBooking(bookingData);
-  const booking = bookings[0];
+  const booking = await createBooking(bookingData);
 
   if (!booking) {
     throw new Error("Failed to create booking");

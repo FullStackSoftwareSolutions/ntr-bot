@@ -14,9 +14,11 @@
   "license": "ISC",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.6.0",
+    "awesome-phonenumber": "^6.6.0",
     "dayjs": "^1.11.10",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.4",
+    "email-validator": "^2.0.4",
     "express": "^4.19.1",
     "pino": "^8.19.0",
     "postgres": "^3.4.4",
