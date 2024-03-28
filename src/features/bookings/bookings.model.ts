@@ -12,8 +12,8 @@ export const getDatesForBooking = (booking: Booking) => {
 
   const dates = [];
 
-  let date = dayjs.utc(`${booking.startDate}T${booking.scheduledTime}Z`);
-  while (!date.isAfter(`${booking.endDate}T${booking.scheduledTime}Z`)) {
+  let date = dayjs(`${booking.startDate}T${booking.scheduledTime}`);
+  while (!date.isAfter(`${booking.endDate}T${booking.scheduledTime}`)) {
     dates.push(date.toDate());
 
     date = date.add(1, "week");

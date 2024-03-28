@@ -32,9 +32,10 @@ export const players = pgTable(
     ),
   })
 );
+console.log(players);
 
 export const playersRelations = relations(players, ({ many }) => ({
-  bookings: many(bookings),
+  bookings: many(playersToBookings),
   skates: many(playersToSkates),
 }));
 
@@ -63,7 +64,7 @@ export const playersToSkates = pgTable(
   })
 );
 
-export const playersToSkatessRelations = relations(
+export const playersToSkatesRelations = relations(
   playersToSkates,
   ({ one }) => ({
     player: one(players, {
@@ -95,7 +96,33 @@ export const bookingsRelations = relations(bookings, ({ one, many }) => ({
     references: [players.id],
   }),
   skates: many(skates),
+  players: many(playersToBookings),
 }));
+
+export const playersToBookings = pgTable(
+  "players_to_bookings",
+  {
+    playerId: integer("player_id").references(() => players.id),
+    bookingId: integer("booking_id").references(() => bookings.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.playerId, t.bookingId] }),
+  })
+);
+
+export const playersToBookingsRelations = relations(
+  playersToBookings,
+  ({ one }) => ({
+    player: one(players, {
+      fields: [playersToBookings.playerId],
+      references: [players.id],
+    }),
+    booking: one(bookings, {
+      fields: [playersToBookings.bookingId],
+      references: [bookings.id],
+    }),
+  })
+);
 
 export const whatsappAuth = pgTable(
   "whatsapp_auth",

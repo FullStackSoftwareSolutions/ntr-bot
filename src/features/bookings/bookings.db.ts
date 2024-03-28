@@ -6,6 +6,9 @@ export const getAllBookings = async () => db.query.bookings.findMany();
 export const getBookingById = async (id: number) =>
   db.query.bookings.findMany({
     where: eq(bookings.id, id),
+    with: {
+      players: true,
+    },
   });
 
 export const createBooking = async (booking: {

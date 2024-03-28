@@ -18,6 +18,7 @@ import {
   stringJoin,
 } from "~/features/whatsapp/whatsapp.formatting";
 import { getSkatesForBooking } from "~/features/skates/skates.db";
+import { getPlayersForBooking } from "~/features/players/players.db";
 
 const bookingsView: {
   [playerId: number]: {
@@ -91,11 +92,15 @@ const processBookingSelection = async (
 
     const bookingsId = parseInt(selectedId);
     const [booking] = await getBookingById(bookingsId);
+    bookingsView[player.id] = {
+      booking,
+    };
 
     await sendMessage(senderJid, { delete: session.pollKey! });
     await sendMessage(senderJid, {
       text: stringJoin("📆 *Booking*", formatList([booking!])),
     });
+
     await bookingCommandPrompt(senderJid, player.id);
 
     return;
@@ -128,15 +133,18 @@ const processSelectedBooking = async (
       return;
     }
     if (message.body === "players") {
-      await sendMessage(senderJid, {
-        text: "players",
-      });
-      return;
-    }
-    if (message.body === "delete") {
-      await sendMessage(senderJid, {
-        text: "delete",
-      });
+      const players = await getPlayersForBooking(booking!.id);
+      if (players.length === 0) {
+        await sendMessage(senderJid, {
+          text: "No players have joined this booking yet",
+        });
+      } else {
+        await sendMessage(senderJid, {
+          text: formatList(players, { header: { content: "🤕 *Players*" } }),
+        });
+      }
+
+      await bookingCommandPrompt(senderJid, player.id);
       return;
     }
     return;
@@ -151,11 +159,16 @@ const bookingCommandPrompt = async (senderJid: string, playerId: number) => {
   const existingPollKey = bookingsView[playerId]?.pollKey;
   if (existingPollKey) {
     await sendMessage(senderJid, { delete: existingPollKey });
+    bookingsView[playerId] = {
+      ...bookingsView[playerId],
+      pollKey: undefined,
+    };
   }
+
   const poll = await sendMessage(senderJid, {
     poll: {
       name: "Select an action for this booking",
-      values: ["skates", "players", "delete"],
+      values: ["skates", "players"],
       selectableCount: 1,
     },
   });
