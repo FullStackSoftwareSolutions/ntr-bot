@@ -12,6 +12,29 @@ export type FormatListConfig = {
   };
 };
 
+export const formatStringList = (rows: string[], config?: FormatListConfig) => {
+  if (rows.length === 0) return "";
+
+  const maxValueLength = rows.reduce((maxLength, row) => {
+    return row.length > maxLength ? row.length : maxLength;
+  }, 0);
+  const separatorLine = "┏" + "━".repeat(maxValueLength);
+
+  const data = rows
+    .map((row) => {
+      const valueString = row?.toString() ?? "<empty>";
+      return `┃ \`${valueString}\``;
+    })
+    .join("\n");
+
+  let headerString = config?.header?.content
+    ? `${config.header.content}\n`
+    : "";
+  let listString = `${separatorLine}\n${data}`;
+
+  return `${headerString}${listString}`;
+};
+
 export const formatList = (
   rows: { [key: string]: any }[],
   config?: FormatListConfig
@@ -33,7 +56,7 @@ export const formatList = (
 
         const valueString = row[header]?.toString() ?? "<empty>";
 
-        return `┃ *${headerString}*: \`${valueString}\``;
+        if (config?.hideKeys) return `┃ *${headerString}*: \`${valueString}\``;
       })
       .join("\n")
   );

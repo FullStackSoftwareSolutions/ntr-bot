@@ -57,6 +57,27 @@
       "when": 1711640249227,
       "tag": "0007_wakeful_midnight",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1711660528740,
+      "tag": "0008_rich_bastion",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1711663522873,
+      "tag": "0009_dashing_whizzer",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1711664280188,
+      "tag": "0010_uneven_cerebro",
+      "breakpoints": true
     }
   ]
 }

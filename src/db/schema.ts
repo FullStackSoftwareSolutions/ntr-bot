@@ -34,8 +34,8 @@ export const players = pgTable(
 );
 
 export const playersRelations = relations(players, ({ many }) => ({
-  bookings: many(playersToBookings),
-  skates: many(playersToSkates),
+  playersToBookings: many(playersToBookings),
+  playersToSkates: many(playersToSkates),
 }));
 
 export const skates = pgTable("skates", {
@@ -45,18 +45,22 @@ export const skates = pgTable("skates", {
 });
 
 export const skatesRelations = relations(skates, ({ one, many }) => ({
-  bookingId: one(bookings, {
+  booking: one(bookings, {
     fields: [skates.bookingId],
     references: [bookings.id],
   }),
-  players: many(playersToSkates),
+  playersToSkates: many(playersToSkates),
 }));
 
 export const playersToSkates = pgTable(
   "players_to_skates",
   {
-    playerId: integer("player_id").references(() => players.id),
-    skateId: integer("skate_id").references(() => skates.id),
+    playerId: integer("player_id")
+      .notNull()
+      .references(() => players.id),
+    skateId: integer("skate_id")
+      .notNull()
+      .references(() => skates.id),
     team: varchar("team"),
   },
   (t) => ({
@@ -81,6 +85,7 @@ export const playersToSkatesRelations = relations(
 export const bookings = pgTable("bookings", {
   id: serial("id").unique().primaryKey(),
   name: varchar("name"),
+  announceName: varchar("announce_name"),
   numPlayers: integer("num_players"),
   location: varchar("location"),
   cost: numeric("cost"),
@@ -89,6 +94,7 @@ export const bookings = pgTable("bookings", {
   startDate: date("start_date"),
   endDate: date("end_date"),
   bookedById: integer("booked_by_id").references(() => players.id),
+  whatsAppGroupJid: varchar("whatsapp_group_jid"),
 });
 
 export const bookingsRelations = relations(bookings, ({ one, many }) => ({
@@ -97,7 +103,7 @@ export const bookingsRelations = relations(bookings, ({ one, many }) => ({
     references: [players.id],
   }),
   skates: many(skates),
-  players: many(playersToBookings),
+  playersToBookings: many(playersToBookings),
 }));
 
 export const playersToBookings = pgTable(

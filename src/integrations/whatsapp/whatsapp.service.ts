@@ -11,6 +11,7 @@ import {
   makeInMemoryStore,
   WAMessageKey,
   WAMessageContent,
+  GroupMetadata,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
@@ -233,4 +234,11 @@ export const sendMessage = (
 
 export const deleteMessage = (jid: string, messageKey: WAMessageKey) => {
   return sendMessage(jid, { delete: messageKey });
+};
+
+export const getAllGroups = async (): Promise<GroupMetadata[]> => {
+  const getGroups = await sock.groupFetchAllParticipating();
+  return Object.entries(getGroups)
+    .slice(0)
+    .map((entry) => entry[1]);
 };
