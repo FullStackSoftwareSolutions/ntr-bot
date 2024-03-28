@@ -1,7 +1,12 @@
 import { bookings } from "~/db/schema";
 import { db } from "../../db";
+import { eq } from "drizzle-orm";
 
 export const getAllBookings = async () => db.query.bookings.findMany();
+export const getBookingById = async (id: number) =>
+  db.query.bookings.findMany({
+    where: eq(bookings.id, id),
+  });
 
 export const createBooking = async (booking: {
   name: string;

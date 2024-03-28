@@ -4,10 +4,14 @@ import {
   WAProto,
 } from "@whiskeysockets/baileys";
 
+export type WhatsAppMessageKey = WAProto.IMessageKey;
+
 export type WhatsAppMessage = {
   from: string | null | undefined;
   message?: WAProto.IWebMessageInfo["message"] | null | undefined;
-  key?: WAProto.IMessageKey | undefined;
+  key?: WhatsAppMessageKey | undefined;
+  type: string;
+  body?: string | null | undefined;
 };
 export type WhatsAppMessageContent = AnyMessageContent;
 export type WhatsAppMessageOptions = MiscMessageGenerationOptions;
@@ -29,3 +33,13 @@ export const getSenderFromMessage = (message: WhatsAppMessage) =>
 
 export const isGroupMessage = (message: WhatsAppMessage) =>
   message.key?.participant != null;
+
+export const isPollResponse = (message: WhatsAppMessage) =>
+  message.type === "poll" && message.body != null;
+
+export const doKeysMatch = (
+  keya: WhatsAppMessageKey,
+  keyb: WhatsAppMessageKey
+) => {
+  return keya.id === keyb.id && keya.remoteJid === keyb.remoteJid;
+};

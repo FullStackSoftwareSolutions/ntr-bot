@@ -15,8 +15,9 @@ import {
 import { Boom } from "@hapi/boom";
 import pino from "pino";
 import { WhatsAppMessage } from "~/features/whatsapp/whatsapp.model";
-import { unlinkSync, existsSync } from "fs";
+import { unlinkSync } from "fs";
 import { generateRefProvider } from "./hash";
+import path from "path";
 
 let sock: ReturnType<typeof makeWASocket>;
 let authState: AuthenticationState;
@@ -51,6 +52,7 @@ export const connect = async () => {
     generateHighQualityLinkPreview: true,
     getMessage,
   });
+  store.bind(sock.ev);
 
   sock.ev.on("creds.update", saveCreds);
   sock.ev.on("connection.update", handleConnectionUpdate);
@@ -70,10 +72,8 @@ async function getMessage(
 
 const saveStoreAutomatically = () => {
   setInterval(() => {
-    const path = `store.json`;
-    if (existsSync(path)) {
-      store.writeToFile(path);
-    }
+    const storePath = path.resolve(`./store.json`);
+    store.writeToFile(storePath);
   }, 10_000);
 };
 
@@ -105,13 +105,6 @@ export type TextMessage = {
 
 export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
   sock.ev.on("messages.upsert", async ({ messages, type }) => {
-    // const message = m.messages[0];
-    // if (!message) return;
-
-    // const fromMe = message.key.fromMe;
-    // if (fromMe) return;
-
-    // cb(message);
     if (type !== "notify") return;
     const [message] = messages;
 
@@ -125,6 +118,7 @@ export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
 
     let payload = {
       ...message,
+      type,
       body:
         message?.message?.extendedTextMessage?.text ??
         message?.message?.conversation,
@@ -172,6 +166,8 @@ export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
 
     if (payload?.key?.fromMe) return;
 
+    if (!payload.body) return;
+
     // if (!baileyIsValidNumber(payload.from)) {
     //   return;
     // }
@@ -187,10 +183,8 @@ export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
   });
 
   sock.ev.on("messages.update", async (message) => {
-    console.log(JSON.stringify(store, null, 2));
     for (const { key, update } of message) {
       if (update.pollUpdates) {
-        console.log(update.pollUpdates);
         const pollCreation = await getMessage(key);
         if (pollCreation) {
           const pollMessage = await getAggregateVotesInPollMessage({
