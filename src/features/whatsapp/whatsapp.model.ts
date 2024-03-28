@@ -38,8 +38,19 @@ export const isPollResponse = (message: WhatsAppMessage) =>
   message.type === "poll" && message.body != null;
 
 export const doKeysMatch = (
-  keya: WhatsAppMessageKey,
-  keyb: WhatsAppMessageKey
+  keya: WhatsAppMessageKey | null | undefined,
+  keyb: WhatsAppMessageKey | null | undefined
 ) => {
+  if (!keya || !keyb) return false;
+
   return keya.id === keyb.id && keya.remoteJid === keyb.remoteJid;
+};
+
+export const isPollAnswer = (
+  message: WhatsAppMessage,
+  pollKey: WhatsAppMessageKey | null | undefined
+) => {
+  if (!isPollResponse(message)) return false;
+
+  return doKeysMatch(message.key, pollKey);
 };

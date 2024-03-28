@@ -7,7 +7,6 @@ import {
 import EventEmitter from "node:events";
 import {
   getSenderFromMessage,
-  getTextFromMessage,
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
 import { createPlayerHandler } from "~/features/players/players.controller";

@@ -8,33 +8,39 @@ import {
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
 import { Player } from "~/features/players/players.type";
+import { usePlayerStore } from "./state";
 
 export const initializeBot = async () => {
   await loadCommands();
   onAdminMessage(handleAdminMessage);
 };
 
-const activeCommandByPlayer: {
-  [playerId: number]: string;
-} = {};
-
 const handleAdminMessage = async (message: WhatsAppMessage, player: Player) => {
-  const messageContent = getTextFromMessage(message);
+  const {
+    registerPlayer,
+    getActiveCommand,
+    setActiveCommand,
+    clearActiveCommand,
+  } = usePlayerStore();
+
+  registerPlayer(player.id);
+
+  const commandMessage = message.body?.trim().toLowerCase();
   const jid = getGroupOrSenderFromMessage(message);
 
   if (!isGroupMessage(message)) {
-    const activeCommand = activeCommandByPlayer[player.id];
+    const activeCommand = getActiveCommand(player.id);
     if (activeCommand) {
       const command = commands.get(activeCommand);
       return command.execute(message, player);
     }
 
-    const command = messageContent && commands.get(messageContent);
+    const command = commandMessage && commands.get(commandMessage);
     if (command) {
       if (command.onComplete) {
-        activeCommandByPlayer[player.id] = messageContent;
+        setActiveCommand(player.id, commandMessage);
         command.onComplete(() => {
-          delete activeCommandByPlayer[player.id];
+          clearActiveCommand(player.id);
         });
       }
       return command.execute(message, player);

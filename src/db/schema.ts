@@ -18,12 +18,12 @@ export const players = pgTable(
   "players",
   {
     id: serial("id").unique().primaryKey(),
-    fullName: varchar("full_name", { length: 256 }),
+    fullName: varchar("full_name", { length: 256 }).notNull(),
     nickname: varchar("nickname", { length: 256 }),
-    email: varchar("email").unique(),
-    phoneNumber: varchar("phone_number").unique(),
-    admin: boolean("admin").default(false),
+    email: varchar("email").unique().notNull(),
+    phoneNumber: varchar("phone_number").notNull().unique(),
     skillLevel: varchar("skill_level"),
+    admin: boolean("admin").notNull().default(false),
   },
   (players) => ({
     playersEmailIdx: index("players_email_idx").on(players.email),

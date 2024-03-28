@@ -12,7 +12,6 @@ import { onMessage as onWhatsAppMessage } from "../../integrations/whatsapp/what
 import { getPlayerByPhoneNumber } from "../players/players.db";
 import {
   getGroupOrSenderFromMessage,
-  getSenderFromMessage,
   getSenderNumberFromMessage,
   WhatsAppMessage,
   WhatsAppMessageContent,

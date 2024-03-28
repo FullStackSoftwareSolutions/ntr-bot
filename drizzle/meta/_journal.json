@@ -50,6 +50,13 @@
       "when": 1711634729516,
       "tag": "0006_unknown_rogue",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1711640249227,
+      "tag": "0007_wakeful_midnight",
+      "breakpoints": true
     }
   ]
 }

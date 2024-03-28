@@ -1,9 +1,9 @@
 export type Player = {
   id: number;
   email: string;
-  fullName: string | null;
+  fullName: string;
   nickname: string | null;
-  phoneNumber: string | null;
+  phoneNumber: string;
   admin: boolean;
   skillLevel: string | null;
 };

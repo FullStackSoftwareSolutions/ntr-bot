@@ -38,6 +38,8 @@ const logger = pino({ level: "fatal" }) as any;
 
 export const connect = async () => {
   store = makeInMemoryStore({ logger });
+  store.readFromFile(path.resolve(`./store.json`));
+
   saveStoreAutomatically();
 
   sock = makeWASocket({
@@ -227,4 +229,8 @@ export const sendMessage = (
   options?: MiscMessageGenerationOptions
 ) => {
   return sock.sendMessage(toJid, message, options);
+};
+
+export const deleteMessage = (jid: string, messageKey: WAMessageKey) => {
+  return sendMessage(jid, { delete: messageKey });
 };
