@@ -11,10 +11,7 @@ import {
 } from "~/features/whatsapp/whatsapp.model";
 import { createPlayerHandler } from "~/features/players/players.controller";
 import { parseEmail, parsePhoneNumber } from "../inputs";
-
-const playersPending: {
-  [playerId: number]: Partial<PlayerCreate>;
-} = {};
+import { usePlayerStore } from "../state";
 
 export const playerStepPrompt: {
   [key in keyof PlayerCreate]?:
@@ -43,6 +40,35 @@ export const playerStepPrompt: {
   skillLevel: "What is their skill level?",
 };
 
+export const execute = async (
+  message: WhatsAppMessage,
+  sessionPlayer: Player
+) => {
+  const { clearActiveCommand, setActiveCommand, updatePlayers, getPlayers } =
+    usePlayerStore();
+  const senderJid = getSenderFromMessage(message);
+
+  let newPlayer = getPlayers(sessionPlayer.id)?.add.player!;
+  if (!newPlayer) {
+    newPlayer = {};
+    updatePlayers(sessionPlayer.id, (draft) => {
+      draft.add.player = newPlayer;
+    });
+  }
+
+  let currentStep = getPendingStep(newPlayer);
+  console.log(currentStep);
+
+  // if (!currentStep) {
+  //   completed(message, newPlayer as PlayerCreate);
+  //   return;
+  // }
+
+  await sendMessage(senderJid, {
+    text: getReply(currentStep),
+  });
+};
+
 const getPendingStep = (player: Partial<PlayerCreate>) => {
   return Object.keys(playerStepPrompt).find(
     (key) => player[key as keyof PlayerCreate] === undefined
@@ -65,7 +91,7 @@ export const getPrompt = (
         }
       : prompt;
 
-  if (!promptData.parse) {
+  if (promptData && !promptData.parse) {
     promptData.parse = (value: string) => {
       if (!promptData.required && value === "!") {
         return null;
@@ -81,37 +107,9 @@ export const getPrompt = (
   };
 };
 
-export const execute = async (message: WhatsAppMessage, player: Player) => {
-  const senderJid = getSenderFromMessage(message);
-
-  let newPlayer = playersPending[player.id];
-  let firstMessage = false;
-  if (!newPlayer) {
-    firstMessage = true;
-    newPlayer = playersPending[player.id] = {};
-  }
-
-  let currentStep = getPendingStep(newPlayer);
-
-  if (!firstMessage) {
-    newPlayer[currentStep] = getPrompt(currentStep).parse(message.body!);
-
-    currentStep = getPendingStep(newPlayer);
-  }
-
-  if (!currentStep) {
-    completed(message, newPlayer as PlayerCreate);
-    return;
-  }
-
-  await sendMessage(senderJid, {
-    text: getReply(firstMessage, currentStep),
-  });
-};
-
-const getReply = (firstMessage: boolean, currentStep: keyof PlayerCreate) => {
+const getReply = (currentStep: keyof PlayerCreate) => {
   const { prompt } = getPrompt(currentStep);
-  if (firstMessage) {
+  if (Object.keys(playerStepPrompt)[0] === currentStep) {
     return stringJoin(
       "⛸️ Let's create a new player.",
       "══════════════════════════════════",

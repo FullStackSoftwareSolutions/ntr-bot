@@ -56,7 +56,7 @@ export const formatList = (
 
         const valueString = row[header]?.toString() ?? "<empty>";
 
-        if (config?.hideKeys) return `┃ *${headerString}*: \`${valueString}\``;
+        return `┃ *${headerString}*: \`${valueString}\``;
       })
       .join("\n")
   );

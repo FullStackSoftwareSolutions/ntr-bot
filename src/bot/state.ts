@@ -17,6 +17,10 @@ type Commands = {
       fieldPollKey?: WhatsAppMessageKey | null;
       field?: keyof PlayerCreate;
     };
+    add: {
+      step?: keyof PlayerCreate;
+      player?: Partial<PlayerCreate>;
+    };
   };
 };
 
@@ -51,6 +55,7 @@ export const store = createStore<State & Actions>()(
             activeCommand: null,
             players: {
               edit: {},
+              add: {},
             },
           };
         }),

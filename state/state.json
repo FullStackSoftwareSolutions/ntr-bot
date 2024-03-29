@@ -1,1 +1,1 @@
-{"state":{"commands":{"1":{"activeCommand":null,"players":{"edit":{},"playerMessageKeys":[],"viewIndex":0,"viewPollKey":null}}}},"version":0}
+{"state":{"commands":{"1":{"activeCommand":"players.add","players":{"edit":{},"add":{"player":{}},"playerMessageKeys":[],"viewPollKey":null,"viewIndex":0}}}},"version":0}

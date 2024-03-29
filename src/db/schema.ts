@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   index,
   varchar,
@@ -23,6 +23,9 @@ export const players = pgTable(
     email: varchar("email").unique().notNull(),
     phoneNumber: varchar("phone_number").notNull().unique(),
     skillLevel: varchar("skill_level"),
+    dateAdded: timestamp("date_added")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
     admin: boolean("admin").notNull().default(false),
   },
   (players) => ({
