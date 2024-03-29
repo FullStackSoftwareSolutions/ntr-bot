@@ -6,6 +6,7 @@ export enum Command {
   Help = "help",
   Seed = "seed",
   Players = "players",
+  PlayersAdd = "players.add",
   PlayersEdit = "players.edit",
 }
 

@@ -12,6 +12,7 @@ import {
 import { createPlayerHandler } from "~/features/players/players.controller";
 import { parseEmail, parsePhoneNumber } from "../inputs";
 import { usePlayerStore } from "../state";
+import { Command } from "../commands";
 
 export const playerStepPrompt: {
   [key in keyof PlayerCreate]?:
@@ -46,33 +47,59 @@ export const execute = async (
 ) => {
   const { clearActiveCommand, setActiveCommand, updatePlayers, getPlayers } =
     usePlayerStore();
+  setActiveCommand(sessionPlayer.id, Command.PlayersAdd);
+
   const senderJid = getSenderFromMessage(message);
 
   let newPlayer = getPlayers(sessionPlayer.id)?.add.player!;
-  if (!newPlayer) {
-    newPlayer = {};
-    updatePlayers(sessionPlayer.id, (draft) => {
-      draft.add.player = newPlayer;
-    });
+  let currentStep = newPlayer ? getPendingStep(newPlayer) : null;
+
+  updatePlayers(sessionPlayer.id, (draft) => {
+    if (!draft.add.player) {
+      draft.add.player = {};
+    }
+    if (currentStep) {
+      draft.add.player[currentStep] = getPrompt(currentStep)?.parse(
+        message.body!
+      );
+    }
+  });
+
+  newPlayer = getPlayers(sessionPlayer.id)?.add.player!;
+  currentStep = getPendingStep(newPlayer);
+
+  if (!currentStep) {
+    await createPlayer(message, newPlayer as PlayerCreate);
+    clearActiveCommand(sessionPlayer.id);
+    return;
   }
 
-  let currentStep = getPendingStep(newPlayer);
-  console.log(currentStep);
-
-  // if (!currentStep) {
-  //   completed(message, newPlayer as PlayerCreate);
-  //   return;
-  // }
-
+  await sendMessage(senderJid, {
+    text: formatList([newPlayer ?? {}]),
+  });
   await sendMessage(senderJid, {
     text: getReply(currentStep),
   });
 };
 
 const getPendingStep = (player: Partial<PlayerCreate>) => {
-  return Object.keys(playerStepPrompt).find(
-    (key) => player[key as keyof PlayerCreate] === undefined
-  ) as keyof PlayerCreate;
+  return Object.keys(playerStepPrompt).find((key) => {
+    const promptData = getPromptData(key as keyof PlayerCreate);
+    if (promptData.required) {
+      return player[key as keyof PlayerCreate] == null;
+    }
+    return player[key as keyof PlayerCreate] === undefined;
+  }) as keyof PlayerCreate;
+};
+
+const getPromptData = (step: keyof PlayerCreate) => {
+  const prompt = playerStepPrompt[step]!;
+  return typeof prompt === "string"
+    ? {
+        prompt,
+        required: true,
+      }
+    : prompt;
 };
 
 export const getPrompt = (
@@ -82,14 +109,7 @@ export const getPrompt = (
   required: boolean;
   parse: (value: string) => any;
 } => {
-  const prompt = playerStepPrompt[step]!;
-  let promptData =
-    typeof prompt === "string"
-      ? {
-          prompt,
-          required: true,
-        }
-      : prompt;
+  const promptData = getPromptData(step);
 
   if (promptData && !promptData.parse) {
     promptData.parse = (value: string) => {
@@ -120,8 +140,7 @@ const getReply = (currentStep: keyof PlayerCreate) => {
   return prompt;
 };
 
-const commandEventEmitter = new EventEmitter();
-const completed = async (message: WhatsAppMessage, player: PlayerCreate) => {
+const createPlayer = async (message: WhatsAppMessage, player: PlayerCreate) => {
   const newPlayer = await createPlayerHandler(player);
 
   const senderJid = getSenderFromMessage(message);
@@ -132,10 +151,4 @@ const completed = async (message: WhatsAppMessage, player: PlayerCreate) => {
       },
     }),
   });
-
-  commandEventEmitter.emit("complete");
-};
-
-export const onComplete = (cb: () => void) => {
-  commandEventEmitter.on("complete", cb);
 };
