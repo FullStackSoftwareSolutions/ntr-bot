@@ -1,1 +1,1 @@
-{"state":{"commands":{"1":{"activeCommand":null,"players":{"update":{},"create":{}},"bookings":{"update":{},"read":{}}}}},"version":0}
+{"state":{"commands":{"1":{"activeCommand":"bookings","players":{"update":{},"create":{}},"bookings":{"update":{},"read":{"bookingPollKey":{"remoteJid":"14164644510@s.whatsapp.net","fromMe":true,"id":"BAE54B806BE48FED"},"bookingId":13,"actionPollKey":{"remoteJid":"14164644510@s.whatsapp.net","fromMe":true,"id":"BAE5294DD6697A52"}}}}}},"version":0}

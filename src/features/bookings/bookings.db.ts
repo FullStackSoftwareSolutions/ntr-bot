@@ -1,6 +1,6 @@
-import { bookings } from "~/db/schema";
+import { bookings, playersToBookings } from "~/db/schema";
 import { db } from "../../db";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 export const getAllBookings = async () => db.query.bookings.findMany();
 export const getBookingById = async (id: number) =>
@@ -14,6 +14,7 @@ export const getBookingById = async (id: number) =>
     },
     where: eq(bookings.id, id),
   });
+
 export const getBookingByName = async (name: string) =>
   db.query.bookings.findFirst({
     with: {
@@ -37,4 +38,20 @@ export const createBooking = async (bookingData: {
 }) => {
   const [booking] = await db.insert(bookings).values(bookingData).returning();
   return booking;
+};
+
+export const updateBookingPlayersAmountPaid = async (
+  bookingId: number,
+  playerIds: number[],
+  amountPaid: string
+) => {
+  await db
+    .update(playersToBookings)
+    .set({ amountPaid })
+    .where(
+      and(
+        eq(playersToBookings.bookingId, bookingId),
+        inArray(playersToBookings.playerId, playerIds)
+      )
+    );
 };

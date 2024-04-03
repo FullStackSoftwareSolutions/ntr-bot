@@ -42,7 +42,12 @@ export const getPlayerByPhoneNumber = async (number: string) =>
 
 export const getPlayersForBooking = async (bookingId: number) =>
   db
-    .select(getTableColumns(players))
+    .select({
+      ...getTableColumns(players),
+      playersToBookings: {
+        amountPaid: playersToBookings.amountPaid,
+      },
+    })
     .from(players)
     .innerJoin(playersToBookings, eq(players.id, playersToBookings.playerId))
     .where(eq(playersToBookings.bookingId, bookingId));

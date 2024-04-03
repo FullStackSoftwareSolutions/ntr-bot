@@ -32,6 +32,11 @@ type Commands = {
         addPollKeys: WhatsAppMessageKey[];
         confirmPollKey: WhatsAppMessageKey;
       };
+      payments?: {
+        playerIds: number[];
+        playerPollKeys: WhatsAppMessageKey[];
+        confirmPollKey: WhatsAppMessageKey;
+      };
     };
     read: {
       bookingId?: number;
@@ -129,6 +134,7 @@ export const usePlayerBookingState = (playerId: number) => {
   const { getBookings } = usePlayerStore();
   return getBookings(playerId);
 };
+
 export const useUpdatePlayerBookingState: Actions["updateBookings"] = (
   playerId,
   bookings

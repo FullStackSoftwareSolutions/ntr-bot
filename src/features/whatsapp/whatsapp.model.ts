@@ -24,10 +24,10 @@ export type WhatsAppMessage = {
 export type WhatsAppMessageContent = AnyMessageContent;
 export type WhatsAppMessageOptions = MiscMessageGenerationOptions;
 
-export const PollOptions = {
-  Confirm: "✅ Confirm",
-  Cancel: "❌ Cancel",
-};
+export enum PollOptions {
+  Confirm = "✅ Confirm",
+  Cancel = "❌ Cancel",
+}
 
 export const getNumberFromJid = (jid: string) => jid.split("@")[0] as string;
 

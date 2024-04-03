@@ -22,7 +22,15 @@ import {
   onPollSelection as onPlayersPollSelection,
   sendBookingPlayersPollSelection,
 } from "./bookings/players";
+import { onPollSelection as onPaymentsPollSelection } from "./bookings/payments";
 import { getBookingMessage } from "~/features/bookings/bookings.model";
+import { sendBookingPaymentsPollSelection } from "./bookings/payments";
+
+enum BookingActionsPollOptions {
+  Players = "Players",
+  Skates = "Skates",
+  Payments = "Payments",
+}
 
 export const onCommand = async (message: WhatsAppMessage, player: Player) => {
   usePlayerStore().setActiveCommand(player.id, Command.Bookings);
@@ -48,6 +56,7 @@ export const onPollSelection = async (
   }
 
   onPlayersPollSelection(message, player);
+  onPaymentsPollSelection(message, player);
 };
 
 const sendBookingPollMessage = async (
@@ -116,16 +125,24 @@ const handleBookingActionPollSelection = async (
   }
 
   await sendMessage(senderJid, { delete: bookingState!.read.actionPollKey! });
-  if (message.body === "Skates") {
+
+  if (message.body === BookingActionsPollOptions.Skates) {
     const skates = await getSkatesForBooking(bookingId);
     await sendMessage(senderJid, {
       text: formatList(skates, { header: { content: "⛸️ *Skates*" } }),
     });
     await bookingCommandPrompt(senderJid, player.id);
-    return;
   }
-  if (message.body === "Players") {
+
+  if (message.body === BookingActionsPollOptions.Players) {
     await sendBookingPlayersPollSelection(message, player);
+    useUpdatePlayerBookingState(player.id, (draft) => {
+      draft.read = {};
+    });
+  }
+
+  if (message.body === BookingActionsPollOptions.Payments) {
+    await sendBookingPaymentsPollSelection(message, player);
     useUpdatePlayerBookingState(player.id, (draft) => {
       draft.read = {};
     });
@@ -153,7 +170,7 @@ const bookingCommandPrompt = async (senderJid: string, playerId: number) => {
   const poll = await sendMessage(senderJid, {
     poll: {
       name: "Select an action for this booking",
-      values: ["Skates", "Players", PollOptions.Cancel],
+      values: [...Object.values(BookingActionsPollOptions), PollOptions.Cancel],
       selectableCount: 1,
     },
   });
