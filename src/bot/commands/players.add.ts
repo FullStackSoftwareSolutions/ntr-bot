@@ -38,29 +38,46 @@ export const playerStepPrompt: {
     parse: parsePhoneNumber,
   },
   skillLevel: "What is their skill level?",
+  notes: {
+    prompt: "Any notes?",
+    required: false,
+  },
 };
 
-export const execute = async (
+export const onCommand = async (
   message: WhatsAppMessage,
   sessionPlayer: Player
 ) => {
-  const { clearActiveCommand, setActiveCommand, updatePlayers, getPlayers } =
-    usePlayerStore();
+  const { setActiveCommand, updatePlayers } = usePlayerStore();
   setActiveCommand(sessionPlayer.id, Command.PlayersAdd);
 
   const senderJid = getSenderFromMessage(message);
 
+  updatePlayers(sessionPlayer.id, (draft) => {
+    draft.create.player = {};
+  });
+
+  const currentStep = getPendingStep({});
+  await sendMessage(senderJid, {
+    text: getReply(currentStep),
+  });
+};
+
+export const onMessage = async (
+  message: WhatsAppMessage,
+  sessionPlayer: Player
+) => {
+  const { clearActiveCommand, updatePlayers, getPlayers } = usePlayerStore();
+
+  const senderJid = getSenderFromMessage(message);
+
   let newPlayer = getPlayers(sessionPlayer.id)?.create.player!;
-  let currentStep = newPlayer ? getPendingStep(newPlayer) : null;
+  let currentStep = getPendingStep(newPlayer);
+  const parsedMessage = getPrompt(currentStep)?.parse(message.body!);
 
   updatePlayers(sessionPlayer.id, (draft) => {
-    if (!draft.create.player) {
-      draft.create.player = {};
-    }
     if (currentStep) {
-      draft.create.player[currentStep] = getPrompt(currentStep)?.parse(
-        message.body!
-      );
+      draft.create.player![currentStep] = parsedMessage;
     }
   });
 

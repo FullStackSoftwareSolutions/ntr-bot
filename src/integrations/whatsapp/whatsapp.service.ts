@@ -340,7 +340,10 @@ export const sendPolls = async (toJid: string, poll: PollMessageOptions) => {
   const pollKeys = [];
 
   for (let i = 0; i < Math.ceil(poll.values.length / MAX_POLL_OPTIONS); i++) {
-    const values = poll.values.slice(i, MAX_POLL_OPTIONS);
+    const values = poll.values.slice(
+      i * MAX_POLL_OPTIONS,
+      i * MAX_POLL_OPTIONS + MAX_POLL_OPTIONS
+    );
 
     const pollName = i === 0 ? poll.name : "-------";
     const pollMesage = await sendMessage(toJid, {

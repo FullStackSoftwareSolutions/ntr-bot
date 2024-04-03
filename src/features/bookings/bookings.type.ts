@@ -22,6 +22,7 @@ export type Booking = {
   endDate: string | null;
   bookedById: number | null;
   playersToBookings: {
+    amountPaid: string | null;
     player: Player;
   }[];
 };

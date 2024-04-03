@@ -14,10 +14,6 @@ import {
 import { getPlayerName } from "~/features/players/players.model";
 import { Player } from "~/features/players/players.type";
 import {
-  formatList,
-  stringJoin,
-} from "~/features/whatsapp/whatsapp.formatting";
-import {
   doKeysMatch,
   getSenderFromMessage,
   isKeyInList,

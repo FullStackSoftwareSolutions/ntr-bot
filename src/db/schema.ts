@@ -12,6 +12,7 @@ import {
   numeric,
   integer,
   primaryKey,
+  text,
 } from "drizzle-orm/pg-core";
 
 export const players = pgTable(
@@ -23,6 +24,7 @@ export const players = pgTable(
     email: varchar("email").unique().notNull(),
     phoneNumber: varchar("phone_number").notNull().unique(),
     skillLevel: varchar("skill_level"),
+    notes: text("notes"),
     dateAdded: timestamp("date_added")
       .notNull()
       .default(sql`CURRENT_TIMESTAMP`),

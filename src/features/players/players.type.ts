@@ -6,6 +6,7 @@ export type Player = {
   phoneNumber: string;
   admin: boolean;
   skillLevel: string | null;
+  dateAdded: Date;
 };
 
 export type PlayerCreate = {
@@ -14,4 +15,5 @@ export type PlayerCreate = {
   nickname: string;
   phoneNumber: string;
   skillLevel: string;
+  notes: string;
 };

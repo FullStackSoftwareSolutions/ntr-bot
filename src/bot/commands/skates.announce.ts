@@ -17,7 +17,7 @@ export const execute = async (
   sessionPlayer: Player,
   skateId: number
 ) => {
-  const skate = await getSkateById(skateId);
+  const skate = await getSkate(skateId);
   const senderJid = getSenderFromMessage(message);
 
   if (!skate) {
@@ -47,4 +47,11 @@ export const execute = async (
   //     text: `📢 Announced skate to group ${skate.booking?.whatsAppGroupJid}`,
   //   });
   // }
+};
+
+const getSkate = async (skateId: number | null | undefined) => {
+  if (!skateId) {
+    return null;
+  }
+  return await getSkateById(skateId);
 };

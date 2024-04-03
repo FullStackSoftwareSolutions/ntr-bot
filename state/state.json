@@ -1,1 +1,1 @@
-{"state":{"commands":{"1":{"activeCommand":"players.add","players":{"update":{},"create":{"player":{}}},"bookings":{"update":{},"read":{}}}}},"version":0}
+{"state":{"commands":{"1":{"activeCommand":null,"players":{"update":{},"create":{}},"bookings":{"update":{},"read":{}}}}},"version":0}
