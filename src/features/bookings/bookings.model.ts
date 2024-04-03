@@ -8,7 +8,9 @@ import { formatCurrency } from "~/formatting/currency";
 
 dayjs.extend(utcPlugin);
 
-export const getDatesForBooking = (booking: Booking) => {
+export const getDatesForBooking = (
+  booking: Omit<Booking, "playersToBookings">
+) => {
   if (!booking.startDate || !booking.endDate) {
     throw new Error("Booking is missing start or end date");
   }

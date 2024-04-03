@@ -1,3 +1,4 @@
+import { updatePlayersForBooking } from "../players/players.db";
 import { createSkate } from "../skates/skates.db";
 import { createBooking } from "./bookings.db";
 import { getDatesForBooking } from "./bookings.model";
@@ -24,4 +25,12 @@ export const createBookingHandler = async (bookingData: {
       scheduledOn: date,
     });
   }
+};
+
+export const updateBookingPlayersHandler = async (
+  bookingId: number,
+  removePlayerIds: number[],
+  addPlayerIds: number[]
+) => {
+  await updatePlayersForBooking(bookingId, removePlayerIds, addPlayerIds);
 };

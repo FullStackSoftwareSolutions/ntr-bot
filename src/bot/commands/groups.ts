@@ -8,7 +8,7 @@ import {
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
 
-export const execute = async (message: WhatsAppMessage) => {
+export const onCommand = async (message: WhatsAppMessage) => {
   const whatsAppGroups = await getAllGroups();
 
   const reply = formatList(

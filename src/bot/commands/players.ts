@@ -8,8 +8,10 @@ import {
 } from "../../integrations/whatsapp/whatsapp.service";
 import { formatList } from "../../features/whatsapp/whatsapp.formatting";
 import {
+  doKeysMatch,
   getSenderFromMessage,
   isPollAnswer,
+  PollOptions,
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
 import { usePlayerStore } from "../state";
@@ -17,55 +19,69 @@ import { Player } from "~/features/players/players.type";
 import { Command } from "../commands";
 import { AnyMessageContent } from "@whiskeysockets/baileys";
 
-const MAX_DISPLAYED = 20;
+const MAX_DISPLAYED = 15;
 
-const PageOptions = {
-  prev: "⬅️ Prev Page",
-  next: "➡️ Next Page",
-  cancel: "❌ Cancel",
-};
-
-export const execute = async (
+export const onCommand = async (
   message: WhatsAppMessage,
   sessionPlayer: Player,
   search: string
 ) => {
-  const { getPlayers, setActiveCommand, clearActiveCommand } = usePlayerStore();
-
-  setActiveCommand(sessionPlayer.id, Command.Players);
-
-  const players = search
-    ? await getAllPlayersSearch(search)
-    : await getAllPlayers();
   const senderJid = getSenderFromMessage(message);
 
-  const state = getPlayers(sessionPlayer.id);
+  const { setActiveCommand } = usePlayerStore();
+  setActiveCommand(sessionPlayer.id, Command.Players);
 
-  let currentPageIndex = state?.viewIndex ?? 0;
-  if (isPollAnswer(message, state?.viewPollKey)) {
-    await deleteMessage(senderJid, state?.viewPollKey!);
+  usePlayerStore().updatePlayers(sessionPlayer.id, (draft) => {
+    draft.search = search;
+  });
 
-    if (message.body === PageOptions.cancel) {
-      cancel(sessionPlayer);
-      return;
-    }
-    if (message.body === PageOptions.prev) {
-      currentPageIndex -= 1;
-    }
-    if (message.body === PageOptions.next) {
-      currentPageIndex += 1;
-    }
-    usePlayerStore().updatePlayers(sessionPlayer.id, (draft) => {
-      draft.viewIndex = currentPageIndex;
-    });
-  }
-
-  await sendPlayersMessage(players, senderJid, currentPageIndex, sessionPlayer);
+  const players = await getPlayers(sessionPlayer);
+  await sendPlayersMessage(players, senderJid, 0, sessionPlayer);
 
   if (players.length === 0 || players.length <= MAX_DISPLAYED) {
     cancel(sessionPlayer);
     return;
   }
+};
+
+export const onPollSelection = async (
+  message: WhatsAppMessage,
+  sessionPlayer: Player
+) => {
+  const senderJid = getSenderFromMessage(message);
+  const state = usePlayerStore().getPlayers(sessionPlayer.id);
+
+  let currentPageIndex = state?.viewIndex ?? 0;
+
+  if (doKeysMatch(message.key, state?.viewPollKey)) {
+    await deleteMessage(senderJid, state?.viewPollKey!);
+
+    if (message.body === PollOptions.Cancel) {
+      cancel(sessionPlayer);
+      return;
+    }
+    if (message.body === PollOptions.PrevPage) {
+      currentPageIndex -= 1;
+    }
+    if (message.body === PollOptions.NextPage) {
+      currentPageIndex += 1;
+    }
+
+    usePlayerStore().updatePlayers(sessionPlayer.id, (draft) => {
+      draft.viewIndex = currentPageIndex;
+    });
+  }
+
+  const players = await getPlayers(sessionPlayer);
+  await sendPlayersMessage(players, senderJid, currentPageIndex, sessionPlayer);
+};
+
+const getPlayers = async (sessionPlayer: Player) => {
+  const state = usePlayerStore().getPlayers(sessionPlayer.id);
+
+  return state?.search
+    ? await getAllPlayersSearch(state.search)
+    : await getAllPlayers();
 };
 
 const cancel = async (sessionPlayer: Player) => {
@@ -156,12 +172,12 @@ const sendPageMessage = async (
   senderJid: string,
   player: Player
 ) => {
-  let values = [PageOptions.prev, PageOptions.next, PageOptions.cancel];
+  let values = [PollOptions.PrevPage, PollOptions.NextPage, PollOptions.Cancel];
   if (pageData.index === 0) {
-    values = [PageOptions.next, PageOptions.cancel];
+    values = [PollOptions.NextPage, PollOptions.Cancel];
   }
   if (pageData.index === pageData.numPages - 1) {
-    values = [PageOptions.prev, PageOptions.cancel];
+    values = [PollOptions.PrevPage, PollOptions.Cancel];
   }
 
   const poll = await sendMessage(senderJid, {

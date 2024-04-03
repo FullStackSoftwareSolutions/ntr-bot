@@ -27,6 +27,8 @@ export type WhatsAppMessageOptions = MiscMessageGenerationOptions;
 export enum PollOptions {
   Confirm = "✅ Confirm",
   Cancel = "❌ Cancel",
+  PrevPage = "⬅️ Prev Page",
+  NextPage = "➡️ Next Page",
 }
 
 export const getNumberFromJid = (jid: string) => jid.split("@")[0] as string;

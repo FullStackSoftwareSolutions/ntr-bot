@@ -1,6 +1,11 @@
 import { and, asc, eq, getTableColumns, inArray, like, or } from "drizzle-orm";
 import { db } from "../../db";
-import { players, playersToBookings } from "../../db/schema";
+import {
+  players,
+  playersToBookings,
+  playersToSkates,
+  skates,
+} from "../../db/schema";
 import { PlayerCreate } from "./players.type";
 
 export const getAllPlayers = async () =>
@@ -58,6 +63,10 @@ export const updatePlayersForBooking = async (
   addPlayerIds: number[]
 ) => {
   await db.transaction(async (tx) => {
+    const bookingSkates = await tx.query.skates.findMany({
+      where: eq(skates.bookingId, bookingId),
+    });
+
     if (removePlayerIds.length > 0) {
       await tx
         .delete(playersToBookings)
@@ -67,12 +76,30 @@ export const updatePlayersForBooking = async (
             inArray(playersToBookings.playerId, removePlayerIds)
           )
         );
+
+      await tx.delete(playersToSkates).where(
+        and(
+          inArray(playersToSkates.playerId, removePlayerIds),
+          inArray(
+            playersToSkates.skateId,
+            bookingSkates.map(({ id }) => id)
+          )
+        )
+      );
     }
 
     if (addPlayerIds.length > 0) {
       await tx
         .insert(playersToBookings)
         .values(addPlayerIds.map((id) => ({ bookingId, playerId: id })));
+
+      for (const skate of bookingSkates) {
+        await tx
+          .insert(playersToSkates)
+          .values(
+            addPlayerIds.map((id) => ({ skateId: skate.id, playerId: id }))
+          );
+      }
     }
   });
 };

@@ -3,13 +3,13 @@ import {
   usePlayerStore,
   useUpdatePlayerBookingState,
 } from "~/bot/state";
+import { updateBookingPlayersHandler } from "~/features/bookings/bookings.controller";
 import { getBookingById } from "~/features/bookings/bookings.db";
 import { getBookingMessage } from "~/features/bookings/bookings.model";
 import {
   getAllPlayers,
   getPlayersByNames,
   getPlayersForBooking,
-  updatePlayersForBooking,
 } from "~/features/players/players.db";
 import { getPlayerName } from "~/features/players/players.model";
 import { Player } from "~/features/players/players.type";
@@ -143,7 +143,7 @@ const confirmBookingPlayersPollSelection = async (
     return;
   }
 
-  await updatePlayersForBooking(
+  await updateBookingPlayersHandler(
     updateState.bookingId!,
     updateState.players.removePlayerIds,
     updateState.players.addPlayerIds

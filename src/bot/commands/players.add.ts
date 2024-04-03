@@ -37,7 +37,10 @@ export const playerStepPrompt: {
     required: true,
     parse: parsePhoneNumber,
   },
-  skillLevel: "What is their skill level?",
+  skillLevel: {
+    prompt: "What is their skill level?",
+    required: false,
+  },
   notes: {
     prompt: "Any notes?",
     required: false,

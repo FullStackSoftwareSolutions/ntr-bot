@@ -6,7 +6,7 @@ import {
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
 
-export const execute = (message: WhatsAppMessage) => {
+export const onCommand = (message: WhatsAppMessage) => {
   const reply = formatList(getAllCommands(), {
     header: {
       content: "💻 Commands",

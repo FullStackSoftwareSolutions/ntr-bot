@@ -9,6 +9,7 @@ import { PlayerCreate } from "~/features/players/players.type";
 type Commands = {
   activeCommand: string | null;
   players: {
+    search?: string;
     viewIndex?: number;
     viewPollKey?: WhatsAppMessageKey | null;
     playerMessageKeys?: WhatsAppMessageKey[];

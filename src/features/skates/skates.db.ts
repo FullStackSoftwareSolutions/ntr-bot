@@ -1,6 +1,6 @@
-import { skates } from "~/db/schema";
+import { playersToSkates, skates } from "~/db/schema";
 import { db } from "../../db";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 export const getSkateById = async (id: number) => {
   const [skate] = await db.query.skates.findMany({
@@ -23,9 +23,50 @@ export const getSkateById = async (id: number) => {
 
 export const getAllSkates = async () => db.query.skates.findMany();
 export const getSkatesForBooking = async (bookingId: number) =>
-  db.query.skates.findMany({ where: eq(skates.bookingId, bookingId) });
+  db.query.skates.findMany({
+    with: {
+      playersToSkates: {
+        with: {
+          player: true,
+        },
+      },
+    },
+    where: eq(skates.bookingId, bookingId),
+  });
 
 export const createSkate = async (skate: {
   scheduledOn: Date;
   bookingId: number;
-}) => db.insert(skates).values([skate]).returning();
+}) => {
+  const [insertedSkate] = await db.insert(skates).values([skate]).returning();
+  return insertedSkate;
+};
+
+export const deleteSkatesForBooking = async (bookingId: number) =>
+  db.delete(skates).where(eq(skates.bookingId, bookingId)).returning();
+
+export const addPlayersToSkate = async (
+  skateId: number,
+  playerIds: number[]
+) => {
+  await db.insert(playersToSkates).values(
+    playerIds.map((playerId) => ({
+      skateId,
+      playerId,
+    }))
+  );
+};
+
+export const removePlayersFromSkate = async (
+  skateId: number,
+  playerIds: number[]
+) => {
+  await db
+    .delete(playersToSkates)
+    .where(
+      and(
+        eq(playersToSkates.skateId, skateId),
+        inArray(playersToSkates.playerId, playerIds)
+      )
+    );
+};

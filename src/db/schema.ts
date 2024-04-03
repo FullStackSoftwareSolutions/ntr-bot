@@ -64,10 +64,10 @@ export const playersToSkates = pgTable(
   {
     playerId: integer("player_id")
       .notNull()
-      .references(() => players.id),
+      .references(() => players.id, { onDelete: "cascade" }),
     skateId: integer("skate_id")
       .notNull()
-      .references(() => skates.id),
+      .references(() => skates.id, { onDelete: "cascade" }),
     team: varchar("team"),
   },
   (t) => ({
