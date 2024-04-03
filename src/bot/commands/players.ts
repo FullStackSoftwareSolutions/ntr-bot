@@ -1,4 +1,7 @@
-import { getAllPlayers } from "../../features/players/players.db";
+import {
+  getAllPlayers,
+  getAllPlayersSearch,
+} from "../../features/players/players.db";
 import {
   deleteMessage,
   sendMessage,
@@ -14,7 +17,7 @@ import { Player } from "~/features/players/players.type";
 import { Command } from "../commands";
 import { AnyMessageContent } from "@whiskeysockets/baileys";
 
-const MAX_DISPLAYED = 5;
+const MAX_DISPLAYED = 20;
 
 const PageOptions = {
   prev: "⬅️ Prev Page",
@@ -24,13 +27,16 @@ const PageOptions = {
 
 export const execute = async (
   message: WhatsAppMessage,
-  sessionPlayer: Player
+  sessionPlayer: Player,
+  search: string
 ) => {
   const { getPlayers, setActiveCommand, clearActiveCommand } = usePlayerStore();
 
   setActiveCommand(sessionPlayer.id, Command.Players);
 
-  const players = await getAllPlayers();
+  const players = search
+    ? await getAllPlayersSearch(search)
+    : await getAllPlayers();
   const senderJid = getSenderFromMessage(message);
 
   const state = getPlayers(sessionPlayer.id);
@@ -90,7 +96,9 @@ const sendPlayersMessage = async (
   const state = getPlayers(sessionPlayer.id);
 
   if ((state?.playerMessageKeys ?? []).length === 0) {
-    await sendMessage(senderJid, { text: "🏒 *Players*" });
+    await sendMessage(senderJid, {
+      text: `🏒 *Players* (${pageData.total})`,
+    });
   }
 
   for (
@@ -139,6 +147,7 @@ const getPageData = (players: Player[], index: number) => {
     ),
     page,
     numPages,
+    total: players.length,
   };
 };
 

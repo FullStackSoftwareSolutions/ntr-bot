@@ -12,6 +12,7 @@ import {
   WAMessageKey,
   WAMessageContent,
   GroupMetadata,
+  PollMessageOptions,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
@@ -107,8 +108,8 @@ export type TextMessage = {
 };
 
 export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
-  sock.ev.on("messages.upsert", async ({ messages, type }) => {
-    if (type !== "notify") return;
+  sock.ev.on("messages.upsert", async ({ messages, ...rest }) => {
+    if (rest.type !== "notify") return;
     const [message] = messages;
 
     if (
@@ -119,13 +120,20 @@ export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
       return;
     }
 
+    let type: string = rest.type;
+    if (message.message?.reactionMessage) {
+      type = "reaction";
+    }
+
     let payload = {
       ...message,
       type,
       body:
         message?.message?.extendedTextMessage?.text ??
-        message?.message?.conversation,
+        message?.message?.conversation ??
+        message?.message?.reactionMessage?.text,
 
+      reactionMessage: message?.message?.reactionMessage,
       from: message?.key?.remoteJid,
     };
 
@@ -205,10 +213,105 @@ export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
             messageOriginalKey.id
           );
 
+          const pollVotesForSender = pollMessage
+            .filter((poll) => poll.voters.includes(key.remoteJid!))
+            .map((poll) => poll.name);
+
+          const body = pollMessage
+            .filter((poll) => poll.voters.length > 0)
+            .map((poll) => poll.name)
+            .join(", ");
+
           let payload = {
             ...messageCtx,
-            body:
-              pollMessage.find((poll) => poll.voters.length > 0)?.name || "",
+            body: body,
+            pollVotesForSender,
+            pollMessage,
+            from: key.remoteJid,
+            pushName: messageOriginal?.pushName,
+            broadcast: messageOriginal?.broadcast,
+            messageTimestamp: messageOriginal?.messageTimestamp,
+            voters: pollCreation,
+            type: "poll",
+          };
+
+          cb(payload);
+        }
+      }
+    }
+  });
+};
+
+export const onReaction = (cb: (message: WhatsAppMessage) => void) => {
+  sock.ev.on("messages.upsert", async ({ messages, ...rest }) => {
+    if (rest.type !== "notify") return;
+    const [message] = messages;
+
+    if (
+      !message ||
+      message?.message?.protocolMessage?.type ===
+        WAProto.Message.ProtocolMessage.Type.EPHEMERAL_SETTING
+    ) {
+      return;
+    }
+
+    let type: string = rest.type;
+    if (!message.message?.reactionMessage) {
+      return;
+    }
+
+    let payload = {
+      ...message,
+      type,
+      body: message?.message?.reactionMessage?.text,
+      from: message?.key?.remoteJid,
+    };
+
+    if (payload.from === "status@broadcast") return;
+
+    if (payload?.key?.fromMe) return;
+
+    if (!payload.body) return;
+
+    cb(payload);
+  });
+};
+
+export const onPollSelection = (cb: (message: WhatsAppMessage) => void) => {
+  sock.ev.on("messages.update", async (message) => {
+    for (const { key, update } of message) {
+      if (update.pollUpdates) {
+        const pollCreation = await getMessage(key);
+        if (pollCreation) {
+          const pollMessage = await getAggregateVotesInPollMessage({
+            message: pollCreation,
+            pollUpdates: update.pollUpdates,
+          });
+          const [messageCtx] = message;
+
+          const messageOriginalKey =
+            messageCtx?.update?.pollUpdates?.[0]?.pollUpdateMessageKey;
+          if (!messageOriginalKey?.id || !messageOriginalKey.remoteJid) return;
+
+          const messageOriginal = await store.loadMessage(
+            messageOriginalKey.remoteJid,
+            messageOriginalKey.id
+          );
+
+          const pollVotesForSender = pollMessage
+            .filter((poll) => poll.voters.includes(key.remoteJid!))
+            .map((poll) => poll.name);
+
+          const body = pollMessage
+            .filter((poll) => poll.voters.length > 0)
+            .map((poll) => poll.name)
+            .join(", ");
+
+          let payload = {
+            ...messageCtx,
+            body: body,
+            pollVotesForSender,
+            pollMessage,
             from: key.remoteJid,
             pushName: messageOriginal?.pushName,
             broadcast: messageOriginal?.broadcast,
@@ -230,6 +333,25 @@ export const sendMessage = (
   options?: MiscMessageGenerationOptions
 ) => {
   return sock.sendMessage(toJid, message, options);
+};
+
+const MAX_POLL_OPTIONS = 12;
+export const sendPolls = async (toJid: string, poll: PollMessageOptions) => {
+  const pollKeys = [];
+
+  for (let i = 0; i < Math.ceil(poll.values.length / MAX_POLL_OPTIONS); i++) {
+    const values = poll.values.slice(i, MAX_POLL_OPTIONS);
+
+    const pollName = i === 0 ? poll.name : "-------";
+    const pollMesage = await sendMessage(toJid, {
+      poll: { name: pollName, values },
+    });
+    if (pollMesage) {
+      pollKeys.push(pollMesage);
+    }
+  }
+
+  return pollKeys;
 };
 
 export const deleteMessage = (jid: string, messageKey: WAMessageKey) => {

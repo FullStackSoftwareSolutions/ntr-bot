@@ -12,14 +12,31 @@ type Commands = {
     viewIndex?: number;
     viewPollKey?: WhatsAppMessageKey | null;
     playerMessageKeys?: WhatsAppMessageKey[];
-    edit: {
+    update: {
       playerId?: number;
       fieldPollKey?: WhatsAppMessageKey | null;
       field?: keyof PlayerCreate;
     };
-    add: {
+    create: {
       step?: keyof PlayerCreate;
       player?: Partial<PlayerCreate>;
+    };
+  };
+  bookings: {
+    update: {
+      bookingId?: number;
+      players?: {
+        removePlayerIds: number[];
+        addPlayerIds: number[];
+        removePollKeys: WhatsAppMessageKey[];
+        addPollKeys: WhatsAppMessageKey[];
+        confirmPollKey: WhatsAppMessageKey;
+      };
+    };
+    read: {
+      bookingId?: number;
+      bookingPollKey?: WhatsAppMessageKey | null;
+      actionPollKey?: WhatsAppMessageKey | null;
     };
   };
 };
@@ -38,6 +55,11 @@ type Actions = {
     playerId: number,
     players: (players: NonNullable<Commands["players"]>) => void
   ) => void;
+  getBookings: (bookingId: number) => Commands["bookings"] | undefined;
+  updateBookings: (
+    playerId: number,
+    bookings: (bookings: NonNullable<Commands["bookings"]>) => void
+  ) => void;
   reset: () => void;
 };
 
@@ -54,8 +76,12 @@ export const store = createStore<State & Actions>()(
           state.commands[playerId] = {
             activeCommand: null,
             players: {
-              edit: {},
-              add: {},
+              update: {},
+              create: {},
+            },
+            bookings: {
+              update: {},
+              read: {},
             },
           };
         }),
@@ -77,6 +103,14 @@ export const store = createStore<State & Actions>()(
             update
           );
         }),
+      getBookings: (playerId) => get().commands[playerId]?.bookings,
+      updateBookings: (playerId, update) =>
+        set((state) => {
+          state.commands[playerId]!.bookings = produce(
+            state.commands[playerId]!.bookings,
+            update
+          );
+        }),
       reset: () => set(defaultState),
     })),
     {
@@ -89,4 +123,16 @@ export const store = createStore<State & Actions>()(
 export const usePlayerStore = () => {
   const { getState } = store;
   return getState();
+};
+
+export const usePlayerBookingState = (playerId: number) => {
+  const { getBookings } = usePlayerStore();
+  return getBookings(playerId);
+};
+export const useUpdatePlayerBookingState: Actions["updateBookings"] = (
+  playerId,
+  bookings
+) => {
+  const { updateBookings } = usePlayerStore();
+  return updateBookings(playerId, bookings);
 };

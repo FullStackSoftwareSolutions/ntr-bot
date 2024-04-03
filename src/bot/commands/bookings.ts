@@ -1,24 +1,164 @@
-import { getAllBookings } from "../../features/bookings/bookings.db";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
-import { formatList } from "../../features/whatsapp/whatsapp.formatting";
 import {
+  doKeysMatch,
   getSenderFromMessage,
+  PollOptions,
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
+import { Player } from "~/features/players/players.type";
+import {
+  getAllBookings,
+  getBookingByName,
+} from "~/features/bookings/bookings.db";
+import { formatList } from "~/features/whatsapp/whatsapp.formatting";
+import { getSkatesForBooking } from "~/features/skates/skates.db";
+import {
+  usePlayerBookingState,
+  usePlayerStore,
+  useUpdatePlayerBookingState,
+} from "../state";
+import { Command } from "../commands";
+import {
+  onPollSelection as onPlayersPollSelection,
+  sendBookingPlayersPollSelection,
+} from "./bookings/players";
+import { getBookingMessage } from "~/features/bookings/bookings.model";
 
-export const execute = async (message: WhatsAppMessage) => {
-  const bookings = await getAllBookings();
+export const onCommand = async (message: WhatsAppMessage, player: Player) => {
+  usePlayerStore().setActiveCommand(player.id, Command.Bookings);
+
+  await sendBookingPollMessage(message, player);
+};
+
+export const onMessage = async (message: WhatsAppMessage, player: Player) => {};
+
+export const onPollSelection = async (
+  message: WhatsAppMessage,
+  player: Player
+) => {
+  const bookingState = usePlayerBookingState(player.id);
+  const bookingPollKey = bookingState?.read.bookingPollKey;
+  const actionPollKey = bookingState?.read.actionPollKey;
+
+  if (doKeysMatch(actionPollKey, message.key!)) {
+    return handleBookingActionPollSelection(message, player);
+  }
+  if (doKeysMatch(bookingPollKey, message.key)) {
+    return handleBookingPollSelection(message, player);
+  }
+
+  onPlayersPollSelection(message, player);
+};
+
+const sendBookingPollMessage = async (
+  message: WhatsAppMessage,
+  player: Player
+) => {
   const senderJid = getSenderFromMessage(message);
+  const bookingState = usePlayerBookingState(player.id);
 
-  if (bookings.length === 0) {
-    sendMessage(senderJid, { text: "No bookings found" });
+  if (bookingState?.read.bookingId) {
     return;
   }
 
-  await sendMessage(senderJid, { text: "📆 *Bookings*" });
+  const bookings = await getAllBookings();
+  const poll = await sendMessage(senderJid, {
+    poll: {
+      name: "Which booking would you like to view?",
+      values: bookings.map((booking) => booking.name),
+      selectableCount: 1,
+    },
+  });
 
-  for (const booking of bookings) {
-    const text = formatList([booking]);
-    await sendMessage(senderJid, { text });
+  useUpdatePlayerBookingState(player.id, (draft) => {
+    draft.read.bookingPollKey = poll!.key;
+  });
+};
+
+const handleBookingPollSelection = async (
+  message: WhatsAppMessage,
+  player: Player
+) => {
+  const senderJid = getSenderFromMessage(message);
+  const bookingState = usePlayerBookingState(player.id);
+
+  const selectedBookingName = message.body;
+  if (!selectedBookingName) {
+    return;
   }
+
+  const booking = await getBookingByName(selectedBookingName);
+  if (!booking) {
+    throw new Error("Booking not found!");
+  }
+
+  useUpdatePlayerBookingState(player.id, (draft) => {
+    draft.read.bookingId = booking.id;
+  });
+
+  await sendMessage(senderJid, { delete: bookingState!.read.bookingPollKey! });
+  await sendMessage(senderJid, {
+    text: getBookingMessage(booking),
+  });
+
+  await bookingCommandPrompt(senderJid, player.id);
+};
+
+const handleBookingActionPollSelection = async (
+  message: WhatsAppMessage,
+  player: Player
+) => {
+  const senderJid = getSenderFromMessage(message);
+  const bookingState = usePlayerBookingState(player.id);
+  const bookingId = bookingState?.read.bookingId;
+  if (!bookingId) {
+    throw new Error("No booking selected!");
+  }
+
+  await sendMessage(senderJid, { delete: bookingState!.read.actionPollKey! });
+  if (message.body === "Skates") {
+    const skates = await getSkatesForBooking(bookingId);
+    await sendMessage(senderJid, {
+      text: formatList(skates, { header: { content: "⛸️ *Skates*" } }),
+    });
+    await bookingCommandPrompt(senderJid, player.id);
+    return;
+  }
+  if (message.body === "Players") {
+    await sendBookingPlayersPollSelection(message, player);
+    useUpdatePlayerBookingState(player.id, (draft) => {
+      draft.read = {};
+    });
+  }
+
+  if (message.body === PollOptions.Cancel) {
+    useUpdatePlayerBookingState(player.id, (draft) => {
+      draft.read = {};
+    });
+    usePlayerStore().clearActiveCommand(player.id);
+  }
+};
+
+const bookingCommandPrompt = async (senderJid: string, playerId: number) => {
+  const bookingState = usePlayerBookingState(playerId);
+  const existingPollKey = bookingState?.read.actionPollKey;
+
+  if (existingPollKey) {
+    await sendMessage(senderJid, { delete: existingPollKey });
+    useUpdatePlayerBookingState(playerId, (draft) => {
+      delete draft.read.actionPollKey;
+    });
+  }
+
+  const poll = await sendMessage(senderJid, {
+    poll: {
+      name: "Select an action for this booking",
+      values: ["Skates", "Players", PollOptions.Cancel],
+      selectableCount: 1,
+    },
+  });
+
+  useUpdatePlayerBookingState(playerId, (draft) => {
+    draft.read.actionPollKey = poll!.key;
+  });
 };

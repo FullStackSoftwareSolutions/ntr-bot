@@ -29,7 +29,7 @@ export const execute = async (
     usePlayerStore();
   const senderJid = getSenderFromMessage(message);
 
-  let playerId = editPlayerId ?? getPlayers(sessionPlayer.id)?.edit?.playerId;
+  let playerId = editPlayerId ?? getPlayers(sessionPlayer.id)?.update?.playerId;
 
   let editPlayer = await getPlayer(playerId);
   if (editPlayer == null) {
@@ -40,11 +40,11 @@ export const execute = async (
   }
 
   updatePlayers(sessionPlayer.id, (draft) => {
-    draft.edit.playerId = editPlayer!.id;
+    draft.update.playerId = editPlayer!.id;
   });
   setActiveCommand(sessionPlayer.id, Command.PlayersEdit);
 
-  const state = getPlayers(sessionPlayer.id)?.edit;
+  const state = getPlayers(sessionPlayer.id)?.update;
 
   if (state?.field) {
     const { required, parse } = getPrompt(state.field);
@@ -59,7 +59,7 @@ export const execute = async (
     editPlayer = await updatePlayer(editPlayer.id, { [state.field]: value });
 
     updatePlayers(sessionPlayer.id, (draft) => {
-      delete draft.edit.field;
+      delete draft.update.field;
     });
 
     await sendMessage(senderJid, {
@@ -71,7 +71,7 @@ export const execute = async (
     await deleteMessage(senderJid, state?.fieldPollKey!);
     if (message.body === CancelOption) {
       updatePlayers(sessionPlayer.id, (draft) => {
-        draft.edit = {};
+        draft.update = {};
       });
       clearActiveCommand(sessionPlayer.id);
       return;
@@ -80,8 +80,8 @@ export const execute = async (
     const field = message.body as keyof PlayerCreate;
     const { prompt } = getPrompt(field);
     updatePlayers(sessionPlayer.id, (draft) => {
-      draft.edit.field = field;
-      delete draft.edit.fieldPollKey;
+      draft.update.field = field;
+      delete draft.update.fieldPollKey;
     });
 
     await sendMessage(senderJid, {
@@ -123,6 +123,6 @@ const sendEditPollMessage = async (
   });
 
   usePlayerStore().updatePlayers(sessionPlayer.id, (draft) => {
-    draft.edit.fieldPollKey = poll!.key;
+    draft.update.fieldPollKey = poll!.key;
   });
 };

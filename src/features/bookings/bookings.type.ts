@@ -1,3 +1,5 @@
+import { Player } from "../players/players.type";
+
 export type BookingCreate = {
   name: string;
   numPlayers: number;
@@ -19,4 +21,7 @@ export type Booking = {
   startDate: string | null;
   endDate: string | null;
   bookedById: number | null;
+  playersToBookings: {
+    player: Player;
+  }[];
 };

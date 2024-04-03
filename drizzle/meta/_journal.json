@@ -85,6 +85,27 @@
       "when": 1711680014606,
       "tag": "0011_lyrical_spot",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1711727769617,
+      "tag": "0012_giant_korvac",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1711745577125,
+      "tag": "0013_third_black_crow",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "5",
+      "when": 1712099899076,
+      "tag": "0014_sparkling_electro",
+      "breakpoints": true
     }
   ]
 }

@@ -13,13 +13,14 @@ import { Player } from "~/features/players/players.type";
 import { getSkateById } from "~/features/skates/skates.db";
 import dayjs from "dayjs";
 import { getPlayerName } from "~/features/players/players.model";
+import { timeToEmoji } from "~/formatting/time.emoji";
 
 export const execute = async (
   message: WhatsAppMessage,
   sessionPlayer: Player,
   skateId: number
 ) => {
-  const skate = await getSkateById(skateId);
+  const skate = await getSkate(skateId);
   const senderJid = getSenderFromMessage(message);
 
   if (!skate) {
@@ -31,9 +32,9 @@ export const execute = async (
     skate.playersToSkates.map((p) => getPlayerName(p.player)),
     {
       header: {
-        content: `⛸️ *${skate.booking!.announceName}* 📅 ${dayjs(
+        content: `🏒 *${skate.booking!.announceName}* ${timeToEmoji(
           skate.scheduledOn
-        ).format("MMM D ⌚ h:mma")}`,
+        )} ${dayjs(skate.scheduledOn).format(`MMM D h:mma`)}`,
       },
     }
   );
@@ -41,4 +42,11 @@ export const execute = async (
   await sendMessage(senderJid, {
     text: skateFormat,
   });
+};
+
+const getSkate = async (skateId: number | null | undefined) => {
+  if (!skateId) {
+    return null;
+  }
+  return await getSkateById(skateId);
 };

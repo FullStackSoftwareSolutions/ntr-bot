@@ -8,7 +8,11 @@ import {
   getWhatsappAuthData,
   upsertWhatsappAuthData,
 } from "./whatsapp.db";
-import { onMessage as onWhatsAppMessage } from "../../integrations/whatsapp/whatsapp.service";
+import {
+  onMessage as onWhatsAppMessage,
+  onPollSelection as onWhatsAppPollSelection,
+  onReaction as onWhatsAppReaction,
+} from "../../integrations/whatsapp/whatsapp.service";
 import { getPlayerByPhoneNumber } from "../players/players.db";
 import {
   getGroupOrSenderFromMessage,
@@ -30,9 +34,11 @@ export const connectToWhatsapp = async () => {
   await initialize(auth);
 
   onWhatsAppMessage(handleMessage);
+  onWhatsAppReaction(handleReaction);
+  onWhatsAppPollSelection(handlePollSelection);
 };
 
-const handleMessage = async (message: WhatsAppMessage) => {
+const getPlayerOrSendErrorMessages = async (message: WhatsAppMessage) => {
   const player = await getPlayerByPhoneNumber(
     getSenderNumberFromMessage(message)
   );
@@ -43,36 +49,14 @@ const handleMessage = async (message: WhatsAppMessage) => {
     });
     return;
   }
-
-  if (player.admin) {
-    await handleAdminMessage(message, player);
+  if (!player.admin) {
+    await sendMessage(getGroupOrSenderFromMessage(message), {
+      text: "sorry, admins only",
+    });
     return;
   }
 
-  await handlePlayerMessage(message, player);
-};
-
-const handleAdminMessage = async (message: WhatsAppMessage, player: Player) => {
-  messageEventEmitter.emit("admin-message", message, player);
-};
-const handlePlayerMessage = async (
-  message: WhatsAppMessage,
-  player: Player
-) => {
-  messageEventEmitter.emit("player-message", message, player);
-};
-
-const messageEventEmitter = new EventEmitter();
-
-export const onAdminMessage = (
-  cb: (message: WhatsAppMessage, player: Player) => void
-) => {
-  messageEventEmitter.on("admin-message", cb);
-};
-export const onPlayerMessage = (
-  cb: (message: WhatsAppMessage, player: Player) => void
-) => {
-  messageEventEmitter.on("player-message", cb);
+  return player;
 };
 
 export const sendMessage = (
@@ -80,3 +64,49 @@ export const sendMessage = (
   message: WhatsAppMessageContent,
   options?: WhatsAppMessageOptions
 ) => sendWhatsappMessage(toJid, message, options);
+
+const messageEventEmitter = new EventEmitter();
+
+enum PlayerEvents {
+  Message = "message",
+  Reaction = "reaction",
+  PollSelection = "pollSelection",
+}
+
+const handleMessage = async (message: WhatsAppMessage) => {
+  const senderJid = getSenderNumberFromMessage(message);
+  console.info(`${senderJid}: ${message.body}`);
+
+  const player = await getPlayerOrSendErrorMessages(message);
+  if (!player) return;
+
+  messageEventEmitter.emit(PlayerEvents.Message, message, player);
+};
+const handleReaction = async (message: WhatsAppMessage) => {
+  const player = await getPlayerOrSendErrorMessages(message);
+  if (!player) return;
+
+  messageEventEmitter.emit(PlayerEvents.Reaction, message, player);
+};
+const handlePollSelection = async (message: WhatsAppMessage) => {
+  const player = await getPlayerOrSendErrorMessages(message);
+  if (!player) return;
+
+  messageEventEmitter.emit(PlayerEvents.PollSelection, message, player);
+};
+
+export const onPlayerMessage = (
+  cb: (message: WhatsAppMessage, player: Player) => void
+) => {
+  messageEventEmitter.on(PlayerEvents.Message, cb);
+};
+export const onPlayerReaction = (
+  cb: (message: WhatsAppMessage, player: Player) => void
+) => {
+  messageEventEmitter.on(PlayerEvents.Reaction, cb);
+};
+export const onPlayerPollSelection = (
+  cb: (message: WhatsAppMessage, player: Player) => void
+) => {
+  messageEventEmitter.on(PlayerEvents.PollSelection, cb);
+};

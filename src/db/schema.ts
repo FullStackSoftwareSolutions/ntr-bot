@@ -43,8 +43,10 @@ export const playersRelations = relations(players, ({ many }) => ({
 
 export const skates = pgTable("skates", {
   id: serial("id").unique().primaryKey(),
-  scheduledOn: timestamp("scheduled_on"),
-  bookingId: integer("booking_id").references(() => bookings.id),
+  scheduledOn: timestamp("scheduled_on").notNull(),
+  bookingId: integer("booking_id")
+    .notNull()
+    .references(() => bookings.id),
 });
 
 export const skatesRelations = relations(skates, ({ one, many }) => ({
@@ -87,12 +89,11 @@ export const playersToSkatesRelations = relations(
 
 export const bookings = pgTable("bookings", {
   id: serial("id").unique().primaryKey(),
-  name: varchar("name"),
+  name: varchar("name").notNull().unique(),
   announceName: varchar("announce_name"),
   numPlayers: integer("num_players"),
   location: varchar("location"),
   cost: numeric("cost"),
-  costPerPlayer: numeric("cost_per_player"),
   scheduledTime: time("scheduled_time"),
   startDate: date("start_date"),
   endDate: date("end_date"),
@@ -112,8 +113,12 @@ export const bookingsRelations = relations(bookings, ({ one, many }) => ({
 export const playersToBookings = pgTable(
   "players_to_bookings",
   {
-    playerId: integer("player_id").references(() => players.id),
-    bookingId: integer("booking_id").references(() => bookings.id),
+    playerId: integer("player_id")
+      .notNull()
+      .references(() => players.id),
+    bookingId: integer("booking_id")
+      .notNull()
+      .references(() => bookings.id),
     amountPaid: numeric("amount_paid"),
   },
   (t) => ({

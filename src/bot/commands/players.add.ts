@@ -4,7 +4,6 @@ import {
   formatList,
   stringJoin,
 } from "~/features/whatsapp/whatsapp.formatting";
-import EventEmitter from "node:events";
 import {
   getSenderFromMessage,
   WhatsAppMessage,
@@ -51,32 +50,32 @@ export const execute = async (
 
   const senderJid = getSenderFromMessage(message);
 
-  let newPlayer = getPlayers(sessionPlayer.id)?.add.player!;
+  let newPlayer = getPlayers(sessionPlayer.id)?.create.player!;
   let currentStep = newPlayer ? getPendingStep(newPlayer) : null;
 
   updatePlayers(sessionPlayer.id, (draft) => {
-    if (!draft.add.player) {
-      draft.add.player = {};
+    if (!draft.create.player) {
+      draft.create.player = {};
     }
     if (currentStep) {
-      draft.add.player[currentStep] = getPrompt(currentStep)?.parse(
+      draft.create.player[currentStep] = getPrompt(currentStep)?.parse(
         message.body!
       );
     }
   });
 
-  newPlayer = getPlayers(sessionPlayer.id)?.add.player!;
+  newPlayer = getPlayers(sessionPlayer.id)?.create.player!;
   currentStep = getPendingStep(newPlayer);
 
   if (!currentStep) {
     await createPlayer(message, newPlayer as PlayerCreate);
+    updatePlayers(sessionPlayer.id, (draft) => {
+      delete draft.create.player;
+    });
     clearActiveCommand(sessionPlayer.id);
     return;
   }
 
-  await sendMessage(senderJid, {
-    text: formatList([newPlayer ?? {}]),
-  });
   await sendMessage(senderJid, {
     text: getReply(currentStep),
   });
@@ -131,8 +130,8 @@ const getReply = (currentStep: keyof PlayerCreate) => {
   const { prompt } = getPrompt(currentStep);
   if (Object.keys(playerStepPrompt)[0] === currentStep) {
     return stringJoin(
-      "⛸️ Let's create a new player.",
-      "══════════════════════════════════",
+      "🤕 Let's create a new player.",
+      "══════════════════",
       prompt
     );
   }
@@ -147,7 +146,7 @@ const createPlayer = async (message: WhatsAppMessage, player: PlayerCreate) => {
   await sendMessage(senderJid, {
     text: formatList([newPlayer], {
       header: {
-        content: "🏒 *Player created*",
+        content: "🤕 *Player created*",
       },
     }),
   });

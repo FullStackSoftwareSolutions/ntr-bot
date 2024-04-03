@@ -9,12 +9,25 @@ export type WhatsAppMessageKey = WAProto.IMessageKey;
 export type WhatsAppMessage = {
   from: string | null | undefined;
   message?: WAProto.IWebMessageInfo["message"] | null | undefined;
+  pollMessage?:
+    | {
+        name: string;
+        voters: string[];
+      }[]
+    | null
+    | undefined;
+  pollVotesForSender?: string[] | null | undefined;
   key?: WhatsAppMessageKey | undefined;
   type: string;
   body?: string | null | undefined;
 };
 export type WhatsAppMessageContent = AnyMessageContent;
 export type WhatsAppMessageOptions = MiscMessageGenerationOptions;
+
+export const PollOptions = {
+  Confirm: "✅ Confirm",
+  Cancel: "❌ Cancel",
+};
 
 export const getNumberFromJid = (jid: string) => jid.split("@")[0] as string;
 
@@ -44,6 +57,14 @@ export const doKeysMatch = (
   if (!keya || !keyb) return false;
 
   return keya.id === keyb.id && keya.remoteJid === keyb.remoteJid;
+};
+export const isKeyInList = (
+  keyA: WhatsAppMessageKey | null | undefined,
+  keys: WhatsAppMessageKey[]
+) => {
+  if (keys.length === 0 || !keyA) return false;
+
+  return keys.find((key) => doKeysMatch(keyA, key)) !== undefined;
 };
 
 export const isPollAnswer = (

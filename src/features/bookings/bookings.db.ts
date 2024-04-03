@@ -4,8 +4,26 @@ import { eq } from "drizzle-orm";
 
 export const getAllBookings = async () => db.query.bookings.findMany();
 export const getBookingById = async (id: number) =>
-  db.query.bookings.findMany({
+  db.query.bookings.findFirst({
+    with: {
+      playersToBookings: {
+        with: {
+          player: true,
+        },
+      },
+    },
     where: eq(bookings.id, id),
+  });
+export const getBookingByName = async (name: string) =>
+  db.query.bookings.findFirst({
+    with: {
+      playersToBookings: {
+        with: {
+          player: true,
+        },
+      },
+    },
+    where: eq(bookings.name, name),
   });
 
 export const createBooking = async (bookingData: {

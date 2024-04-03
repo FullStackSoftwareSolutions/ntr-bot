@@ -8,6 +8,9 @@ export enum Command {
   Players = "players",
   PlayersAdd = "players.add",
   PlayersEdit = "players.edit",
+  Bookings = "bookings",
+  BookingsAdd = "bookings.add",
+  BookingsList = "bookings.list",
 }
 
 export const commandDescriptions = {
@@ -15,7 +18,20 @@ export const commandDescriptions = {
   [Command.Players]: "List all players",
 };
 
-export const commands = new Map<string, any>();
+const commands = new Map<string, any>();
+
+export const getCommand = (command: string | null | undefined) => {
+  if (!command) return null;
+
+  return commands.get(command);
+};
+
+export const getAllCommands = () =>
+  [...commands.keys()].map((command) => ({
+    command: command,
+    description: getCommandDescription(command),
+  }));
+
 export const loadCommands = async () => {
   const files = await readdir(commandsPath);
 
@@ -25,11 +41,11 @@ export const loadCommands = async () => {
 
     const commandImport = await import(filePath);
 
-    if ("execute" in commandImport) {
+    if ("execute" in commandImport || "onCommand" in commandImport) {
       commands.set(command, commandImport);
     } else {
-      console.log(
-        `[WARNING] The command at ${filePath} is missing the required "execute" property.`
+      console.warn(
+        `[WARNING] The command at ${filePath} is missing the required "execute" or "onCommand" property.`
       );
     }
   }
