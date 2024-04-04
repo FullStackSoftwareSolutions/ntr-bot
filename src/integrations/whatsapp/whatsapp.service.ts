@@ -77,7 +77,7 @@ async function getMessage(
 
 const saveStoreAutomatically = () => {
   setInterval(() => {
-    const storePath = path.resolve(`./store.json`);
+    const storePath = path.resolve(`./state/store.json`);
     store.writeToFile(storePath);
   }, 10_000);
 };

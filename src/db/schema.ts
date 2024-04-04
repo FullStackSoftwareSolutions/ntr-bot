@@ -68,6 +68,7 @@ export const playersToSkates = pgTable(
     skateId: integer("skate_id")
       .notNull()
       .references(() => skates.id, { onDelete: "cascade" }),
+    droppedOutOn: timestamp("dropped_out_on"),
     team: varchar("team"),
   },
   (t) => ({

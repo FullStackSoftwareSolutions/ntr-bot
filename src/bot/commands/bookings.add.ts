@@ -1,13 +1,11 @@
-import { Booking, BookingCreate } from "~/features/bookings/bookings.type";
+import { BookingCreate } from "~/features/bookings/bookings.type";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
 import {
   formatList,
   stringJoin,
 } from "~/features/whatsapp/whatsapp.formatting";
-import EventEmitter from "node:events";
 import {
   getSenderFromMessage,
-  getTextFromMessage,
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
 import { Player } from "~/features/players/players.type";
