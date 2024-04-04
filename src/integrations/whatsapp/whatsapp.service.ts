@@ -20,6 +20,7 @@ import { WhatsAppMessage } from "~/features/whatsapp/whatsapp.model";
 import { unlinkSync } from "fs";
 import { generateRefProvider } from "./hash";
 import path from "path";
+import chalk from "chalk";
 
 let sock: ReturnType<typeof makeWASocket>;
 let authState: AuthenticationState;
@@ -96,8 +97,7 @@ const handleConnectionUpdate = (update: Partial<ConnectionState>) => {
       connect();
     }
   } else if (connection === "open") {
-    console.info("Whatsapp connection open");
-    console.info("-------------------------------------------");
+    console.info(chalk.black(chalk.bgGreen(" 🛜 Whatsapp connection open ")));
   }
 };
 
@@ -120,7 +120,7 @@ export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
       return;
     }
 
-    let type: string = rest.type;
+    let type: string = "message";
     if (message.message?.reactionMessage) {
       type = "reaction";
     }
@@ -192,54 +192,6 @@ export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
 
     cb(payload);
   });
-
-  sock.ev.on("messages.update", async (message) => {
-    for (const { key, update } of message) {
-      if (update.pollUpdates) {
-        const pollCreation = await getMessage(key);
-        if (pollCreation) {
-          const pollMessage = await getAggregateVotesInPollMessage({
-            message: pollCreation,
-            pollUpdates: update.pollUpdates,
-          });
-          const [messageCtx] = message;
-
-          const messageOriginalKey =
-            messageCtx?.update?.pollUpdates?.[0]?.pollUpdateMessageKey;
-          if (!messageOriginalKey?.id || !messageOriginalKey.remoteJid) return;
-
-          const messageOriginal = await store.loadMessage(
-            messageOriginalKey.remoteJid,
-            messageOriginalKey.id
-          );
-
-          const pollVotesForSender = pollMessage
-            .filter((poll) => poll.voters.includes(key.remoteJid!))
-            .map((poll) => poll.name);
-
-          const body = pollMessage
-            .filter((poll) => poll.voters.length > 0)
-            .map((poll) => poll.name)
-            .join(", ");
-
-          let payload = {
-            ...messageCtx,
-            body: body,
-            pollVotesForSender,
-            pollMessage,
-            from: key.remoteJid,
-            pushName: messageOriginal?.pushName,
-            broadcast: messageOriginal?.broadcast,
-            messageTimestamp: messageOriginal?.messageTimestamp,
-            voters: pollCreation,
-            type: "poll",
-          };
-
-          cb(payload);
-        }
-      }
-    }
-  });
 };
 
 export const onReaction = (cb: (message: WhatsAppMessage) => void) => {
@@ -255,7 +207,7 @@ export const onReaction = (cb: (message: WhatsAppMessage) => void) => {
       return;
     }
 
-    let type: string = rest.type;
+    let type: string = "reaction";
     if (!message.message?.reactionMessage) {
       return;
     }

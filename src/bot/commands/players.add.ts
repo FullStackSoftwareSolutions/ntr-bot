@@ -9,43 +9,9 @@ import {
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
 import { createPlayerHandler } from "~/features/players/players.controller";
-import { parseEmail, parsePhoneNumber } from "../inputs";
 import { usePlayerStore } from "../state";
 import { Command } from "../commands";
-
-export const playerStepPrompt: {
-  [key in keyof PlayerCreate]?:
-    | string
-    | {
-        prompt: string;
-        required: boolean;
-        parse?: (value: string) => any;
-      };
-} = {
-  fullName: "What is their full name?",
-  nickname: {
-    prompt: "What is their nickname?",
-    required: false,
-  },
-  email: {
-    prompt: "What is their email?",
-    required: true,
-    parse: parseEmail,
-  },
-  phoneNumber: {
-    prompt: "What is their phone number?",
-    required: true,
-    parse: parsePhoneNumber,
-  },
-  skillLevel: {
-    prompt: "What is their skill level?",
-    required: false,
-  },
-  notes: {
-    prompt: "Any notes?",
-    required: false,
-  },
-};
+import { playerFieldPrompts } from "~/features/players/players.model";
 
 export const onCommand = async (
   message: WhatsAppMessage,
@@ -102,7 +68,7 @@ export const onMessage = async (
 };
 
 const getPendingStep = (player: Partial<PlayerCreate>) => {
-  return Object.keys(playerStepPrompt).find((key) => {
+  return Object.keys(playerFieldPrompts).find((key) => {
     const promptData = getPromptData(key as keyof PlayerCreate);
     if (promptData.required) {
       return player[key as keyof PlayerCreate] == null;
@@ -112,7 +78,7 @@ const getPendingStep = (player: Partial<PlayerCreate>) => {
 };
 
 const getPromptData = (step: keyof PlayerCreate) => {
-  const prompt = playerStepPrompt[step]!;
+  const prompt = playerFieldPrompts[step]!;
   return typeof prompt === "string"
     ? {
         prompt,
@@ -148,7 +114,7 @@ export const getPrompt = (
 
 const getReply = (currentStep: keyof PlayerCreate) => {
   const { prompt } = getPrompt(currentStep);
-  if (Object.keys(playerStepPrompt)[0] === currentStep) {
+  if (Object.keys(playerFieldPrompts)[0] === currentStep) {
     return stringJoin(
       "🤕 Let's create a new player.",
       "══════════════════",

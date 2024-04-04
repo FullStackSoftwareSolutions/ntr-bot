@@ -41,11 +41,11 @@ export const loadCommands = async () => {
 
     const commandImport = await import(filePath);
 
-    if ("execute" in commandImport || "onCommand" in commandImport) {
+    if ("onCommand" in commandImport) {
       commands.set(command, commandImport);
     } else {
       console.warn(
-        `[WARNING] The command at ${filePath} is missing the required "execute" or "onCommand" property.`
+        `[WARNING] The command at ${filePath} is missing the required "onCommand" property.`
       );
     }
   }

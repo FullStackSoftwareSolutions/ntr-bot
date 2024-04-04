@@ -23,6 +23,7 @@ import {
 } from "./whatsapp.model";
 import EventEmitter from "node:events";
 import { Player } from "../players/players.type";
+import chalk from "chalk";
 
 export const connectToWhatsapp = async () => {
   const auth = await useWhatsappAuth({
@@ -75,7 +76,12 @@ enum PlayerEvents {
 
 const handleMessage = async (message: WhatsAppMessage) => {
   const senderJid = getSenderNumberFromMessage(message);
-  console.info(`${senderJid}: ${message.body}`);
+
+  console.info(
+    `${chalk.bgBlue(senderJid)} ${chalk.bgMagenta(message.type)} ${
+      message.body
+    }`
+  );
 
   const player = await getPlayerOrSendErrorMessages(message);
   if (!player) return;
@@ -83,12 +89,27 @@ const handleMessage = async (message: WhatsAppMessage) => {
   messageEventEmitter.emit(PlayerEvents.Message, message, player);
 };
 const handleReaction = async (message: WhatsAppMessage) => {
+  const senderJid = getSenderNumberFromMessage(message);
+  console.info(
+    `${chalk.bgBlue(senderJid)} ${chalk.bgMagenta(message.type)} ${
+      message.body
+    }`
+  );
+
   const player = await getPlayerOrSendErrorMessages(message);
   if (!player) return;
 
   messageEventEmitter.emit(PlayerEvents.Reaction, message, player);
 };
 const handlePollSelection = async (message: WhatsAppMessage) => {
+  const senderJid = getSenderNumberFromMessage(message);
+
+  console.info(
+    `${chalk.bgBlue(senderJid)} ${chalk.bgMagenta(message.type)} ${
+      message.body
+    }`
+  );
+
   const player = await getPlayerOrSendErrorMessages(message);
   if (!player) return;
 

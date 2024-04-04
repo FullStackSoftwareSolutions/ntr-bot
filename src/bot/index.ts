@@ -80,26 +80,10 @@ const handlePlayerMessage = async (
       return activeCommand.onMessage(message, player);
     }
 
-    // TODO: DELETE THIS
-    if (activeCommand?.execute) {
-      return activeCommand.execute(message, player);
-    }
-
     const command = getCommand(messageCommand);
     if (command?.onCommand) {
       return command.onCommand(message, player, ...messageArgs);
     }
-
-    /// TODO: DELETE THIS
-    if (command?.onComplete) {
-      setActiveCommand(player.id, messageCommand);
-      command.onComplete(() => {
-        clearActiveCommand(player.id);
-      });
-    }
-
-    // TODO: DELET THIS
-    return command?.execute(message, player, ...messageArgs);
   }
 
   await sendMessage(jid, {

@@ -25,6 +25,8 @@ export const createBookingHandler = async (bookingData: {
       scheduledOn: date,
     });
   }
+
+  return booking;
 };
 
 export const updateBookingPlayersHandler = async (

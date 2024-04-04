@@ -1,6 +1,9 @@
 import { Booking, BookingCreate } from "~/features/bookings/bookings.type";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
-import { stringJoin } from "~/features/whatsapp/whatsapp.formatting";
+import {
+  formatList,
+  stringJoin,
+} from "~/features/whatsapp/whatsapp.formatting";
 import EventEmitter from "node:events";
 import {
   getSenderFromMessage,
@@ -9,66 +12,112 @@ import {
 } from "~/features/whatsapp/whatsapp.model";
 import { Player } from "~/features/players/players.type";
 import { createBookingHandler } from "~/features/bookings/bookings.controller";
+import { bookingFieldPrompts } from "~/features/bookings/bookings.model";
+import { usePlayerStore } from "../state";
+import { Command } from "../commands";
 
-const bookingsPending: {
-  [playerId: number]: Partial<Booking>;
-} = {};
+export const onCommand = async (
+  message: WhatsAppMessage,
+  sessionPlayer: Player
+) => {
+  const { setActiveCommand, updateBookings } = usePlayerStore();
+  setActiveCommand(sessionPlayer.id, Command.BookingsAdd);
 
-const bookingStepPrompt: { [key in keyof Booking]?: string } = {
-  name: "What would you like to name it?",
-  numPlayers: "How many players are you booking for?",
-  location: "Where will you be playing?",
-  cost: "How much will it cost?",
-  scheduledTime: "What time is it at?",
-  startDate: "What day does it start?",
-  endDate: "What day does it end?",
-};
-
-const bookingStepParse: { [key in keyof Booking]?: (value: string) => any } = {
-  numPlayers: (value) => parseInt(value),
-  cost: (value) => parseFloat(value),
-};
-
-const getPendingStep = (booking: Partial<Booking>) => {
-  return Object.keys(bookingStepPrompt).find(
-    (key) => !booking[key as keyof Booking]
-  ) as keyof Booking;
-};
-
-export const execute = async (message: WhatsAppMessage, player: Player) => {
   const senderJid = getSenderFromMessage(message);
 
-  let booking = bookingsPending[player.id];
-  let firstMessage = false;
-  if (!booking) {
-    firstMessage = true;
-    booking = bookingsPending[player.id] = {};
-  }
+  updateBookings(sessionPlayer.id, (draft) => {
+    draft.create.booking = {};
+  });
 
-  let currentStep = getPendingStep(booking);
+  const currentStep = getPendingStep({});
+  await sendMessage(senderJid, {
+    text: getReply(currentStep),
+  });
+};
 
-  if (!firstMessage) {
-    const messageText = getTextFromMessage(message);
-    const parseMessage = bookingStepParse[currentStep] ?? ((x) => x);
-    booking[currentStep] = parseMessage(messageText);
+export const onMessage = async (
+  message: WhatsAppMessage,
+  sessionPlayer: Player
+) => {
+  const { clearActiveCommand, updateBookings, getBookings } = usePlayerStore();
 
-    currentStep = getPendingStep(booking);
-  }
+  const senderJid = getSenderFromMessage(message);
+
+  let newBooking = getBookings(sessionPlayer.id)?.create.booking!;
+  let currentStep = getPendingStep(newBooking);
+  const parsedMessage = getPrompt(currentStep)?.parse(message.body!);
+
+  updateBookings(sessionPlayer.id, (draft) => {
+    if (currentStep) {
+      draft.create.booking![currentStep] = parsedMessage;
+    }
+  });
+
+  newBooking = getBookings(sessionPlayer.id)?.create.booking!;
+  currentStep = getPendingStep(newBooking);
 
   if (!currentStep) {
-    booking.bookedById = player.id;
-    completed(message, booking as BookingCreate);
+    await createBooking(message, newBooking as BookingCreate);
+    updateBookings(sessionPlayer.id, (draft) => {
+      delete draft.create.booking;
+    });
+    clearActiveCommand(sessionPlayer.id);
     return;
   }
 
   await sendMessage(senderJid, {
-    text: getReply(firstMessage, currentStep),
+    text: getReply(currentStep),
   });
 };
 
-const getReply = (firstMessage: boolean, currentStep: keyof Booking) => {
-  const prompt = bookingStepPrompt[currentStep]!;
-  if (firstMessage) {
+const getPromptData = (step: keyof BookingCreate) => {
+  const prompt = bookingFieldPrompts[step]!;
+  return typeof prompt === "string"
+    ? {
+        prompt,
+        required: true,
+      }
+    : prompt;
+};
+
+export const getPrompt = (
+  step: keyof BookingCreate
+): {
+  prompt: string;
+  required: boolean;
+  parse: (value: string) => any;
+} => {
+  const promptData = getPromptData(step);
+
+  if (promptData && !promptData.parse) {
+    promptData.parse = (value: string) => {
+      if (!promptData.required && value === "!") {
+        return null;
+      }
+      return value;
+    };
+  }
+
+  return promptData as {
+    prompt: string;
+    required: boolean;
+    parse: (value: string) => any;
+  };
+};
+
+const getPendingStep = (booking: Partial<BookingCreate>) => {
+  return Object.keys(bookingFieldPrompts).find((key) => {
+    const promptData = getPromptData(key as keyof BookingCreate);
+    if (promptData.required) {
+      return booking[key as keyof BookingCreate] == null;
+    }
+    return booking[key as keyof BookingCreate] === undefined;
+  }) as keyof BookingCreate;
+};
+
+const getReply = (currentStep: keyof BookingCreate) => {
+  const { prompt } = getPrompt(currentStep);
+  if (Object.keys(bookingFieldPrompts)[0] === currentStep) {
     return stringJoin(
       "📆 Let's create a new booking.",
       "══════════════════════════════════",
@@ -79,18 +128,18 @@ const getReply = (firstMessage: boolean, currentStep: keyof Booking) => {
   return prompt;
 };
 
-const commandEventEmitter = new EventEmitter();
-const completed = async (message: WhatsAppMessage, booking: BookingCreate) => {
-  await createBookingHandler(booking);
+const createBooking = async (
+  message: WhatsAppMessage,
+  booking: BookingCreate
+) => {
+  const newBooking = await createBookingHandler(booking);
 
   const senderJid = getSenderFromMessage(message);
   await sendMessage(senderJid, {
-    text: "Booking created! 🎉",
+    text: formatList([newBooking], {
+      header: {
+        content: "📅 *Booking created!*",
+      },
+    }),
   });
-
-  commandEventEmitter.emit("complete");
-};
-
-export const onComplete = (cb: () => void) => {
-  commandEventEmitter.on("complete", cb);
 };

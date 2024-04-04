@@ -5,14 +5,17 @@ import { produce } from "immer";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { LocalStorage } from "node-localstorage";
 import { PlayerCreate } from "~/features/players/players.type";
+import { BookingCreate } from "~/features/bookings/bookings.type";
 
 type Commands = {
   activeCommand: string | null;
   players: {
-    search?: string;
-    viewIndex?: number;
-    viewPollKey?: WhatsAppMessageKey | null;
-    playerMessageKeys?: WhatsAppMessageKey[];
+    read: {
+      search?: string;
+      viewIndex?: number;
+      viewPollKey?: WhatsAppMessageKey | null;
+      playerMessageKeys?: WhatsAppMessageKey[];
+    };
     update: {
       playerId?: number;
       fieldPollKey?: WhatsAppMessageKey | null;
@@ -43,6 +46,10 @@ type Commands = {
       bookingId?: number;
       bookingPollKey?: WhatsAppMessageKey | null;
       actionPollKey?: WhatsAppMessageKey | null;
+    };
+    create: {
+      step?: keyof BookingCreate;
+      booking?: Partial<BookingCreate>;
     };
   };
 };
@@ -82,12 +89,14 @@ export const store = createStore<State & Actions>()(
           state.commands[playerId] = {
             activeCommand: null,
             players: {
-              update: {},
+              read: {},
               create: {},
+              update: {},
             },
             bookings: {
-              update: {},
               read: {},
+              create: {},
+              update: {},
             },
           };
         }),
