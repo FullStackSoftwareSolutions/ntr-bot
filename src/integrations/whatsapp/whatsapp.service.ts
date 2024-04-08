@@ -21,11 +21,14 @@ import { unlinkSync } from "fs";
 import { generateRefProvider } from "./hash";
 import path from "path";
 import chalk from "chalk";
+import EventEmitter from "node:events";
 
 let sock: ReturnType<typeof makeWASocket>;
 let authState: AuthenticationState;
 let saveCreds: () => Promise<void>;
 let store: ReturnType<typeof makeInMemoryStore>;
+
+const eventEmitter = new EventEmitter();
 
 export const initialize = async (auth: {
   state: AuthenticationState;
@@ -61,6 +64,7 @@ export const connect = async () => {
 
   sock.ev.on("creds.update", saveCreds);
   sock.ev.on("connection.update", handleConnectionUpdate);
+  sock.ev.on("messages.upsert", handleMessagesUpsert);
 };
 
 async function getMessage(
@@ -88,16 +92,113 @@ const handleConnectionUpdate = (update: Partial<ConnectionState>) => {
 
   if (connection === "close") {
     if (statusCode !== DisconnectReason.loggedOut) {
+      console.info(chalk.black(chalk.bgRed(" ❌ Whatsapp connection closed")));
+
       connect();
     }
 
     if (statusCode === DisconnectReason.loggedOut) {
+      console.info(chalk.black(chalk.bgRed(" 🪵 Whatsapp logged out")));
       unlinkSync("store.json");
 
       connect();
     }
   } else if (connection === "open") {
     console.info(chalk.black(chalk.bgGreen(" 🛜 Whatsapp connection open ")));
+  }
+};
+
+const handleMessagesUpsert = async ({ messages, ...rest }: any) => {
+  if (rest.type !== "notify") return;
+  const [message] = messages;
+
+  if (
+    !message ||
+    message?.message?.protocolMessage?.type ===
+      WAProto.Message.ProtocolMessage.Type.EPHEMERAL_SETTING
+  ) {
+    return;
+  }
+
+  let type: string = "message";
+  const messageText =
+    message?.message?.extendedTextMessage?.text ??
+    message?.message?.conversation;
+
+  let payload = {
+    ...message,
+    type,
+    body: messageText,
+    from: message?.key?.remoteJid,
+  };
+
+  if (message.message?.reactionMessage) {
+    type = "reaction";
+    payload = {
+      ...payload,
+      type: "reaction",
+      body: message?.message?.reactionMessage?.text,
+      reactionMessage: message?.message?.reactionMessage,
+    };
+  }
+
+  if (message.message?.locationMessage) {
+    const { degreesLatitude, degreesLongitude } =
+      message.message.locationMessage;
+    if (
+      typeof degreesLatitude === "number" &&
+      typeof degreesLongitude === "number"
+    ) {
+      payload = { ...payload, body: generateRefProvider("_event_location_") };
+    }
+  }
+
+  //Detectar video
+  if (message.message?.videoMessage) {
+    payload = { ...payload, body: generateRefProvider("_event_media_") };
+  }
+
+  //Detectar Sticker
+  if (message.message?.stickerMessage) {
+    payload = { ...payload, body: generateRefProvider("_event_media_") };
+  }
+
+  //Detectar media
+  if (message.message?.imageMessage) {
+    payload = { ...payload, body: generateRefProvider("_event_media_") };
+  }
+
+  //Detectar file
+  if (message.message?.documentMessage) {
+    payload = { ...payload, body: generateRefProvider("_event_document_") };
+  }
+
+  //Detectar voice note
+  if (message.message?.audioMessage) {
+    payload = { ...payload, body: generateRefProvider("_event_voice_note_") };
+  }
+
+  if (payload.from === "status@broadcast") return;
+
+  if (payload?.key?.fromMe) return;
+
+  if (!payload.body) return;
+
+  // if (!baileyIsValidNumber(payload.from)) {
+  //   return;
+  // }
+
+  const btnCtx = payload?.message?.buttonsResponseMessage?.selectedDisplayText;
+  if (btnCtx) payload.body = btnCtx;
+
+  const listRowId = payload?.message?.listResponseMessage?.title;
+  if (listRowId) payload.body = listRowId;
+
+  if (payload.type === "message") {
+    eventEmitter.emit("message", payload);
+  }
+  if (payload.type === "reaction") {
+    eventEmitter.emit("reaction", payload);
   }
 };
 
@@ -108,125 +209,11 @@ export type TextMessage = {
 };
 
 export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
-  sock.ev.on("messages.upsert", async ({ messages, ...rest }) => {
-    if (rest.type !== "notify") return;
-    const [message] = messages;
-
-    if (
-      !message ||
-      message?.message?.protocolMessage?.type ===
-        WAProto.Message.ProtocolMessage.Type.EPHEMERAL_SETTING
-    ) {
-      return;
-    }
-
-    let type: string = "message";
-    if (message.message?.reactionMessage) {
-      type = "reaction";
-    }
-
-    let payload = {
-      ...message,
-      type,
-      body:
-        message?.message?.extendedTextMessage?.text ??
-        message?.message?.conversation ??
-        message?.message?.reactionMessage?.text,
-
-      reactionMessage: message?.message?.reactionMessage,
-      from: message?.key?.remoteJid,
-    };
-
-    if (message.message?.locationMessage) {
-      const { degreesLatitude, degreesLongitude } =
-        message.message.locationMessage;
-      if (
-        typeof degreesLatitude === "number" &&
-        typeof degreesLongitude === "number"
-      ) {
-        payload = { ...payload, body: generateRefProvider("_event_location_") };
-      }
-    }
-
-    //Detectar video
-    if (message.message?.videoMessage) {
-      payload = { ...payload, body: generateRefProvider("_event_media_") };
-    }
-
-    //Detectar Sticker
-    if (message.message?.stickerMessage) {
-      payload = { ...payload, body: generateRefProvider("_event_media_") };
-    }
-
-    //Detectar media
-    if (message.message?.imageMessage) {
-      payload = { ...payload, body: generateRefProvider("_event_media_") };
-    }
-
-    //Detectar file
-    if (message.message?.documentMessage) {
-      payload = { ...payload, body: generateRefProvider("_event_document_") };
-    }
-
-    //Detectar voice note
-    if (message.message?.audioMessage) {
-      payload = { ...payload, body: generateRefProvider("_event_voice_note_") };
-    }
-
-    if (payload.from === "status@broadcast") return;
-
-    if (payload?.key?.fromMe) return;
-
-    if (!payload.body) return;
-
-    // if (!baileyIsValidNumber(payload.from)) {
-    //   return;
-    // }
-
-    const btnCtx =
-      payload?.message?.buttonsResponseMessage?.selectedDisplayText;
-    if (btnCtx) payload.body = btnCtx;
-
-    const listRowId = payload?.message?.listResponseMessage?.title;
-    if (listRowId) payload.body = listRowId;
-
-    cb(payload);
-  });
+  eventEmitter.on("message", cb);
 };
 
 export const onReaction = (cb: (message: WhatsAppMessage) => void) => {
-  sock.ev.on("messages.upsert", async ({ messages, ...rest }) => {
-    if (rest.type !== "notify") return;
-    const [message] = messages;
-
-    if (
-      !message ||
-      message?.message?.protocolMessage?.type ===
-        WAProto.Message.ProtocolMessage.Type.EPHEMERAL_SETTING
-    ) {
-      return;
-    }
-
-    let type: string = "reaction";
-    if (!message.message?.reactionMessage) {
-      return;
-    }
-
-    let payload = {
-      ...message,
-      type,
-      body: message?.message?.reactionMessage?.text,
-      from: message?.key?.remoteJid,
-    };
-
-    if (payload.from === "status@broadcast") return;
-
-    if (payload?.key?.fromMe) return;
-
-    if (!payload.body) return;
-
-    cb(payload);
-  });
+  eventEmitter.on("reaction", cb);
 };
 
 export const onPollSelection = (cb: (message: WhatsAppMessage) => void) => {
