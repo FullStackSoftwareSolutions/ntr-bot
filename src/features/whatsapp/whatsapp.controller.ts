@@ -39,23 +39,23 @@ export const connectToWhatsapp = async () => {
   onWhatsAppPollSelection(handlePollSelection);
 };
 
-const getPlayerOrSendErrorMessages = async (message: WhatsAppMessage) => {
+const getPlayerFromMessage = async (message: WhatsAppMessage) => {
   const player = await getPlayerByPhoneNumber(
     getSenderNumberFromMessage(message)
   );
 
-  if (!player) {
-    await sendMessage(getGroupOrSenderFromMessage(message), {
-      text: "who the fuck are you?",
-    });
-    return;
-  }
-  if (!player.admin) {
-    await sendMessage(getGroupOrSenderFromMessage(message), {
-      text: "sorry, admins only",
-    });
-    return;
-  }
+  // if (!player) {
+  //   await sendMessage(getGroupOrSenderFromMessage(message), {
+  //     text: "who the fuck are you?",
+  //   });
+  //   return;
+  // }
+  // if (!player.admin) {
+  //   await sendMessage(getGroupOrSenderFromMessage(message), {
+  //     text: "sorry, admins only",
+  //   });
+  //   return;
+  // }
 
   return player;
 };
@@ -83,7 +83,7 @@ const handleMessage = async (message: WhatsAppMessage) => {
     }`
   );
 
-  const player = await getPlayerOrSendErrorMessages(message);
+  const player = await getPlayerFromMessage(message);
   if (!player) return;
 
   messageEventEmitter.emit(PlayerEvents.Message, message, player);
@@ -96,7 +96,7 @@ const handleReaction = async (message: WhatsAppMessage) => {
     }`
   );
 
-  const player = await getPlayerOrSendErrorMessages(message);
+  const player = await getPlayerFromMessage(message);
   if (!player) return;
 
   messageEventEmitter.emit(PlayerEvents.Reaction, message, player);
@@ -110,7 +110,7 @@ const handlePollSelection = async (message: WhatsAppMessage) => {
     }`
   );
 
-  const player = await getPlayerOrSendErrorMessages(message);
+  const player = await getPlayerFromMessage(message);
   if (!player) return;
 
   messageEventEmitter.emit(PlayerEvents.PollSelection, message, player);

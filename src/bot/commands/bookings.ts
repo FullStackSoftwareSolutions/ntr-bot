@@ -10,7 +10,6 @@ import {
   getAllBookings,
   getBookingByName,
 } from "~/features/bookings/bookings.db";
-import { formatList } from "~/features/whatsapp/whatsapp.formatting";
 import { getSkatesForBooking } from "~/features/skates/skates.db";
 import {
   usePlayerBookingState,
@@ -25,7 +24,7 @@ import {
 import { onPollSelection as onPaymentsPollSelection } from "./bookings/payments";
 import { getBookingMessage } from "~/features/bookings/bookings.model";
 import { sendBookingPaymentsPollSelection } from "./bookings/payments";
-import { getSkatesMessage } from "~/features/skates/skates.model";
+import { getSkateMessage } from "~/features/skates/skates.model";
 
 enum BookingActionsPollOptions {
   Players = "Players",
@@ -129,24 +128,25 @@ const handleBookingActionPollSelection = async (
 
   if (message.body === BookingActionsPollOptions.Skates) {
     const skates = await getSkatesForBooking(bookingId);
+
     await sendMessage(senderJid, {
-      text: getSkatesMessage(skates),
+      text: "🏒 *Skates*",
     });
+    for (const skate of skates) {
+      await sendMessage(senderJid, {
+        text: getSkateMessage(skate),
+      });
+    }
+
     await bookingCommandPrompt(senderJid, player.id);
   }
 
   if (message.body === BookingActionsPollOptions.Players) {
     await sendBookingPlayersPollSelection(message, player);
-    useUpdatePlayerBookingState(player.id, (draft) => {
-      draft.read = {};
-    });
   }
 
   if (message.body === BookingActionsPollOptions.Payments) {
     await sendBookingPaymentsPollSelection(message, player);
-    useUpdatePlayerBookingState(player.id, (draft) => {
-      draft.read = {};
-    });
   }
 
   if (message.body === PollOptions.Cancel) {
@@ -157,7 +157,10 @@ const handleBookingActionPollSelection = async (
   }
 };
 
-const bookingCommandPrompt = async (senderJid: string, playerId: number) => {
+export const bookingCommandPrompt = async (
+  senderJid: string,
+  playerId: number
+) => {
   const bookingState = usePlayerBookingState(playerId);
   const existingPollKey = bookingState?.read.actionPollKey;
 

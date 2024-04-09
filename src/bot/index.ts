@@ -31,23 +31,20 @@ const handlePlayerMessage = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const {
-    registerPlayer,
-    getActiveCommand,
-    setActiveCommand,
-    clearActiveCommand,
-    reset,
-    commands,
-  } = usePlayerStore();
+  if (isGroupMessage(message)) {
+    return;
+  }
+
+  const { registerPlayer, getActiveCommand, commands } = usePlayerStore();
 
   registerPlayer(player.id);
 
-  const messageCommands = message.body?.trim().toLowerCase().split(" ");
+  const messageCommands = message.body?.trim().split(" ");
   if (!messageCommands) {
     return;
   }
 
-  const messageCommand = messageCommands[0];
+  const messageCommand = messageCommands[0]?.toLowerCase();
   const messageArgs = messageCommands.slice(1);
   if (!messageCommand) {
     return;
@@ -72,23 +69,15 @@ const handlePlayerMessage = async (
     return;
   }
 
-  const jid = getGroupOrSenderFromMessage(message);
-
-  if (!isGroupMessage(message)) {
-    const activeCommand = getCommand(getActiveCommand(player.id));
-    if (activeCommand?.onMessage) {
-      return activeCommand.onMessage(message, player);
-    }
-
-    const command = getCommand(messageCommand);
-    if (command?.onCommand) {
-      return command.onCommand(message, player, ...messageArgs);
-    }
+  const activeCommand = getCommand(getActiveCommand(player.id));
+  if (activeCommand?.onMessage) {
+    return activeCommand.onMessage(message, player);
   }
 
-  await sendMessage(jid, {
-    text: "ayda eats poop 💩",
-  });
+  const command = getCommand(messageCommand);
+  if (command?.onCommand) {
+    return command.onCommand(message, player, ...messageArgs);
+  }
 };
 
 const handlePlayerPollSelection = async (

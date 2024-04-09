@@ -1,6 +1,6 @@
 import { playersToSkates, skates } from "~/db/schema";
 import { db } from "../../db";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 
 export const getSkateById = async (id: number) => {
   const [skate] = await db.query.skates.findMany({
@@ -32,6 +32,7 @@ export const getSkatesForBooking = async (bookingId: number) =>
       },
     },
     where: eq(skates.bookingId, bookingId),
+    orderBy: asc(skates.scheduledOn),
   });
 
 export const createSkate = async (skate: {
@@ -40,6 +41,15 @@ export const createSkate = async (skate: {
 }) => {
   const [insertedSkate] = await db.insert(skates).values([skate]).returning();
   return insertedSkate;
+};
+
+export const updateSkate = async (id: number, skate: { scheduledOn: Date }) => {
+  const [updatedSkate] = await db
+    .update(skates)
+    .set(skate)
+    .where(eq(skates.id, id))
+    .returning();
+  return updatedSkate;
 };
 
 export const deleteSkatesForBooking = async (bookingId: number) =>

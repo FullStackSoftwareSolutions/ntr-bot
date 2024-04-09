@@ -35,6 +35,16 @@ export const getSkatesMessage = (skates: Skate[]) => {
   );
 };
 
+export const getSkateMessage = (skate: Skate) => {
+  return formatList([
+    {
+      id: skate.id,
+      scheduledOn: getSkateTimeMessage(skate),
+      players: getPlayersText(skate),
+    },
+  ]);
+};
+
 const getPlayersText = (skate: Skate) => {
   if (skate.playersToSkates.length === 0) {
     return "None";

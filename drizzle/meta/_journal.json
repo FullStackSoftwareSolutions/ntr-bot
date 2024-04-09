@@ -141,6 +141,20 @@
       "when": 1712167795444,
       "tag": "0019_spooky_dragon_man",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1712688249115,
+      "tag": "0020_nebulous_masque",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "5",
+      "when": 1712690521796,
+      "tag": "0021_lame_whizzer",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { and, asc, eq, getTableColumns, inArray, like, or } from "drizzle-orm";
+import { and, asc, eq, getTableColumns, ilike, inArray, or } from "drizzle-orm";
 import { db } from "../../db";
 import {
   players,
@@ -15,10 +15,10 @@ export const getAllPlayers = async () =>
 export const getAllPlayersSearch = async (search: string) =>
   db.query.players.findMany({
     where: or(
-      like(players.fullName, `%${search}%`),
-      like(players.nickname, `%${search}%`),
-      like(players.email, `%${search}%`),
-      like(players.phoneNumber, `%${search}%`)
+      ilike(players.fullName, `%${search}%`),
+      ilike(players.nickname, `%${search}%`),
+      ilike(players.email, `%${search}%`),
+      ilike(players.phoneNumber, `%${search}%`)
     ),
     orderBy: asc(players.dateAdded),
   });

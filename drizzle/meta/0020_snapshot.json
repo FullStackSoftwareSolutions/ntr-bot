@@ -1,0 +1,462 @@
+{
+  "id": "9947df99-1fd4-4de3-a29d-2762e8e2937c",
+  "prevId": "b9ad64d8-a9ac-40eb-b7c3-f0f41697515f",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "bookings": {
+      "name": "bookings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "announce_name": {
+          "name": "announce_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "num_players": {
+          "name": "num_players",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cost": {
+          "name": "cost",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scheduled_time": {
+          "name": "scheduled_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "booked_by_id": {
+          "name": "booked_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "whatsapp_group_jid": {
+          "name": "whatsapp_group_jid",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bookings_booked_by_id_players_id_fk": {
+          "name": "bookings_booked_by_id_players_id_fk",
+          "tableFrom": "bookings",
+          "tableTo": "players",
+          "columnsFrom": [
+            "booked_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "bookings_id_unique": {
+          "name": "bookings_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "bookings_name_unique": {
+          "name": "bookings_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      }
+    },
+    "players": {
+      "name": "players",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nickname": {
+          "name": "nickname",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "skill_level": {
+          "name": "skill_level",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_added": {
+          "name": "date_added",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "admin": {
+          "name": "admin",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {
+        "players_email_idx": {
+          "name": "players_email_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": false
+        },
+        "players_phone_number_idx": {
+          "name": "players_phone_number_idx",
+          "columns": [
+            "phone_number"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "players_id_unique": {
+          "name": "players_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "players_email_unique": {
+          "name": "players_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        },
+        "players_phone_number_unique": {
+          "name": "players_phone_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "phone_number"
+          ]
+        }
+      }
+    },
+    "players_to_bookings": {
+      "name": "players_to_bookings",
+      "schema": "",
+      "columns": {
+        "player_id": {
+          "name": "player_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "booking_id": {
+          "name": "booking_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount_paid": {
+          "name": "amount_paid",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "players_to_bookings_player_id_players_id_fk": {
+          "name": "players_to_bookings_player_id_players_id_fk",
+          "tableFrom": "players_to_bookings",
+          "tableTo": "players",
+          "columnsFrom": [
+            "player_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "players_to_bookings_booking_id_bookings_id_fk": {
+          "name": "players_to_bookings_booking_id_bookings_id_fk",
+          "tableFrom": "players_to_bookings",
+          "tableTo": "bookings",
+          "columnsFrom": [
+            "booking_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "players_to_bookings_player_id_booking_id_pk": {
+          "name": "players_to_bookings_player_id_booking_id_pk",
+          "columns": [
+            "player_id",
+            "booking_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "players_to_skates": {
+      "name": "players_to_skates",
+      "schema": "",
+      "columns": {
+        "player_id": {
+          "name": "player_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "skate_id": {
+          "name": "skate_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "replacing_player_id": {
+          "name": "replacing_player_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dropped_out_on": {
+          "name": "dropped_out_on",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team": {
+          "name": "team",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "players_to_skates_player_id_players_id_fk": {
+          "name": "players_to_skates_player_id_players_id_fk",
+          "tableFrom": "players_to_skates",
+          "tableTo": "players",
+          "columnsFrom": [
+            "player_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "players_to_skates_skate_id_skates_id_fk": {
+          "name": "players_to_skates_skate_id_skates_id_fk",
+          "tableFrom": "players_to_skates",
+          "tableTo": "skates",
+          "columnsFrom": [
+            "skate_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "players_to_skates_replacing_player_id_players_id_fk": {
+          "name": "players_to_skates_replacing_player_id_players_id_fk",
+          "tableFrom": "players_to_skates",
+          "tableTo": "players",
+          "columnsFrom": [
+            "replacing_player_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "players_to_skates_player_id_skate_id_pk": {
+          "name": "players_to_skates_player_id_skate_id_pk",
+          "columns": [
+            "player_id",
+            "skate_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "skates": {
+      "name": "skates",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "scheduled_on": {
+          "name": "scheduled_on",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "booking_id": {
+          "name": "booking_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "skates_booking_id_bookings_id_fk": {
+          "name": "skates_booking_id_bookings_id_fk",
+          "tableFrom": "skates",
+          "tableTo": "bookings",
+          "columnsFrom": [
+            "booking_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "skates_id_unique": {
+          "name": "skates_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
+    },
+    "whatsapp_auth": {
+      "name": "whatsapp_auth",
+      "schema": "",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "whatsapp_auth_key_idx": {
+          "name": "whatsapp_auth_key_idx",
+          "columns": [
+            "key"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "whatsapp_auth_key_unique": {
+          "name": "whatsapp_auth_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "key"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

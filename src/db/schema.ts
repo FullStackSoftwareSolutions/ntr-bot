@@ -68,6 +68,9 @@ export const playersToSkates = pgTable(
     skateId: integer("skate_id")
       .notNull()
       .references(() => skates.id, { onDelete: "cascade" }),
+    replacingPlayerId: integer("replacing_player_id").references(
+      () => players.id
+    ),
     droppedOutOn: timestamp("dropped_out_on"),
     team: varchar("team"),
   },
@@ -97,6 +100,7 @@ export const bookings = pgTable("bookings", {
   numPlayers: integer("num_players"),
   location: varchar("location"),
   cost: numeric("cost"),
+  costPerPlayer: numeric("cost_per_player"),
   scheduledTime: time("scheduled_time"),
   startDate: date("start_date"),
   endDate: date("end_date"),

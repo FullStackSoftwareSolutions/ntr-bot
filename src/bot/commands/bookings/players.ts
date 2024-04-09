@@ -25,6 +25,7 @@ import {
   sendMessage,
   sendPolls,
 } from "~/integrations/whatsapp/whatsapp.service";
+import { bookingCommandPrompt } from "../bookings";
 
 export const onPollSelection = async (
   message: WhatsAppMessage,
@@ -129,7 +130,7 @@ const cancelBookingPlayersPollSelection = async (
   useUpdatePlayerBookingState(player.id, (draft) => {
     draft.update = {};
   });
-  usePlayerStore().clearActiveCommand(player.id);
+  bookingCommandPrompt(getSenderFromMessage(message), player.id);
 };
 
 const confirmBookingPlayersPollSelection = async (
@@ -161,12 +162,29 @@ const handleRemovePlayerPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const names = message.pollVotesForSender?.map((n) => n.replace("⛔️ ", ""));
-  const players = names ? await getPlayersByNames(names) : [];
+  const bookingState = usePlayerBookingState(player.id);
+  const allSelectedIds = bookingState?.update.players?.removePlayerIds ?? [];
+
+  const playersInPoll = message.pollMessage!.map(({ name }) =>
+    getPlayerNameFromPollSelection(name)
+  );
+  const playerIdsInPoll = await getPlayerIdsForNames(playersInPoll);
+  const otherPollSelectedIds = allSelectedIds.filter(
+    (id) => !playerIdsInPoll.includes(id)
+  );
+
+  const selectedPollPlayers = message.pollVotesForSender?.map(
+    getPlayerNameFromPollSelection
+  );
+  const selectedPollPlayerIds = await getPlayerIdsForNames(
+    selectedPollPlayers!
+  );
+
+  const selectedPlayerIds = [...otherPollSelectedIds, ...selectedPollPlayerIds];
 
   useUpdatePlayerBookingState(player.id, (draft) => {
     if (!draft.update.players) return;
-    draft.update.players.removePlayerIds = players.map((p) => p.id);
+    draft.update.players.removePlayerIds = selectedPlayerIds;
   });
 };
 
@@ -174,11 +192,37 @@ const handleAddPlayerPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const names = message.pollVotesForSender?.map((n) => n.replace("✅ ", ""));
-  const players = names ? await getPlayersByNames(names) : [];
+  const bookingState = usePlayerBookingState(player.id);
+  const allSelectedIds = bookingState?.update.players?.addPlayerIds ?? [];
+
+  const playersInPoll = message.pollMessage!.map(({ name }) =>
+    getPlayerNameFromPollSelection(name)
+  );
+  const playerIdsInPoll = await getPlayerIdsForNames(playersInPoll);
+  const otherPollSelectedIds = allSelectedIds.filter(
+    (id) => !playerIdsInPoll.includes(id)
+  );
+
+  const selectedPollPlayers = message.pollVotesForSender?.map(
+    getPlayerNameFromPollSelection
+  );
+  const selectedPollPlayerIds = await getPlayerIdsForNames(
+    selectedPollPlayers!
+  );
+
+  const selectedPlayerIds = [...otherPollSelectedIds, ...selectedPollPlayerIds];
 
   useUpdatePlayerBookingState(player.id, (draft) => {
     if (!draft.update.players) return;
-    draft.update.players.addPlayerIds = players.map((p) => p.id);
+    draft.update.players.addPlayerIds = selectedPlayerIds;
   });
 };
+
+const getPlayerIdsForNames = async (names: string[]) => {
+  if (names.length === 0) return [];
+  const players = await getPlayersByNames(names);
+  return players.map((p) => p.id);
+};
+
+const getPlayerNameFromPollSelection = (name: string) =>
+  name.replace("✅ ", "").replace("⛔️ ", "");

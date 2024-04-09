@@ -59,13 +59,13 @@ export const getCostPerPlayerForBooking = (
 };
 
 export const getPaymentAmountsForBooking = (booking: Booking) => {
-  const costPerPlayer = getCostPerSkatePerPlayerForBooking(booking, true);
+  //const costPerPlayer = getCostPerSkatePerPlayerForBooking(booking, true);
 
-  const paymentAmounts = [];
+  const paymentAmounts = [Number(booking.costPerPlayer ?? 0)];
 
-  for (let i = 0; i < getNumSkatesForBooking(booking); i++) {
-    paymentAmounts.push(costPerPlayer * (i + 1));
-  }
+  // for (let i = 0; i < getNumSkatesForBooking(booking); i++) {
+  //   paymentAmounts.push(costPerPlayer * (i + 1));
+  // }
 
   return paymentAmounts;
 };
@@ -81,9 +81,24 @@ export const getBookingMessage = (booking: Booking) => {
   const cost = Number(booking.cost ?? 0);
   const dates = getDatesForBooking(booking);
   const costPerSkate = cost / getDatesForBooking(booking).length;
-  const bookingNumPlayers = booking.playersToBookings.length;
+
+  const bookingPlayersRegistered = booking.playersToBookings.length;
+  const bookingNumPlayers = booking.numPlayers ?? 0;
   const costPerPlayer = cost / bookingNumPlayers;
   const costPerPlayerPerSkate = costPerSkate / bookingNumPlayers;
+
+  const players =
+    bookingPlayersRegistered === 0
+      ? `None (${bookingNumPlayers} spots)`
+      : `(${bookingPlayersRegistered}/${bookingNumPlayers}) ${booking.playersToBookings
+          .sort((a, b) => Number(b.amountPaid) - Number(a.amountPaid))
+          .map(
+            ({ player, amountPaid }) =>
+              `${getPlayerName(player)} (${formatCurrency(
+                Number(amountPaid ?? 0)
+              )})`
+          )
+          .join(", ")}`;
 
   return stringJoin(
     "📆 *Booking*",
@@ -100,17 +115,7 @@ export const getBookingMessage = (booking: Booking) => {
         costPerPlayerPerSkate: formatCurrency(costPerPlayerPerSkate),
         time: booking.scheduledTime,
         location: booking.location,
-        players: `(${bookingNumPlayers}/${
-          booking.numPlayers
-        }) ${booking.playersToBookings
-          .sort((a, b) => Number(b.amountPaid) - Number(a.amountPaid))
-          .map(
-            ({ player, amountPaid }) =>
-              `${getPlayerName(player)} (${formatCurrency(
-                Number(amountPaid ?? 0)
-              )})`
-          )
-          .join(", ")}`,
+        players,
       },
     ])
   );

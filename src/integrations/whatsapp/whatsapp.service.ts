@@ -23,6 +23,12 @@ import path from "path";
 import chalk from "chalk";
 import EventEmitter from "node:events";
 
+export type TextMessage = {
+  key: WAProto.IMessageKey;
+  senderJid: string;
+  message: string | null | undefined;
+};
+
 let sock: ReturnType<typeof makeWASocket>;
 let authState: AuthenticationState;
 let saveCreds: () => Promise<void>;
@@ -34,6 +40,10 @@ export const initialize = async (auth: {
   state: AuthenticationState;
   saveCreds: () => Promise<void>;
 }) => {
+  store = makeInMemoryStore({ logger });
+  store.readFromFile(path.resolve(`./store.json`));
+  saveStoreAutomatically();
+
   authState = auth.state;
   saveCreds = auth.saveCreds;
 
@@ -43,11 +53,6 @@ export const initialize = async (auth: {
 const logger = pino({ level: "fatal" }) as any;
 
 export const connect = async () => {
-  store = makeInMemoryStore({ logger });
-  store.readFromFile(path.resolve(`./store.json`));
-
-  saveStoreAutomatically();
-
   sock = makeWASocket({
     printQRInTerminal: true,
     auth: {
@@ -65,6 +70,7 @@ export const connect = async () => {
   sock.ev.on("creds.update", saveCreds);
   sock.ev.on("connection.update", handleConnectionUpdate);
   sock.ev.on("messages.upsert", handleMessagesUpsert);
+  sock.ev.on("messages.update", handleMessagesUpdate);
 };
 
 async function getMessage(
@@ -202,10 +208,53 @@ const handleMessagesUpsert = async ({ messages, ...rest }: any) => {
   }
 };
 
-export type TextMessage = {
-  key: WAProto.IMessageKey;
-  senderJid: string;
-  message: string | null | undefined;
+const handleMessagesUpdate = async (message: any) => {
+  for (const { key, update } of message) {
+    if (update.pollUpdates) {
+      const pollCreation = await getMessage(key);
+
+      if (pollCreation) {
+        const pollMessage = await getAggregateVotesInPollMessage({
+          message: pollCreation,
+          pollUpdates: update.pollUpdates,
+        });
+        const [messageCtx] = message;
+
+        const messageOriginalKey =
+          messageCtx?.update?.pollUpdates?.[0]?.pollUpdateMessageKey;
+        if (!messageOriginalKey?.id || !messageOriginalKey.remoteJid) return;
+
+        const messageOriginal = await store.loadMessage(
+          messageOriginalKey.remoteJid,
+          messageOriginalKey.id
+        );
+
+        const pollVotesForSender = pollMessage
+          .filter((poll) => poll.voters.includes(key.remoteJid!))
+          .map((poll) => poll.name);
+
+        const body = pollMessage
+          .filter((poll) => poll.voters.length > 0)
+          .map((poll) => poll.name)
+          .join(", ");
+
+        let payload = {
+          ...messageCtx,
+          body: body,
+          pollVotesForSender,
+          pollMessage,
+          from: key.remoteJid,
+          pushName: messageOriginal?.pushName,
+          broadcast: messageOriginal?.broadcast,
+          messageTimestamp: messageOriginal?.messageTimestamp,
+          voters: pollCreation,
+          type: "poll",
+        };
+
+        eventEmitter.emit("pollSelection", payload);
+      }
+    }
+  }
 };
 
 export const onMessage = (cb: (message: WhatsAppMessage) => void) => {
@@ -217,53 +266,7 @@ export const onReaction = (cb: (message: WhatsAppMessage) => void) => {
 };
 
 export const onPollSelection = (cb: (message: WhatsAppMessage) => void) => {
-  sock.ev.on("messages.update", async (message) => {
-    for (const { key, update } of message) {
-      if (update.pollUpdates) {
-        const pollCreation = await getMessage(key);
-        if (pollCreation) {
-          const pollMessage = await getAggregateVotesInPollMessage({
-            message: pollCreation,
-            pollUpdates: update.pollUpdates,
-          });
-          const [messageCtx] = message;
-
-          const messageOriginalKey =
-            messageCtx?.update?.pollUpdates?.[0]?.pollUpdateMessageKey;
-          if (!messageOriginalKey?.id || !messageOriginalKey.remoteJid) return;
-
-          const messageOriginal = await store.loadMessage(
-            messageOriginalKey.remoteJid,
-            messageOriginalKey.id
-          );
-
-          const pollVotesForSender = pollMessage
-            .filter((poll) => poll.voters.includes(key.remoteJid!))
-            .map((poll) => poll.name);
-
-          const body = pollMessage
-            .filter((poll) => poll.voters.length > 0)
-            .map((poll) => poll.name)
-            .join(", ");
-
-          let payload = {
-            ...messageCtx,
-            body: body,
-            pollVotesForSender,
-            pollMessage,
-            from: key.remoteJid,
-            pushName: messageOriginal?.pushName,
-            broadcast: messageOriginal?.broadcast,
-            messageTimestamp: messageOriginal?.messageTimestamp,
-            voters: pollCreation,
-            type: "poll",
-          };
-
-          cb(payload);
-        }
-      }
-    }
-  });
+  eventEmitter.on("pollSelection", cb);
 };
 
 export const sendMessage = (

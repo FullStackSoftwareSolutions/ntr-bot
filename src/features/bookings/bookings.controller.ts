@@ -1,6 +1,10 @@
 import { updatePlayersForBooking } from "../players/players.db";
-import { createSkate } from "../skates/skates.db";
-import { createBooking } from "./bookings.db";
+import {
+  createSkate,
+  getSkatesForBooking,
+  updateSkate,
+} from "../skates/skates.db";
+import { createBooking, getBookingById } from "./bookings.db";
 import { getDatesForBooking } from "./bookings.model";
 
 export const createBookingHandler = async (bookingData: {
@@ -27,6 +31,27 @@ export const createBookingHandler = async (bookingData: {
   }
 
   return booking;
+};
+
+export const updateBookingDatesHandler = async (bookingId: number) => {
+  const booking = await getBookingById(bookingId);
+  if (!booking) {
+    throw new Error("Booking not found");
+  }
+
+  const skates = await getSkatesForBooking(bookingId);
+  for (const [index, date] of getDatesForBooking(booking).entries()) {
+    const existingSkate = skates[index];
+    if (existingSkate) {
+      await updateSkate(existingSkate.id, { scheduledOn: date });
+      continue;
+    }
+
+    await createSkate({
+      bookingId: booking.id,
+      scheduledOn: date,
+    });
+  }
 };
 
 export const updateBookingPlayersHandler = async (

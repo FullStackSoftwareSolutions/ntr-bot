@@ -30,6 +30,7 @@ import {
   sendMessage,
   sendPolls,
 } from "~/integrations/whatsapp/whatsapp.service";
+import { bookingCommandPrompt } from "../bookings";
 
 export const onPollSelection = async (
   message: WhatsAppMessage,
@@ -122,7 +123,7 @@ const cancelBookingPaymentsPollSelection = async (
   useUpdatePlayerBookingState(player.id, (draft) => {
     draft.update = {};
   });
-  usePlayerStore().clearActiveCommand(player.id);
+  bookingCommandPrompt(getSenderFromMessage(message), player.id);
 };
 
 const handlePaymentsPollSelection = async (

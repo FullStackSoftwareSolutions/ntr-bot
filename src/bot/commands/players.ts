@@ -19,7 +19,7 @@ import { Player } from "~/features/players/players.type";
 import { Command } from "../commands";
 import { AnyMessageContent } from "@whiskeysockets/baileys";
 
-const MAX_DISPLAYED = 15;
+const MAX_DISPLAYED = 150;
 
 export const onCommand = async (
   message: WhatsAppMessage,
@@ -32,7 +32,7 @@ export const onCommand = async (
   setActiveCommand(sessionPlayer.id, Command.Players);
 
   usePlayerStore().updatePlayers(sessionPlayer.id, (draft) => {
-    draft.search = search;
+    draft.read.search = search;
   });
 
   const players = await getPlayers(sessionPlayer);
@@ -51,10 +51,10 @@ export const onPollSelection = async (
   const senderJid = getSenderFromMessage(message);
   const state = usePlayerStore().getPlayers(sessionPlayer.id);
 
-  let currentPageIndex = state?.viewIndex ?? 0;
+  let currentPageIndex = state?.read.viewIndex ?? 0;
 
-  if (doKeysMatch(message.key, state?.viewPollKey)) {
-    await deleteMessage(senderJid, state?.viewPollKey!);
+  if (doKeysMatch(message.key, state?.read.viewPollKey)) {
+    await deleteMessage(senderJid, state?.read.viewPollKey!);
 
     if (message.body === PollOptions.Cancel) {
       cancel(sessionPlayer);
@@ -68,7 +68,7 @@ export const onPollSelection = async (
     }
 
     usePlayerStore().updatePlayers(sessionPlayer.id, (draft) => {
-      draft.viewIndex = currentPageIndex;
+      draft.read.viewIndex = currentPageIndex;
     });
   }
 
@@ -79,8 +79,8 @@ export const onPollSelection = async (
 const getPlayers = async (sessionPlayer: Player) => {
   const state = usePlayerStore().getPlayers(sessionPlayer.id);
 
-  return state?.search
-    ? await getAllPlayersSearch(state.search)
+  return state?.read.search
+    ? await getAllPlayersSearch(state.read.search)
     : await getAllPlayers();
 };
 
@@ -88,9 +88,9 @@ const cancel = async (sessionPlayer: Player) => {
   const { clearActiveCommand, updatePlayers } = usePlayerStore();
 
   updatePlayers(sessionPlayer.id, (draft) => {
-    draft.viewIndex = 0;
-    draft.viewPollKey = null;
-    draft.playerMessageKeys = [];
+    draft.read.viewIndex = 0;
+    draft.read.viewPollKey = null;
+    draft.read.playerMessageKeys = [];
   });
   clearActiveCommand(sessionPlayer.id);
 };
@@ -111,7 +111,7 @@ const sendPlayersMessage = async (
   const { getPlayers, updatePlayers } = usePlayerStore();
   const state = getPlayers(sessionPlayer.id);
 
-  if ((state?.playerMessageKeys ?? []).length === 0) {
+  if ((state?.read.playerMessageKeys ?? []).length === 0) {
     await sendMessage(senderJid, {
       text: `🏒 *Players* (${pageData.total})`,
     });
@@ -129,7 +129,7 @@ const sendPlayersMessage = async (
       text = formatList([player]);
     }
 
-    const existingMessage = state?.playerMessageKeys?.[index];
+    const existingMessage = state?.read.playerMessageKeys?.[index];
 
     const messageContent: AnyMessageContent = {
       text,
@@ -140,10 +140,10 @@ const sendPlayersMessage = async (
     const message = await sendMessage(senderJid, messageContent);
 
     updatePlayers(sessionPlayer.id, (draft) => {
-      if (!draft.playerMessageKeys) {
-        draft.playerMessageKeys = [];
+      if (!draft.read.playerMessageKeys) {
+        draft.read.playerMessageKeys = [];
       }
-      draft.playerMessageKeys.push(message!.key);
+      draft.read.playerMessageKeys.push(message!.key);
     });
   }
 
@@ -188,6 +188,6 @@ const sendPageMessage = async (
   });
 
   usePlayerStore().updatePlayers(player.id, (draft) => {
-    draft.viewPollKey = poll!.key;
+    draft.read.viewPollKey = poll!.key;
   });
 };
