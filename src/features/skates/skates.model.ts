@@ -89,6 +89,12 @@ export const getSkatePlayersOutWithoutSub = (skate: Skate) => {
       position === Positions.Player && droppedOutOn && !substitutePlayer
   );
 };
+export const getSkatePlayersWithSubs = (skate: Skate) => {
+  return skate.playersToSkates.filter(
+    ({ position, droppedOutOn, substitutePlayer }) =>
+      position === Positions.Player && !!droppedOutOn && !!substitutePlayer
+  );
+};
 
 export const getSkatePlayersAndGoaliesIn = (skate: Skate) => {
   return skate.playersToSkates.filter(({ droppedOutOn }) => !droppedOutOn);
@@ -129,7 +135,7 @@ const getSkatePlayerSubStrikeoutMessage = (skate: Skate, player: Player) => {
 };
 
 export const getSkateMessage = (skate: Skate) => {
-  const header = `*${skate.booking!.announceName}* ${getSkateTimeMessage(
+  const header = `*${skate.booking.announceName}* ${getSkateTimeMessage(
     skate
   )}`;
 

@@ -8,6 +8,8 @@ import {
 } from "../../features/whatsapp/whatsapp.formatting";
 import {
   doKeysMatch,
+  getJidFromNumber,
+  getMentionFromNumber,
   getSenderFromMessage,
   isKeyInList,
   PollOptions,
@@ -28,6 +30,7 @@ import {
   Positions,
   randomizeTeamsForSkate,
   Teams,
+  getSkatePlayersWithSubs,
 } from "~/features/skates/skates.model";
 import { Skate } from "~/features/skates/skates.type";
 import { useSkateState, useState, useUpdateSkateState } from "../state";
@@ -38,6 +41,8 @@ import {
   getSkateAvailableSubsHandler,
   updateSkatePlayerOutHandler,
 } from "~/features/skates/skates.controller";
+import { getCostPerSkatePerPlayerForBooking } from "~/features/bookings/bookings.model";
+import { formatCurrency } from "~/formatting/currency";
 
 enum SkateActionsPollOptions {
   PlayerGoalieOut = "Player/Goalie Out",
@@ -45,6 +50,7 @@ enum SkateActionsPollOptions {
   SubstituteGoalie = "Sub Goalie",
   GenerateTeams = "Generate Teams",
   Announce = "Announce",
+  AnnouncePayments = "Announce Payments",
 }
 
 export const onCommand = async (
@@ -110,6 +116,9 @@ const handleSkateActionPollSelection = async (
 
   if (message.body === SkateActionsPollOptions.Announce) {
     await announceSkate(skate, message);
+  }
+  if (message.body === SkateActionsPollOptions.AnnouncePayments) {
+    await announcePayments(skate, message);
   }
 
   if (message.body === SkateActionsPollOptions.PlayerGoalieOut) {
@@ -220,11 +229,7 @@ export const sendActionPollMessage = async (
   }
 
   const options = [
-    SkateActionsPollOptions.PlayerGoalieOut,
-    SkateActionsPollOptions.SubstitutePlayer,
-    SkateActionsPollOptions.SubstituteGoalie,
-    SkateActionsPollOptions.GenerateTeams,
-    SkateActionsPollOptions.Announce,
+    ...Object.values(SkateActionsPollOptions),
     PollOptions.Cancel,
   ].filter((option) => {
     if (option === SkateActionsPollOptions.SubstitutePlayer) {
@@ -299,10 +304,38 @@ export const sendSubPlayerPollMessage = async (
 };
 
 const announceSkate = async (skate: Skate, message: WhatsAppMessage) => {
-  const senderJid = getSenderFromMessage(message);
+  const sendToJid =
+    skate.booking.whatsAppGroupJid ?? getSenderFromMessage(message);
 
-  await sendMessage(senderJid, {
+  await sendMessage(sendToJid, {
     text: getSkateMessage(skate),
+  });
+};
+
+const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
+  const sendToJid =
+    skate.booking.whatsAppGroupJid ?? getSenderFromMessage(message);
+
+  const players = getSkatePlayersWithSubs(skate);
+  const cost = getCostPerSkatePerPlayerForBooking(skate.booking, true);
+
+  const mentions = players.flatMap(({ player, substitutePlayer }) => [
+    getJidFromNumber(player.phoneNumber),
+    getJidFromNumber(substitutePlayer!.phoneNumber),
+  ]);
+
+  const payments = players.map(
+    ({ player, substitutePlayer }) =>
+      `💰 ${getMentionFromNumber(
+        substitutePlayer!.phoneNumber
+      )} send ${formatCurrency(cost)} to ${
+        player.email
+      } 👈 ${getMentionFromNumber(player.phoneNumber)}`
+  );
+
+  await sendMessage(sendToJid, {
+    text: stringJoin(...payments),
+    mentions,
   });
 };
 

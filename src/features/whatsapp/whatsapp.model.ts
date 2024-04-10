@@ -32,6 +32,10 @@ export enum PollOptions {
 }
 
 export const getNumberFromJid = (jid: string) => jid.split("@")[0] as string;
+export const getMentionFromNumber = (number: string) =>
+  `@${number.replace("+", "")}`;
+export const getJidFromNumber = (number: string) =>
+  `${number.replace("+", "")}@s.whatsapp.net`;
 
 export const getTextFromMessage = (message: WhatsAppMessage): string => {
   return message.message?.conversation !== ""

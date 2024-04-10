@@ -1,3 +1,4 @@
+import { BookingWithoutPlayers } from "../bookings/bookings.type";
 import { Player } from "../players/players.type";
 
 export type Skate = {
@@ -10,9 +11,5 @@ export type Skate = {
     substitutePlayer: Player | null;
     position: string;
   }[];
-  booking?: {
-    announceName: string | null;
-    numPlayers: number;
-    numGoalies: number;
-  };
+  booking: BookingWithoutPlayers;
 };

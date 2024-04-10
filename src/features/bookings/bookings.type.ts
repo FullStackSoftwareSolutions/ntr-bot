@@ -24,9 +24,13 @@ export type Booking = {
   startDate: string | null;
   endDate: string | null;
   bookedById: number | null;
+  whatsAppGroupJid: string | null;
+  announceName: string | null;
   playersToBookings: {
     amountPaid: string | null;
     player: Player;
     position: string;
   }[];
 };
+
+export type BookingWithoutPlayers = Omit<Booking, "playersToBookings">;

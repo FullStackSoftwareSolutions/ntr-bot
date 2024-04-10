@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Booking, BookingCreate } from "./bookings.type";
+import { Booking, BookingCreate, BookingWithoutPlayers } from "./bookings.type";
 
 import utcPlugin from "dayjs/plugin/utc";
 import { formatList, stringJoin } from "../whatsapp/whatsapp.formatting";
@@ -28,7 +28,7 @@ export const getDatesForBooking = (
   return dates;
 };
 
-const getNumSkatesForBooking = (booking: Booking) => {
+const getNumSkatesForBooking = (booking: BookingWithoutPlayers) => {
   return getDatesForBooking(booking).length;
 };
 
@@ -38,7 +38,7 @@ export const getCostPerSkateForBooking = (booking: Booking) => {
 };
 
 export const getCostPerSkatePerPlayerForBooking = (
-  booking: Booking,
+  booking: BookingWithoutPlayers,
   roundUp = false
 ) => {
   const cost = Number(booking.cost ?? 0);

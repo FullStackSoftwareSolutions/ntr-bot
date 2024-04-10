@@ -23,7 +23,6 @@ import { generateRefProvider } from "./hash";
 import path from "path";
 import chalk from "chalk";
 import EventEmitter from "node:events";
-import { readFileSync, existsSync } from "fs";
 
 export type TextMessage = {
   key: WAProto.IMessageKey;
