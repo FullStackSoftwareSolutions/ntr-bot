@@ -11,9 +11,15 @@ import { timeToEmoji } from "~/formatting/time.emoji";
 import { Player } from "../players/players.type";
 
 export enum Teams {
-  Black = "⬛ Black",
-  White = "⬜ White",
+  Black = "black",
+  White = "white",
 }
+
+const teamTitles = {
+  [Teams.Black]: "⬛ Black - Home",
+  [Teams.White]: "⬜ White - Away",
+};
+export const getTeamTitle = (team: Teams) => teamTitles[team];
 
 export enum Positions {
   Player = "Player",
@@ -134,23 +140,55 @@ const getSkatePlayerSubStrikeoutMessage = (skate: Skate, player: Player) => {
   return ` 👈 ~${getPlayerName(sub)}~`;
 };
 
-export const getSkateMessage = (skate: Skate) => {
-  const header = `*${skate.booking.announceName}* ${getSkateTimeMessage(
-    skate
-  )}`;
+export const getSkateTitle = (skate: Skate) => {
+  return `*${skate.booking.announceName}* ${getSkateTimeMessage(skate)}`;
+};
 
+export const getSkateGoaliesMessageLines = (
+  skate: Skate,
+  showOriginalPlayer = true,
+  showCount = true
+) => {
   const goaliesIn = [
     ...getSkateGoaliesIn(skate).map(
       ({ player }) =>
-        `\`${getPlayerName(player)}\`${getSkatePlayerSubStrikeoutMessage(
-          skate,
-          player
-        )}`
+        `\`${getPlayerName(player)}\`${
+          showOriginalPlayer
+            ? getSkatePlayerSubStrikeoutMessage(skate, player)
+            : ""
+        }`
     ),
     ...getSkateGoaliesOutWithoutSub(skate).map(
       ({ player }) => `⚠️ ~${getPlayerName(player)}~`
     ),
   ];
+
+  const totalGoalieSpots = getSkateTotalGoalieSpots(skate);
+  const numGoalieSpotsFilled = getSkateNumGoalieSpotsFilled(skate);
+
+  const numGoaliesMessage = `*Goalies*${
+    showCount ? ` (${numGoalieSpotsFilled}/${totalGoalieSpots})` : ""
+  }`;
+  return [numGoaliesMessage, formatStringList(goaliesIn)];
+};
+
+export const getPlayersOutMessageLines = (skate: Skate) => {
+  const playersOut = getSkatePlayersOut(skate).map(
+    ({ player, substitutePlayer }) =>
+      `${getPlayerName(player)}${
+        substitutePlayer ? ` 👉 ${getPlayerName(substitutePlayer)}` : ""
+      }`
+  );
+
+  if (playersOut.length === 0) {
+    return [];
+  }
+
+  return ["🤕 *Out*", formatStringList(playersOut)];
+};
+
+export const getSkateMessage = (skate: Skate) => {
+  const header = getSkateTitle(skate);
 
   const playersIn = [
     ...getSkatePlayersIn(skate).map(
@@ -164,20 +202,11 @@ export const getSkateMessage = (skate: Skate) => {
       ({ player }) => `⚠️ ~${getPlayerName(player)}~`
     ),
   ];
-  const playersOut = getSkatePlayersOut(skate).map(
-    ({ player, substitutePlayer }) =>
-      `${getPlayerName(player)}${
-        substitutePlayer ? ` 👉 ${getPlayerName(substitutePlayer)}` : ""
-      }`
-  );
+  const numGoalieSpotsOpen = getSkateNumGoalieSpotsOpen(skate);
 
   const totalPlayerSpots = getSkateTotalPlayerSpots(skate);
   const numPlayerSpotsFilled = getSkateNumPlayerSpotsFilled(skate);
   const numPlayerSpotsOpen = getSkateNumPlayerSpotsOpen(skate);
-
-  const totalGoalieSpots = getSkateTotalGoalieSpots(skate);
-  const numGoalieSpotsFilled = getSkateNumGoalieSpotsFilled(skate);
-  const numGoalieSpotsOpen = getSkateNumGoalieSpotsOpen(skate);
 
   const fullMessage = `🛑 *Full - No spots open*`;
   const playersNeededMessage = `⚠️ *${numPlayerSpotsOpen} player spot${
@@ -200,10 +229,6 @@ export const getSkateMessage = (skate: Skate) => {
   }
 
   const numPlayersMessage = `*Players* (${numPlayerSpotsFilled}/${totalPlayerSpots})`;
-  const numGoaliesMessage = `*Goalies* (${numGoalieSpotsFilled}/${totalGoalieSpots})`;
-
-  const outMessage =
-    playersOut.length > 0 ? ["", "🤕 *Out*", formatStringList(playersOut)] : [];
 
   if (!haveSkateTeamsBeenGenerated(skate)) {
     return stringJoin(
@@ -213,8 +238,7 @@ export const getSkateMessage = (skate: Skate) => {
       numPlayersMessage,
       formatStringList(playersIn),
       "",
-      numGoaliesMessage,
-      formatStringList(goaliesIn)
+      ...getSkateGoaliesMessageLines(skate)
     );
   }
 
@@ -225,6 +249,49 @@ export const getSkateMessage = (skate: Skate) => {
       players: getPlayersText(skate),
     },
   ]);
+};
+
+export const getSkateTeamsMessage = (skate: Skate, showSkillLevel = false) => {
+  const players = getSkatePlayersIn(skate);
+  let teamBlack = players
+    .filter(({ team }) => team === Teams.Black)
+    .map(({ player }) => player);
+  let teamWhite = players
+    .filter(({ team }) => team === Teams.White)
+    .map(({ player }) => player);
+
+  if (showSkillLevel) {
+    teamBlack = sortPlayers(teamBlack);
+    teamWhite = sortPlayers(teamWhite);
+  } else {
+    teamBlack = shufflePlayers(teamBlack);
+    teamWhite = shufflePlayers(teamWhite);
+  }
+
+  const teamBlackHeader = `${getTeamTitle(Teams.Black)} (${teamBlack.length})`;
+  const teamWhiteHeader = `${getTeamTitle(Teams.White)} (${teamWhite.length})`;
+
+  const formatTeamList = (team: Player[]) =>
+    formatStringList(
+      team.map(
+        (player) =>
+          `${
+            showSkillLevel ? `[${getPlayerSkillLevel(player)}] ` : ""
+          }${getPlayerName(player)}`
+      )
+    );
+
+  return stringJoin(
+    getSkateTitle(skate),
+    "",
+    teamBlackHeader,
+    formatTeamList(teamBlack),
+    "",
+    teamWhiteHeader,
+    formatTeamList(teamWhite),
+    "",
+    ...getSkateGoaliesMessageLines(skate, false, false)
+  );
 };
 
 const getPlayersText = (skate: Skate) => {
@@ -256,7 +323,7 @@ const sortPlayers = (players: Player[]): Player[] => {
 };
 
 export const randomizeTeamsForSkate = (skate: Skate) => {
-  const players = skate.playersToSkates.map(({ player }) => player);
+  const players = getSkatePlayersIn(skate).map(({ player }) => player);
   const shuffledAndSortedPlayers = sortPlayers(shufflePlayers(players));
 
   const teams: Team = { [Teams.Black]: [], [Teams.White]: [] };

@@ -17,20 +17,15 @@ import {
 } from "~/features/whatsapp/whatsapp.model";
 import { Player } from "~/features/players/players.type";
 import { getSkateById } from "~/features/skates/skates.db";
-import {
-  getPlayerName,
-  getPlayerSkillLevel,
-} from "~/features/players/players.model";
+import { getPlayerName } from "~/features/players/players.model";
 import {
   getSkateMessage,
   getSkateNumGoalieSpotsOpen,
   getSkateNumPlayerSpotsOpen,
   getSkatePlayersAndGoaliesIn,
-  getSkateTimeMessage,
   Positions,
-  randomizeTeamsForSkate,
-  Teams,
   getSkatePlayersWithSubs,
+  getSkateTeamsMessage,
 } from "~/features/skates/skates.model";
 import { Skate } from "~/features/skates/skates.type";
 import { useSkateState, useState, useUpdateSkateState } from "../state";
@@ -39,6 +34,7 @@ import { getPlayerByName } from "~/features/players/players.db";
 import {
   addSkateSubPlayerHandler,
   getSkateAvailableSubsHandler,
+  shuffleSkateTeamsHandler,
   updateSkatePlayerOutHandler,
 } from "~/features/skates/skates.controller";
 import { getCostPerSkatePerPlayerForBooking } from "~/features/bookings/bookings.model";
@@ -48,8 +44,9 @@ enum SkateActionsPollOptions {
   PlayerGoalieOut = "Player/Goalie Out",
   SubstitutePlayer = "Sub Player",
   SubstituteGoalie = "Sub Goalie",
-  GenerateTeams = "Generate Teams",
+  ShuffleTeams = "Shuffle Teams",
   Announce = "Announce",
+  AnnounceTeams = "Announce Teams",
   AnnouncePayments = "Announce Payments",
 }
 
@@ -120,12 +117,17 @@ const handleSkateActionPollSelection = async (
   if (message.body === SkateActionsPollOptions.AnnouncePayments) {
     await announcePayments(skate, message);
   }
+  if (message.body === SkateActionsPollOptions.AnnounceTeams) {
+    await announceTeams(skate, message);
+  }
+  if (message.body === SkateActionsPollOptions.ShuffleTeams) {
+    await generateTeams(skate, message);
+  }
 
   if (message.body === SkateActionsPollOptions.PlayerGoalieOut) {
     await sendPlayerOutPollMessage(senderJid, sessionPlayer.id);
     return;
   }
-
   if (
     message.body === SkateActionsPollOptions.SubstitutePlayer ||
     message.body === SkateActionsPollOptions.SubstituteGoalie
@@ -304,8 +306,9 @@ export const sendSubPlayerPollMessage = async (
 };
 
 const announceSkate = async (skate: Skate, message: WhatsAppMessage) => {
-  const sendToJid =
-    skate.booking.whatsAppGroupJid ?? getSenderFromMessage(message);
+  // const sendToJid =
+  //   skate.booking.whatsAppGroupJid ?? getSenderFromMessage(message);
+  const sendToJid = getSenderFromMessage(message);
 
   await sendMessage(sendToJid, {
     text: getSkateMessage(skate),
@@ -339,38 +342,25 @@ const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
   });
 };
 
+const announceTeams = async (skate: Skate, message: WhatsAppMessage) => {
+  const sendToJid =
+    skate.booking.whatsAppGroupJid ?? getSenderFromMessage(message);
+
+  await sendMessage(sendToJid, {
+    text: getSkateTeamsMessage(skate),
+  });
+};
+
 const generateTeams = async (skate: Skate, message: WhatsAppMessage) => {
-  const teams = randomizeTeamsForSkate(skate);
+  const skateWithTeams = await shuffleSkateTeamsHandler(skate.id);
+  if (!skateWithTeams) {
+    throw new Error("Failed to shuffle teams");
+  }
+
   const senderJid = getSenderFromMessage(message);
 
-  const teamBlack = formatStringList(
-    teams[Teams.Black].map(
-      (p) => `[${getPlayerSkillLevel(p)}] ${getPlayerName(p)}`
-    ),
-    {
-      header: {
-        content: Teams.Black,
-      },
-    }
-  );
-  const teamWhite = formatStringList(
-    teams[Teams.White].map(
-      (p) => `[${getPlayerSkillLevel(p)}] ${getPlayerName(p)}`
-    ),
-    {
-      header: {
-        content: Teams.White,
-      },
-    }
-  );
-  const header = `🏒 *${skate.booking!.announceName}* ${getSkateTimeMessage(
-    skate
-  )}`;
-
-  const skateFormat = stringJoin(header, "", teamBlack, "", teamWhite);
-
   await sendMessage(senderJid, {
-    text: skateFormat,
+    text: getSkateTeamsMessage(skateWithTeams, true),
   });
 };
 

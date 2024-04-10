@@ -125,3 +125,25 @@ export const addPlayerToSkate = async (
       { skateId, playerId, team, substitutePlayerId, droppedOutOn, position },
     ]);
 };
+
+export const updateSkateTeams = async (
+  skateId: number,
+  teams: {
+    playerId: number;
+    team: string;
+  }[]
+) => {
+  await db.transaction(async (tx) => {
+    for (const { playerId, team } of teams) {
+      await tx
+        .update(playersToSkates)
+        .set({ team })
+        .where(
+          and(
+            eq(playersToSkates.skateId, skateId),
+            eq(playersToSkates.playerId, playerId)
+          )
+        );
+    }
+  });
+};

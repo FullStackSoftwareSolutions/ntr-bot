@@ -3,11 +3,18 @@ import {
   getAllPlayers,
   getAllPlayersAndGoalies,
 } from "../players/players.db";
-import { addPlayerToSkate, getSkateById, updateSkatePlayer } from "./skates.db";
+import {
+  addPlayerToSkate,
+  getSkateById,
+  updateSkatePlayer,
+  updateSkateTeams,
+} from "./skates.db";
 import {
   getEarliestDropoutWithoutSub,
   getSkatePlayersIn,
   Positions,
+  randomizeTeamsForSkate,
+  Teams,
 } from "./skates.model";
 
 export const updateSkatePlayerOutHandler = async (
@@ -84,4 +91,27 @@ export const getSkateAvailableSubsHandler = async (
   );
 
   return availableSubs;
+};
+
+export const shuffleSkateTeamsHandler = async (skateId: number) => {
+  const skate = await getSkateById(skateId);
+  if (!skate) {
+    throw new Error("No skate found!");
+  }
+
+  const teams = randomizeTeamsForSkate(skate);
+  const playersWithTeam = [
+    ...teams[Teams.Black].map((player) => ({
+      playerId: player.id,
+      team: Teams.Black,
+    })),
+    ...teams[Teams.White].map((player) => ({
+      playerId: player.id,
+      team: Teams.White,
+    })),
+  ];
+
+  await updateSkateTeams(skateId, playersWithTeam);
+
+  return await getSkateById(skateId);
 };
