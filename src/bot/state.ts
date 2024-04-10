@@ -6,6 +6,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { LocalStorage } from "node-localstorage";
 import { PlayerCreate } from "~/features/players/players.type";
 import { BookingCreate } from "~/features/bookings/bookings.type";
+import { Positions } from "~/features/skates/skates.model";
 
 type Commands = {
   activeCommand: string | null;
@@ -56,7 +57,8 @@ type Commands = {
     update: {
       skateId?: number;
       playerOutPollKeys?: WhatsAppMessageKey[];
-      subPlayerPollKeys?: WhatsAppMessageKey[];
+      subPosition?: Positions;
+      subPlayerGoaliePollKeys?: WhatsAppMessageKey[];
     };
     read: {
       skateId?: number;

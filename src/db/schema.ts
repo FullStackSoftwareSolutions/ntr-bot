@@ -14,6 +14,7 @@ import {
   primaryKey,
   text,
 } from "drizzle-orm/pg-core";
+import { Positions } from "~/features/skates/skates.model";
 
 export const players = pgTable(
   "players",
@@ -29,6 +30,8 @@ export const players = pgTable(
       .notNull()
       .default(sql`CURRENT_TIMESTAMP`),
     admin: boolean("admin").notNull().default(false),
+    isPlayer: boolean("is_player").notNull().default(true),
+    isGoalie: boolean("is_goalie").notNull().default(false),
   },
   (players) => ({
     playersEmailIdx: index("players_email_idx").on(players.email),
@@ -76,6 +79,7 @@ export const playersToSkates = pgTable(
     substitutePlayerId: integer("substitute_player_id").references(
       () => players.id
     ),
+    position: varchar("position").notNull().default(Positions.Player),
     droppedOutOn: timestamp("dropped_out_on"),
     team: varchar("team"),
   },
@@ -108,10 +112,12 @@ export const bookings = pgTable("bookings", {
   id: serial("id").unique().primaryKey(),
   name: varchar("name").notNull().unique(),
   announceName: varchar("announce_name"),
-  numPlayers: integer("num_players"),
+  numPlayers: integer("num_players").default(14).notNull(),
+  numGoalies: integer("num_goalies").default(2).notNull(),
   location: varchar("location"),
   cost: numeric("cost"),
   costPerPlayer: numeric("cost_per_player"),
+  costPerGoalie: numeric("cost_per_goalie").default("0").notNull(),
   scheduledTime: time("scheduled_time"),
   startDate: date("start_date"),
   endDate: date("end_date"),
@@ -138,6 +144,7 @@ export const playersToBookings = pgTable(
       .notNull()
       .references(() => bookings.id),
     amountPaid: numeric("amount_paid"),
+    position: varchar("position").notNull().default(Positions.Player),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.playerId, t.bookingId] }),

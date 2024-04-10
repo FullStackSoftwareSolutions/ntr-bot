@@ -3,7 +3,7 @@ import { updateBookingPlayersHandler } from "~/features/bookings/bookings.contro
 import { getBookingById } from "~/features/bookings/bookings.db";
 import { getBookingMessage } from "~/features/bookings/bookings.model";
 import {
-  getAllPlayers,
+  getAllPlayersAndGoalies,
   getPlayersByNames,
   getPlayersForBooking,
 } from "~/features/players/players.db";
@@ -22,6 +22,7 @@ import {
   sendPolls,
 } from "~/integrations/whatsapp/whatsapp.service";
 import { bookingCommandPrompt } from "../bookings";
+import { Positions } from "~/features/skates/skates.model";
 
 export const onPollSelection = async (
   message: WhatsAppMessage,
@@ -46,9 +47,7 @@ export const onPollSelection = async (
     if (message.body === PollOptions.Cancel) {
       return await cancelBookingPlayersPollSelection(message, player);
     }
-    if (message.body === PollOptions.Confirm) {
-      return await confirmBookingPlayersPollSelection(message, player);
-    }
+    return await confirmBookingPlayersPollSelection(message, player);
   }
 };
 
@@ -74,7 +73,7 @@ export const sendBookingPlayersPollSelection = async (
     removePollKeys = removePlayerPolls.map((p) => p.key);
   }
 
-  const allPlayers = await getAllPlayers();
+  const allPlayers = await getAllPlayersAndGoalies();
   const otherPlayers = allPlayers.filter(
     (p) => !bookingPlayers.find((bp) => bp.id === p.id)
   );
@@ -87,8 +86,8 @@ export const sendBookingPlayersPollSelection = async (
 
   const confirmPoll = await sendMessage(senderJid, {
     poll: {
-      name: "Confirm above selections",
-      values: [PollOptions.Confirm, PollOptions.Cancel],
+      name: "What position do they play?",
+      values: [...Object.values(Positions), PollOptions.Cancel],
     },
   });
   confirmPollKey = confirmPoll!.key;
@@ -133,6 +132,8 @@ const confirmBookingPlayersPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
+  const position = message.body as Positions;
+
   const bookingState = useBookingState(player.id);
   const updateState = bookingState?.update;
 
@@ -143,7 +144,8 @@ const confirmBookingPlayersPollSelection = async (
   await updateBookingPlayersHandler(
     updateState.bookingId!,
     updateState.players.removePlayerIds,
-    updateState.players.addPlayerIds
+    updateState.players.addPlayerIds,
+    position
   );
 
   cancelBookingPlayersPollSelection(message, player);

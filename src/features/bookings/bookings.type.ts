@@ -3,6 +3,7 @@ import { Player } from "../players/players.type";
 export type BookingCreate = {
   name: string;
   numPlayers: number;
+  numGoalies: number;
   location: string;
   cost: string;
   scheduledTime: string;
@@ -14,7 +15,8 @@ export type BookingCreate = {
 export type Booking = {
   id: number;
   name: string | null;
-  numPlayers: number | null;
+  numPlayers: number;
+  numGoalies: number;
   location: string | null;
   cost: string | null;
   costPerPlayer: string | null;
@@ -25,5 +27,6 @@ export type Booking = {
   playersToBookings: {
     amountPaid: string | null;
     player: Player;
+    position: string;
   }[];
 };

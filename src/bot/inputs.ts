@@ -14,3 +14,12 @@ export const parseEmail = (input: string) => {
   const isValid = emailValidator.validate(input);
   return isValid ? input : null;
 };
+
+export const parseBoolean = (input: string) => {
+  return (
+    input.toLowerCase() === "yes" ||
+    input.toLowerCase() === "y" ||
+    input === "1" ||
+    input.toLowerCase() === "true"
+  );
+};

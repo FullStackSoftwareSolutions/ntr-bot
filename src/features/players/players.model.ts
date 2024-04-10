@@ -1,4 +1,4 @@
-import { parseEmail, parsePhoneNumber } from "~/bot/inputs";
+import { parseBoolean, parseEmail, parsePhoneNumber } from "~/bot/inputs";
 import { Player, PlayerCreate } from "./players.type";
 
 export const getPlayerWhatsappJid = (player: Player) =>
@@ -36,6 +36,16 @@ export const playerFieldPrompts: {
   skillLevel: {
     prompt: "What is their skill level?",
     required: false,
+  },
+  isPlayer: {
+    prompt: "Are they a player?",
+    required: false,
+    parse: parseBoolean,
+  },
+  isGoalie: {
+    prompt: "Are they a goalie?",
+    required: false,
+    parse: parseBoolean,
   },
   notes: {
     prompt: "Any notes?",

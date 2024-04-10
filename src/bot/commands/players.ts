@@ -1,5 +1,5 @@
 import {
-  getAllPlayers,
+  getAllPlayersAndGoalies,
   getAllPlayersSearch,
 } from "../../features/players/players.db";
 import {
@@ -81,7 +81,7 @@ const getPlayers = async (sessionPlayer: Player) => {
 
   return state?.read.search
     ? await getAllPlayersSearch(state.read.search)
-    : await getAllPlayers();
+    : await getAllPlayersAndGoalies();
 };
 
 const cancel = async (sessionPlayer: Player) => {

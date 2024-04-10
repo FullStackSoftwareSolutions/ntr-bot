@@ -1,8 +1,13 @@
-import { getAllPlayers } from "../players/players.db";
+import {
+  getAllGoalies,
+  getAllPlayers,
+  getAllPlayersAndGoalies,
+} from "../players/players.db";
 import { addPlayerToSkate, getSkateById, updateSkatePlayer } from "./skates.db";
 import {
   getEarliestDropoutWithoutSub,
   getSkatePlayersIn,
+  Positions,
 } from "./skates.model";
 
 export const updateSkatePlayerOutHandler = async (
@@ -30,19 +35,19 @@ export const updateSkatePlayerOutHandler = async (
 
 export const addSkateSubPlayerHandler = async (
   skateId: number,
-  playerId: number
+  playerId: number,
+  position: Positions
 ) => {
   const skate = await getSkateById(skateId);
   if (!skate) {
     throw new Error("No skate found!");
   }
 
-  const dropoutPlayer = getEarliestDropoutWithoutSub(skate);
+  const dropoutPlayer = getEarliestDropoutWithoutSub(skate, position);
   if (!dropoutPlayer) {
     throw new Error("No dropout player found!");
   }
 
-  console.log(dropoutPlayer.id, playerId);
   if (dropoutPlayer.id === playerId) {
     await updateSkatePlayer(skateId, playerId, {
       droppedOutOn: null,
@@ -54,16 +59,25 @@ export const addSkateSubPlayerHandler = async (
   await updateSkatePlayer(skateId, dropoutPlayer.id, {
     substitutePlayerId: playerId,
   });
-  await addPlayerToSkate(skateId, playerId);
+  await addPlayerToSkate(skateId, playerId, {
+    position,
+  });
 };
 
-export const getSkateAvailableSubsHandler = async (skateId: number) => {
+export const getSkateAvailableSubsHandler = async (
+  skateId: number,
+  position: Positions
+) => {
   const skate = await getSkateById(skateId);
   if (!skate) {
     throw new Error("No skate found!");
   }
 
-  const players = await getAllPlayers();
+  const players =
+    position === Positions.Goalie
+      ? await getAllGoalies()
+      : await getAllPlayers();
+
   const playersIn = getSkatePlayersIn(skate);
   const availableSubs = players.filter(
     (player) => !playersIn.some((playerIn) => playerIn.player.id === player.id)

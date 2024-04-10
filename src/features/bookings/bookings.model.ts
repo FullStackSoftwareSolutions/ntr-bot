@@ -5,6 +5,7 @@ import utcPlugin from "dayjs/plugin/utc";
 import { formatList, stringJoin } from "../whatsapp/whatsapp.formatting";
 import { getPlayerName } from "../players/players.model";
 import { formatCurrency } from "~/formatting/currency";
+import { Positions } from "../skates/skates.model";
 
 dayjs.extend(utcPlugin);
 
@@ -82,22 +83,40 @@ export const getBookingMessage = (booking: Booking) => {
   const dates = getDatesForBooking(booking);
   const costPerSkate = cost / getDatesForBooking(booking).length;
 
-  const bookingPlayersRegistered = booking.playersToBookings.length;
-  const bookingNumPlayers = booking.numPlayers ?? 0;
+  const players = booking.playersToBookings
+    .filter(({ position }) => position === Positions.Player)
+    .sort((a, b) => Number(b.amountPaid) - Number(a.amountPaid));
+
+  const goalies = booking.playersToBookings.filter(
+    ({ position }) => position === Positions.Goalie
+  );
+
+  const bookingPlayersRegistered = players.length;
+  const bookingNumPlayers = booking.numPlayers;
+
+  const bookingGoaliesRegistered = goalies.length;
+  const bookingNumGoalies = booking.numGoalies;
+
   const costPerPlayer = cost / bookingNumPlayers;
   const costPerPlayerPerSkate = costPerSkate / bookingNumPlayers;
 
-  const players =
+  const playersMessage =
     bookingPlayersRegistered === 0
       ? `None (${bookingNumPlayers} spots)`
-      : `(${bookingPlayersRegistered}/${bookingNumPlayers}) ${booking.playersToBookings
-          .sort((a, b) => Number(b.amountPaid) - Number(a.amountPaid))
+      : `(${bookingPlayersRegistered}/${bookingNumPlayers}) ${players
           .map(
             ({ player, amountPaid }) =>
               `${getPlayerName(player)} (${formatCurrency(
                 Number(amountPaid ?? 0)
               )})`
           )
+          .join(", ")}`;
+
+  const goaliesMessage =
+    bookingGoaliesRegistered === 0
+      ? `None (${bookingNumGoalies} spots)`
+      : `(${bookingGoaliesRegistered}/${bookingNumGoalies}) ${goalies
+          .map(({ player }) => getPlayerName(player))
           .join(", ")}`;
 
   return stringJoin(
@@ -115,7 +134,8 @@ export const getBookingMessage = (booking: Booking) => {
         costPerPlayerPerSkate: formatCurrency(costPerPlayerPerSkate),
         time: booking.scheduledTime,
         location: booking.location,
-        players,
+        players: playersMessage,
+        goalies: goaliesMessage,
       },
     ])
   );
@@ -133,6 +153,11 @@ export const bookingFieldPrompts: {
   name: "What would you like to name it?",
   numPlayers: {
     prompt: "How many players are you booking for?",
+    parse: (value) => parseInt(value),
+    required: true,
+  },
+  numGoalies: {
+    prompt: "How many goalies are you booking for?",
     parse: (value) => parseInt(value),
     required: true,
   },

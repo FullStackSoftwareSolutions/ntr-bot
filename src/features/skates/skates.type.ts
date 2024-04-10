@@ -8,9 +8,11 @@ export type Skate = {
     team: string | null;
     droppedOutOn: Date | null;
     substitutePlayer: Player | null;
+    position: string;
   }[];
   booking?: {
     announceName: string | null;
-    numPlayers: number | null;
+    numPlayers: number;
+    numGoalies: number;
   };
 };

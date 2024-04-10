@@ -13,6 +13,7 @@ import {
   WAMessageContent,
   GroupMetadata,
   PollMessageOptions,
+  fetchLatestBaileysVersion,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
@@ -22,12 +23,15 @@ import { generateRefProvider } from "./hash";
 import path from "path";
 import chalk from "chalk";
 import EventEmitter from "node:events";
+import { readFileSync, existsSync } from "fs";
 
 export type TextMessage = {
   key: WAProto.IMessageKey;
   senderJid: string;
   message: string | null | undefined;
 };
+
+const storePath = path.resolve(`./state/store.json`);
 
 let sock: ReturnType<typeof makeWASocket>;
 let authState: AuthenticationState;
@@ -41,11 +45,14 @@ export const initialize = async (auth: {
   saveCreds: () => Promise<void>;
 }) => {
   store = makeInMemoryStore({ logger });
-  store.readFromFile(path.resolve(`./store.json`));
+  store.readFromFile(storePath);
   saveStoreAutomatically();
 
   authState = auth.state;
   saveCreds = auth.saveCreds;
+
+  const { version, isLatest } = await fetchLatestBaileysVersion();
+  console.log(`using WA v${version.join(".")}, isLatest: ${isLatest}`);
 
   return connect();
 };
@@ -65,6 +72,13 @@ export const connect = async () => {
     generateHighQualityLinkPreview: true,
     getMessage,
   });
+  // sock.ev.process(
+  //   // events is a map for event name => event data
+  //   async (events) => {
+  //     console.log(events);
+  //   }
+  // );
+
   store.bind(sock.ev);
 
   sock.ev.on("creds.update", saveCreds);
@@ -87,9 +101,8 @@ async function getMessage(
 
 const saveStoreAutomatically = () => {
   setInterval(() => {
-    const storePath = path.resolve(`./state/store.json`);
     store.writeToFile(storePath);
-  }, 10_000);
+  }, 1_000);
 };
 
 const handleConnectionUpdate = (update: Partial<ConnectionState>) => {
@@ -105,7 +118,7 @@ const handleConnectionUpdate = (update: Partial<ConnectionState>) => {
 
     if (statusCode === DisconnectReason.loggedOut) {
       console.info(chalk.black(chalk.bgRed(" 🪵 Whatsapp logged out")));
-      unlinkSync("store.json");
+      unlinkSync(storePath);
 
       connect();
     }

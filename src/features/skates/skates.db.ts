@@ -22,6 +22,7 @@ export const getAllSkates = async () => db.query.skates.findMany();
 export const getSkatesForBooking = async (bookingId: number) =>
   db.query.skates.findMany({
     with: {
+      booking: true,
       playersToSkates: {
         with: {
           player: true,
@@ -110,13 +111,17 @@ export const addPlayerToSkate = async (
     team,
     substitutePlayerId,
     droppedOutOn,
+    position,
   }: {
     team?: string | null;
     substitutePlayerId?: number | null;
     droppedOutOn?: Date | null;
-  } = {}
+    position: string;
+  }
 ) => {
   await db
     .insert(playersToSkates)
-    .values([{ skateId, playerId, team, substitutePlayerId, droppedOutOn }]);
+    .values([
+      { skateId, playerId, team, substitutePlayerId, droppedOutOn, position },
+    ]);
 };

@@ -23,7 +23,7 @@ export const formatStringList = (rows: string[], config?: FormatListConfig) => {
   const data = rows
     .map((row) => {
       const valueString = row?.toString() ?? "<empty>";
-      return `┃ \`${valueString}\``;
+      return `┃ ${valueString}`;
     })
     .join("\n");
 

@@ -8,8 +8,18 @@ import {
 } from "../../db/schema";
 import { PlayerCreate } from "./players.type";
 
+export const getAllPlayersAndGoalies = async () =>
+  db.query.players.findMany({
+    orderBy: asc(players.dateAdded),
+  });
 export const getAllPlayers = async () =>
   db.query.players.findMany({
+    where: eq(players.isPlayer, true),
+    orderBy: asc(players.dateAdded),
+  });
+export const getAllGoalies = async () =>
+  db.query.players.findMany({
+    where: eq(players.isGoalie, true),
     orderBy: asc(players.dateAdded),
   });
 export const getAllPlayersSearch = async (search: string) =>
@@ -64,7 +74,8 @@ export const getPlayersForBooking = async (bookingId: number) =>
 export const updatePlayersForBooking = async (
   bookingId: number,
   removePlayerIds: number[],
-  addPlayerIds: number[]
+  addPlayerIds: number[],
+  position: string
 ) => {
   await db.transaction(async (tx) => {
     const bookingSkates = await tx.query.skates.findMany({
@@ -95,14 +106,18 @@ export const updatePlayersForBooking = async (
     if (addPlayerIds.length > 0) {
       await tx
         .insert(playersToBookings)
-        .values(addPlayerIds.map((id) => ({ bookingId, playerId: id })));
+        .values(
+          addPlayerIds.map((id) => ({ bookingId, playerId: id, position }))
+        );
 
       for (const skate of bookingSkates) {
-        await tx
-          .insert(playersToSkates)
-          .values(
-            addPlayerIds.map((id) => ({ skateId: skate.id, playerId: id }))
-          );
+        await tx.insert(playersToSkates).values(
+          addPlayerIds.map((id) => ({
+            skateId: skate.id,
+            playerId: id,
+            position,
+          }))
+        );
       }
     }
   });

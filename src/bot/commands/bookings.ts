@@ -20,7 +20,10 @@ import {
 import { onPollSelection as onPaymentsPollSelection } from "./bookings/payments";
 import { getBookingMessage } from "~/features/bookings/bookings.model";
 import { sendBookingPaymentsPollSelection } from "./bookings/payments";
-import { getSkateMessage } from "~/features/skates/skates.model";
+import {
+  getSkateMessage,
+  getSkatesMessage,
+} from "~/features/skates/skates.model";
 
 enum BookingActionsPollOptions {
   Players = "Players",
@@ -126,13 +129,8 @@ const handleBookingActionPollSelection = async (
     const skates = await getSkatesForBooking(bookingId);
 
     await sendMessage(senderJid, {
-      text: "🏒 *Skates*",
+      text: getSkatesMessage(skates),
     });
-    for (const skate of skates) {
-      await sendMessage(senderJid, {
-        text: getSkateMessage(skate),
-      });
-    }
 
     await bookingCommandPrompt(senderJid, player.id);
   }

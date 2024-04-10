@@ -57,7 +57,13 @@ export const updateBookingDatesHandler = async (bookingId: number) => {
 export const updateBookingPlayersHandler = async (
   bookingId: number,
   removePlayerIds: number[],
-  addPlayerIds: number[]
+  addPlayerIds: number[],
+  position: string
 ) => {
-  await updatePlayersForBooking(bookingId, removePlayerIds, addPlayerIds);
+  await updatePlayersForBooking(
+    bookingId,
+    removePlayerIds,
+    addPlayerIds,
+    position
+  );
 };
