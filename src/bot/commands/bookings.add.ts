@@ -11,14 +11,14 @@ import {
 import { Player } from "~/features/players/players.type";
 import { createBookingHandler } from "~/features/bookings/bookings.controller";
 import { bookingFieldPrompts } from "~/features/bookings/bookings.model";
-import { usePlayerStore } from "../state";
+import { useState } from "../state";
 import { Command } from "../commands";
 
 export const onCommand = async (
   message: WhatsAppMessage,
   sessionPlayer: Player
 ) => {
-  const { setActiveCommand, updateBookings } = usePlayerStore();
+  const { setActiveCommand, updateBookings } = useState();
   setActiveCommand(sessionPlayer.id, Command.BookingsAdd);
 
   const senderJid = getSenderFromMessage(message);
@@ -37,7 +37,7 @@ export const onMessage = async (
   message: WhatsAppMessage,
   sessionPlayer: Player
 ) => {
-  const { clearActiveCommand, updateBookings, getBookings } = usePlayerStore();
+  const { clearActiveCommand, updateBookings, getBookings } = useState();
 
   const senderJid = getSenderFromMessage(message);
 

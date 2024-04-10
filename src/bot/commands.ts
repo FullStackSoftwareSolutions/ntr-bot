@@ -11,6 +11,7 @@ export enum Command {
   Bookings = "bookings",
   BookingsAdd = "bookings.add",
   BookingsList = "bookings.list",
+  Skates = "skates",
 }
 
 export const commandDescriptions = {

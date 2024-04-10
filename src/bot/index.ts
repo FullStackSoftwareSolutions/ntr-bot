@@ -13,7 +13,7 @@ import {
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
 import { Player } from "~/features/players/players.type";
-import { usePlayerStore } from "./state";
+import { useState } from "./state";
 
 export const initializeBot = async () => {
   await loadCommands();
@@ -24,7 +24,7 @@ export const initializeBot = async () => {
 };
 
 export const resetBot = async () => {
-  await usePlayerStore().reset();
+  await useState().reset();
 };
 
 const handlePlayerMessage = async (
@@ -35,7 +35,7 @@ const handlePlayerMessage = async (
     return;
   }
 
-  const { registerPlayer, getActiveCommand, commands } = usePlayerStore();
+  const { registerPlayer, getActiveCommand, commands } = useState();
 
   registerPlayer(player.id);
 
@@ -84,7 +84,7 @@ const handlePlayerPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const { getActiveCommand } = usePlayerStore();
+  const { getActiveCommand } = useState();
 
   if (isGroupMessage(message)) {
     return;
@@ -101,7 +101,7 @@ const handlePlayerReaction = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const { getActiveCommand } = usePlayerStore();
+  const { getActiveCommand } = useState();
 
   if (isGroupMessage(message)) {
     return;

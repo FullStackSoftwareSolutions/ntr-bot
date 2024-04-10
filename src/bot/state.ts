@@ -52,6 +52,17 @@ type Commands = {
       booking?: Partial<BookingCreate>;
     };
   };
+  skates: {
+    update: {
+      skateId?: number;
+      playerOutPollKeys?: WhatsAppMessageKey[];
+      subPlayerPollKeys?: WhatsAppMessageKey[];
+    };
+    read: {
+      skateId?: number;
+      actionPollKey?: WhatsAppMessageKey | null;
+    };
+  };
 };
 
 type State = {
@@ -72,6 +83,11 @@ type Actions = {
   updateBookings: (
     playerId: number,
     bookings: (bookings: NonNullable<Commands["bookings"]>) => void
+  ) => void;
+  getSkates: (skateId: number) => Commands["skates"] | undefined;
+  updateSkates: (
+    playerId: number,
+    skates: (skates: NonNullable<Commands["skates"]>) => void
   ) => void;
   reset: () => void;
 };
@@ -96,6 +112,10 @@ export const store = createStore<State & Actions>()(
             bookings: {
               read: {},
               create: {},
+              update: {},
+            },
+            skates: {
+              read: {},
               update: {},
             },
           };
@@ -126,6 +146,14 @@ export const store = createStore<State & Actions>()(
             update
           );
         }),
+      getSkates: (playerId) => get().commands[playerId]?.skates,
+      updateSkates: (playerId, update) =>
+        set((state) => {
+          state.commands[playerId]!.skates = produce(
+            state.commands[playerId]!.skates,
+            update
+          );
+        }),
       reset: () => set(defaultState),
     })),
     {
@@ -135,20 +163,33 @@ export const store = createStore<State & Actions>()(
   )
 );
 
-export const usePlayerStore = () => {
+export const useState = () => {
   const { getState } = store;
   return getState();
 };
 
-export const usePlayerBookingState = (playerId: number) => {
-  const { getBookings } = usePlayerStore();
+export const useBookingState = (playerId: number) => {
+  const { getBookings } = useState();
   return getBookings(playerId);
 };
 
-export const useUpdatePlayerBookingState: Actions["updateBookings"] = (
+export const useSkateState = (playerId: number) => {
+  const { getSkates } = useState();
+  return getSkates(playerId);
+};
+
+export const useUpdateBookingState: Actions["updateBookings"] = (
   playerId,
   bookings
 ) => {
-  const { updateBookings } = usePlayerStore();
+  const { updateBookings } = useState();
   return updateBookings(playerId, bookings);
+};
+
+export const useUpdateSkateState: Actions["updateSkates"] = (
+  playerId,
+  skates
+) => {
+  const { updateSkates } = useState();
+  return updateSkates(playerId, skates);
 };

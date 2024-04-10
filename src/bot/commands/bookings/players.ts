@@ -1,8 +1,4 @@
-import {
-  usePlayerBookingState,
-  usePlayerStore,
-  useUpdatePlayerBookingState,
-} from "~/bot/state";
+import { useBookingState, useState, useUpdateBookingState } from "~/bot/state";
 import { updateBookingPlayersHandler } from "~/features/bookings/bookings.controller";
 import { getBookingById } from "~/features/bookings/bookings.db";
 import { getBookingMessage } from "~/features/bookings/bookings.model";
@@ -31,7 +27,7 @@ export const onPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
   const playersState = bookingState?.update.players;
   const bookingId = bookingState?.update.bookingId;
 
@@ -61,7 +57,7 @@ export const sendBookingPlayersPollSelection = async (
   player: Player
 ) => {
   const senderJid = getSenderFromMessage(message);
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
   const bookingId = bookingState!.read.bookingId!;
 
   const bookingPlayers = await getPlayersForBooking(bookingId);
@@ -97,7 +93,7 @@ export const sendBookingPlayersPollSelection = async (
   });
   confirmPollKey = confirmPoll!.key;
 
-  useUpdatePlayerBookingState(player.id, (draft) => {
+  useUpdateBookingState(player.id, (draft) => {
     draft.update.bookingId = bookingId;
     draft.update.players = {
       addPlayerIds: [],
@@ -113,7 +109,7 @@ const cancelBookingPlayersPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
 
   if (bookingState?.update.players?.confirmPollKey) {
     await sendMessage(getSenderFromMessage(message), {
@@ -127,7 +123,7 @@ const cancelBookingPlayersPollSelection = async (
     await sendMessage(getSenderFromMessage(message), { delete: key });
   }
 
-  useUpdatePlayerBookingState(player.id, (draft) => {
+  useUpdateBookingState(player.id, (draft) => {
     draft.update = {};
   });
   bookingCommandPrompt(getSenderFromMessage(message), player.id);
@@ -137,7 +133,7 @@ const confirmBookingPlayersPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
   const updateState = bookingState?.update;
 
   if (!updateState || !updateState.players || !updateState.bookingId) {
@@ -162,7 +158,7 @@ const handleRemovePlayerPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
   const allSelectedIds = bookingState?.update.players?.removePlayerIds ?? [];
 
   const playersInPoll = message.pollMessage!.map(({ name }) =>
@@ -182,7 +178,7 @@ const handleRemovePlayerPollSelection = async (
 
   const selectedPlayerIds = [...otherPollSelectedIds, ...selectedPollPlayerIds];
 
-  useUpdatePlayerBookingState(player.id, (draft) => {
+  useUpdateBookingState(player.id, (draft) => {
     if (!draft.update.players) return;
     draft.update.players.removePlayerIds = selectedPlayerIds;
   });
@@ -192,7 +188,7 @@ const handleAddPlayerPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
   const allSelectedIds = bookingState?.update.players?.addPlayerIds ?? [];
 
   const playersInPoll = message.pollMessage!.map(({ name }) =>
@@ -212,7 +208,7 @@ const handleAddPlayerPollSelection = async (
 
   const selectedPlayerIds = [...otherPollSelectedIds, ...selectedPollPlayerIds];
 
-  useUpdatePlayerBookingState(player.id, (draft) => {
+  useUpdateBookingState(player.id, (draft) => {
     if (!draft.update.players) return;
     draft.update.players.addPlayerIds = selectedPlayerIds;
   });

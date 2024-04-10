@@ -289,7 +289,7 @@ export const sendPolls = async (toJid: string, poll: PollMessageOptions) => {
 
     const pollName = i === 0 ? poll.name : "-------";
     const pollMesage = await sendMessage(toJid, {
-      poll: { name: pollName, values },
+      poll: { name: pollName, values, selectableCount: poll.selectableCount },
     });
     if (pollMesage) {
       pollKeys.push(pollMesage);

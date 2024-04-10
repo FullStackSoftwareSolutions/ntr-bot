@@ -9,7 +9,7 @@ import {
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
 import { createPlayerHandler } from "~/features/players/players.controller";
-import { usePlayerStore } from "../state";
+import { useState } from "../state";
 import { Command } from "../commands";
 import { playerFieldPrompts } from "~/features/players/players.model";
 
@@ -17,7 +17,7 @@ export const onCommand = async (
   message: WhatsAppMessage,
   sessionPlayer: Player
 ) => {
-  const { setActiveCommand, updatePlayers } = usePlayerStore();
+  const { setActiveCommand, updatePlayers } = useState();
   setActiveCommand(sessionPlayer.id, Command.PlayersAdd);
 
   const senderJid = getSenderFromMessage(message);
@@ -36,7 +36,7 @@ export const onMessage = async (
   message: WhatsAppMessage,
   sessionPlayer: Player
 ) => {
-  const { clearActiveCommand, updatePlayers, getPlayers } = usePlayerStore();
+  const { clearActiveCommand, updatePlayers, getPlayers } = useState();
 
   const senderJid = getSenderFromMessage(message);
 

@@ -5,7 +5,7 @@ import {
   getSenderFromMessage,
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
-import { usePlayerStore } from "../state";
+import { useState } from "../state";
 import { Command } from "../commands";
 import { Player } from "~/features/players/players.type";
 

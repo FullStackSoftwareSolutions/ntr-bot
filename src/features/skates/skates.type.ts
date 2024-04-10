@@ -6,5 +6,11 @@ export type Skate = {
   playersToSkates: {
     player: Player;
     team: string | null;
+    droppedOutOn: Date | null;
+    substitutePlayer: Player | null;
   }[];
+  booking?: {
+    announceName: string | null;
+    numPlayers: number | null;
+  };
 };

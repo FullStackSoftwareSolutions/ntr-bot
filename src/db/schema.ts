@@ -40,7 +40,12 @@ export const players = pgTable(
 
 export const playersRelations = relations(players, ({ many }) => ({
   playersToBookings: many(playersToBookings),
-  playersToSkates: many(playersToSkates),
+  playersToSkates: many(playersToSkates, {
+    relationName: "skatePlayer",
+  }),
+  playersToSkatesSubstitute: many(playersToSkates, {
+    relationName: "skateSubstitutePlayer",
+  }),
 }));
 
 export const skates = pgTable("skates", {
@@ -68,7 +73,7 @@ export const playersToSkates = pgTable(
     skateId: integer("skate_id")
       .notNull()
       .references(() => skates.id, { onDelete: "cascade" }),
-    replacingPlayerId: integer("replacing_player_id").references(
+    substitutePlayerId: integer("substitute_player_id").references(
       () => players.id
     ),
     droppedOutOn: timestamp("dropped_out_on"),
@@ -85,6 +90,12 @@ export const playersToSkatesRelations = relations(
     player: one(players, {
       fields: [playersToSkates.playerId],
       references: [players.id],
+      relationName: "skatePlayer",
+    }),
+    substitutePlayer: one(players, {
+      fields: [playersToSkates.substitutePlayerId],
+      references: [players.id],
+      relationName: "skateSubstitutePlayer",
     }),
     skate: one(skates, {
       fields: [playersToSkates.skateId],

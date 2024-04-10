@@ -14,7 +14,7 @@ import {
   PollOptions,
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
-import { usePlayerStore } from "../state";
+import { useState } from "../state";
 import { Player } from "~/features/players/players.type";
 import { Command } from "../commands";
 import { AnyMessageContent } from "@whiskeysockets/baileys";
@@ -28,10 +28,10 @@ export const onCommand = async (
 ) => {
   const senderJid = getSenderFromMessage(message);
 
-  const { setActiveCommand } = usePlayerStore();
+  const { setActiveCommand } = useState();
   setActiveCommand(sessionPlayer.id, Command.Players);
 
-  usePlayerStore().updatePlayers(sessionPlayer.id, (draft) => {
+  useState().updatePlayers(sessionPlayer.id, (draft) => {
     draft.read.search = search;
   });
 
@@ -49,7 +49,7 @@ export const onPollSelection = async (
   sessionPlayer: Player
 ) => {
   const senderJid = getSenderFromMessage(message);
-  const state = usePlayerStore().getPlayers(sessionPlayer.id);
+  const state = useState().getPlayers(sessionPlayer.id);
 
   let currentPageIndex = state?.read.viewIndex ?? 0;
 
@@ -67,7 +67,7 @@ export const onPollSelection = async (
       currentPageIndex += 1;
     }
 
-    usePlayerStore().updatePlayers(sessionPlayer.id, (draft) => {
+    useState().updatePlayers(sessionPlayer.id, (draft) => {
       draft.read.viewIndex = currentPageIndex;
     });
   }
@@ -77,7 +77,7 @@ export const onPollSelection = async (
 };
 
 const getPlayers = async (sessionPlayer: Player) => {
-  const state = usePlayerStore().getPlayers(sessionPlayer.id);
+  const state = useState().getPlayers(sessionPlayer.id);
 
   return state?.read.search
     ? await getAllPlayersSearch(state.read.search)
@@ -85,7 +85,7 @@ const getPlayers = async (sessionPlayer: Player) => {
 };
 
 const cancel = async (sessionPlayer: Player) => {
-  const { clearActiveCommand, updatePlayers } = usePlayerStore();
+  const { clearActiveCommand, updatePlayers } = useState();
 
   updatePlayers(sessionPlayer.id, (draft) => {
     draft.read.viewIndex = 0;
@@ -108,7 +108,7 @@ const sendPlayersMessage = async (
 
   const pageData = getPageData(players, index);
 
-  const { getPlayers, updatePlayers } = usePlayerStore();
+  const { getPlayers, updatePlayers } = useState();
   const state = getPlayers(sessionPlayer.id);
 
   if ((state?.read.playerMessageKeys ?? []).length === 0) {
@@ -187,7 +187,7 @@ const sendPageMessage = async (
     },
   });
 
-  usePlayerStore().updatePlayers(player.id, (draft) => {
+  useState().updatePlayers(player.id, (draft) => {
     draft.read.viewPollKey = poll!.key;
   });
 };

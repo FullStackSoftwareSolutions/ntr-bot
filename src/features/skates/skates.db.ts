@@ -10,14 +10,11 @@ export const getSkateById = async (id: number) => {
       playersToSkates: {
         with: {
           player: true,
+          substitutePlayer: true,
         },
       },
     },
   });
-  if (!skate) {
-    throw new Error(`Skate with id ${id} not found`);
-  }
-
   return skate;
 };
 
@@ -28,6 +25,7 @@ export const getSkatesForBooking = async (bookingId: number) =>
       playersToSkates: {
         with: {
           player: true,
+          substitutePlayer: true,
         },
       },
     },
@@ -79,4 +77,46 @@ export const removePlayersFromSkate = async (
         inArray(playersToSkates.playerId, playerIds)
       )
     );
+};
+
+export const updateSkatePlayer = async (
+  skateId: number,
+  playerId: number,
+  {
+    team,
+    substitutePlayerId,
+    droppedOutOn,
+  }: {
+    team?: string | null;
+    substitutePlayerId?: number | null;
+    droppedOutOn?: Date | null;
+  }
+) => {
+  await db
+    .update(playersToSkates)
+    .set({ team, substitutePlayerId, droppedOutOn })
+    .where(
+      and(
+        eq(playersToSkates.skateId, skateId),
+        eq(playersToSkates.playerId, playerId)
+      )
+    );
+};
+
+export const addPlayerToSkate = async (
+  skateId: number,
+  playerId: number,
+  {
+    team,
+    substitutePlayerId,
+    droppedOutOn,
+  }: {
+    team?: string | null;
+    substitutePlayerId?: number | null;
+    droppedOutOn?: Date | null;
+  } = {}
+) => {
+  await db
+    .insert(playersToSkates)
+    .values([{ skateId, playerId, team, substitutePlayerId, droppedOutOn }]);
 };

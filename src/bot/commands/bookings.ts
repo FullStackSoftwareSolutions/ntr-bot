@@ -11,11 +11,7 @@ import {
   getBookingByName,
 } from "~/features/bookings/bookings.db";
 import { getSkatesForBooking } from "~/features/skates/skates.db";
-import {
-  usePlayerBookingState,
-  usePlayerStore,
-  useUpdatePlayerBookingState,
-} from "../state";
+import { useBookingState, useState, useUpdateBookingState } from "../state";
 import { Command } from "../commands";
 import {
   onPollSelection as onPlayersPollSelection,
@@ -33,7 +29,7 @@ enum BookingActionsPollOptions {
 }
 
 export const onCommand = async (message: WhatsAppMessage, player: Player) => {
-  usePlayerStore().setActiveCommand(player.id, Command.Bookings);
+  useState().setActiveCommand(player.id, Command.Bookings);
 
   await sendBookingPollMessage(message, player);
 };
@@ -44,7 +40,7 @@ export const onPollSelection = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
   const bookingPollKey = bookingState?.read.bookingPollKey;
   const actionPollKey = bookingState?.read.actionPollKey;
 
@@ -64,7 +60,7 @@ const sendBookingPollMessage = async (
   player: Player
 ) => {
   const senderJid = getSenderFromMessage(message);
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
 
   if (bookingState?.read.bookingId) {
     return;
@@ -79,7 +75,7 @@ const sendBookingPollMessage = async (
     },
   });
 
-  useUpdatePlayerBookingState(player.id, (draft) => {
+  useUpdateBookingState(player.id, (draft) => {
     draft.read.bookingPollKey = poll!.key;
   });
 };
@@ -89,7 +85,7 @@ const handleBookingPollSelection = async (
   player: Player
 ) => {
   const senderJid = getSenderFromMessage(message);
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
 
   const selectedBookingName = message.body;
   if (!selectedBookingName) {
@@ -101,7 +97,7 @@ const handleBookingPollSelection = async (
     throw new Error("Booking not found!");
   }
 
-  useUpdatePlayerBookingState(player.id, (draft) => {
+  useUpdateBookingState(player.id, (draft) => {
     draft.read.bookingId = booking.id;
   });
 
@@ -118,7 +114,7 @@ const handleBookingActionPollSelection = async (
   player: Player
 ) => {
   const senderJid = getSenderFromMessage(message);
-  const bookingState = usePlayerBookingState(player.id);
+  const bookingState = useBookingState(player.id);
   const bookingId = bookingState?.read.bookingId;
   if (!bookingId) {
     throw new Error("No booking selected!");
@@ -150,10 +146,10 @@ const handleBookingActionPollSelection = async (
   }
 
   if (message.body === PollOptions.Cancel) {
-    useUpdatePlayerBookingState(player.id, (draft) => {
+    useUpdateBookingState(player.id, (draft) => {
       draft.read = {};
     });
-    usePlayerStore().clearActiveCommand(player.id);
+    useState().clearActiveCommand(player.id);
   }
 };
 
@@ -161,12 +157,12 @@ export const bookingCommandPrompt = async (
   senderJid: string,
   playerId: number
 ) => {
-  const bookingState = usePlayerBookingState(playerId);
+  const bookingState = useBookingState(playerId);
   const existingPollKey = bookingState?.read.actionPollKey;
 
   if (existingPollKey) {
     await sendMessage(senderJid, { delete: existingPollKey });
-    useUpdatePlayerBookingState(playerId, (draft) => {
+    useUpdateBookingState(playerId, (draft) => {
       delete draft.read.actionPollKey;
     });
   }
@@ -179,7 +175,7 @@ export const bookingCommandPrompt = async (
     },
   });
 
-  useUpdatePlayerBookingState(playerId, (draft) => {
+  useUpdateBookingState(playerId, (draft) => {
     draft.read.actionPollKey = poll!.key;
   });
 };

@@ -13,7 +13,7 @@ import {
   PollOptions,
   WhatsAppMessage,
 } from "~/features/whatsapp/whatsapp.model";
-import { usePlayerStore } from "../state";
+import { useState } from "../state";
 import { Player, PlayerCreate } from "~/features/players/players.type";
 import { Command } from "../commands";
 import { getPrompt } from "./players.add";
@@ -26,7 +26,7 @@ export const onCommand = async (
   sessionPlayer: Player,
   editPlayerId: number
 ) => {
-  const { setActiveCommand, updatePlayers } = usePlayerStore();
+  const { setActiveCommand, updatePlayers } = useState();
   const senderJid = getSenderFromMessage(message);
 
   let editPlayer = await getPlayer(editPlayerId);
@@ -50,7 +50,7 @@ export const onPollSelection = async (
   message: WhatsAppMessage,
   sessionPlayer: Player
 ) => {
-  const { clearActiveCommand, updatePlayers, getPlayers } = usePlayerStore();
+  const { clearActiveCommand, updatePlayers, getPlayers } = useState();
 
   const senderJid = getSenderFromMessage(message);
   const state = getPlayers(sessionPlayer.id)?.update;
@@ -86,7 +86,7 @@ export const onMessage = async (
   message: WhatsAppMessage,
   sessionPlayer: Player
 ) => {
-  const { updatePlayers, getPlayers } = usePlayerStore();
+  const { updatePlayers, getPlayers } = useState();
   const senderJid = getSenderFromMessage(message);
 
   const state = getPlayers(sessionPlayer.id)!.update;
@@ -150,7 +150,7 @@ const sendEditPollMessage = async (
     },
   });
 
-  usePlayerStore().updatePlayers(sessionPlayer.id, (draft) => {
+  useState().updatePlayers(sessionPlayer.id, (draft) => {
     draft.update.fieldPollKey = poll!.key;
   });
 };

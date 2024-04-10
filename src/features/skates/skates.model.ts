@@ -1,7 +1,11 @@
 import dayjs from "dayjs";
 import { Skate } from "./skates.type";
 
-import { formatList, stringJoin } from "../whatsapp/whatsapp.formatting";
+import {
+  formatList,
+  formatStringList,
+  stringJoin,
+} from "../whatsapp/whatsapp.formatting";
 import { getPlayerName, getPlayerSkillLevel } from "../players/players.model";
 import { timeToEmoji } from "~/formatting/time.emoji";
 import { Player } from "../players/players.type";
@@ -24,7 +28,7 @@ export const getSkateTimeMessage = (skate: Skate) => {
 
 export const getSkatesMessage = (skates: Skate[]) => {
   return stringJoin(
-    "🏒 *Skates*",
+    `🏒 *Skate${skates.length > 1 ? "s" : ""}*`,
     formatList(
       skates.map((skate) => ({
         id: skate.id,
@@ -35,7 +39,69 @@ export const getSkatesMessage = (skates: Skate[]) => {
   );
 };
 
+const haveSkateTeamsBeenGenerated = (skate: Skate) => {
+  return skate.playersToSkates.some(({ team }) => team !== null);
+};
+
+export const getSkatePlayersIn = (skate: Skate) => {
+  return skate.playersToSkates.filter(({ droppedOutOn }) => !droppedOutOn);
+};
+export const getSkatePlayersOut = (skate: Skate) => {
+  return skate.playersToSkates
+    .filter(({ droppedOutOn }) => droppedOutOn)
+    .sort((a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime());
+};
+export const getSkateTotalSpots = (skate: Skate) => {
+  return skate.booking?.numPlayers ?? 0;
+};
+export const getSkateNumSpotsFilled = (skate: Skate) => {
+  return getSkatePlayersIn(skate).length;
+};
+export const getSkateNumSpotsOpen = (skate: Skate) => {
+  return getSkateTotalSpots(skate) - getSkateNumSpotsFilled(skate);
+};
+
 export const getSkateMessage = (skate: Skate) => {
+  const header = `🏒 *${skate.booking!.announceName}* ${getSkateTimeMessage(
+    skate
+  )}`;
+
+  const playersIn = getSkatePlayersIn(skate).map(({ player }) =>
+    getPlayerName(player)
+  );
+  const playersOut = getSkatePlayersOut(skate).map(
+    ({ player, substitutePlayer }) =>
+      `${getPlayerName(player)}${
+        substitutePlayer ? ` 👉 ${getPlayerName(substitutePlayer)}` : ""
+      }`
+  );
+
+  const totalSpots = getSkateTotalSpots(skate);
+  const numSpotsFilled = playersIn.length;
+  const numSpotsOpen = totalSpots - numSpotsFilled;
+
+  const status =
+    numSpotsOpen > 0
+      ? `⚠ *${numSpotsOpen} spot${numSpotsOpen > 1 ? "s" : ""} open*`
+      : "🛑 *Full*";
+
+  const numPlayersMessage = `*Players* (${numSpotsFilled}/${totalSpots})`;
+
+  const outMessage =
+    playersOut.length > 0 ? ["", "🤕 *Out*", formatStringList(playersOut)] : [];
+
+  if (!haveSkateTeamsBeenGenerated(skate)) {
+    return stringJoin(
+      header,
+      "",
+      numPlayersMessage,
+      formatStringList(playersIn),
+      ...outMessage,
+      "",
+      status
+    );
+  }
+
   return formatList([
     {
       id: skate.id,
@@ -88,4 +154,13 @@ export const randomizeTeamsForSkate = (skate: Skate) => {
   });
 
   return teams;
+};
+
+export const getEarliestDropoutWithoutSub = (skate: Skate) => {
+  return skate.playersToSkates
+    .filter(
+      ({ droppedOutOn, substitutePlayer }) => droppedOutOn && !substitutePlayer
+    )
+    .sort((a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime())[0]
+    ?.player;
 };

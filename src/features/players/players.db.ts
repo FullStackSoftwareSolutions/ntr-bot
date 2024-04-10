@@ -22,6 +22,10 @@ export const getAllPlayersSearch = async (search: string) =>
     ),
     orderBy: asc(players.dateAdded),
   });
+export const getPlayerByName = async (name: string) =>
+  db.query.players.findFirst({
+    where: or(eq(players.fullName, name), eq(players.nickname, name)),
+  });
 export const getPlayersByNames = async (names: string[]) =>
   db.query.players.findMany({
     where: or(
