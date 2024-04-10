@@ -316,7 +316,7 @@ const shufflePlayers = (players: Player[]): Player[] => {
   return players;
 };
 
-const sortPlayers = (players: Player[]): Player[] => {
+export const sortPlayers = (players: Player[]): Player[] => {
   return players.sort((a, b) =>
     getPlayerSkillLevel(a).localeCompare(getPlayerSkillLevel(b))
   );
