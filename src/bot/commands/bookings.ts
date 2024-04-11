@@ -10,7 +10,10 @@ import {
   getAllBookings,
   getBookingByName,
 } from "~/features/bookings/bookings.db";
-import { getSkatesForBooking } from "~/features/skates/skates.db";
+import {
+  getFutureSkatesForBooking,
+  getSkatesForBooking,
+} from "~/features/skates/skates.db";
 import { useBookingState, useState, useUpdateBookingState } from "../state";
 import { Command } from "../commands";
 import {
@@ -20,10 +23,7 @@ import {
 import { onPollSelection as onPaymentsPollSelection } from "./bookings/payments";
 import { getBookingMessage } from "~/features/bookings/bookings.model";
 import { sendBookingPaymentsPollSelection } from "./bookings/payments";
-import {
-  getSkateMessage,
-  getSkatesMessage,
-} from "~/features/skates/skates.model";
+import { getSkatesMessage } from "~/features/skates/skates.model";
 
 enum BookingActionsPollOptions {
   Players = "Players",
@@ -126,7 +126,7 @@ const handleBookingActionPollSelection = async (
   await sendMessage(senderJid, { delete: bookingState!.read.actionPollKey! });
 
   if (message.body === BookingActionsPollOptions.Skates) {
-    const skates = await getSkatesForBooking(bookingId);
+    const skates = await getFutureSkatesForBooking(bookingId);
 
     await sendMessage(senderJid, {
       text: getSkatesMessage(skates),

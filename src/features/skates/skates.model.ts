@@ -253,44 +253,56 @@ export const getSkateMessage = (skate: Skate) => {
 
 export const getSkateTeamsMessage = (skate: Skate, showSkillLevel = false) => {
   const players = getSkatePlayersIn(skate);
-  let teamBlack = players
+  const goalies = getSkateGoaliesIn(skate);
+
+  let teamBlackPlayers = players
     .filter(({ team }) => team === Teams.Black)
     .map(({ player }) => player);
-  let teamWhite = players
+  let teamWhitePlayers = players
     .filter(({ team }) => team === Teams.White)
     .map(({ player }) => player);
 
   if (showSkillLevel) {
-    teamBlack = sortPlayers(teamBlack);
-    teamWhite = sortPlayers(teamWhite);
+    teamBlackPlayers = sortPlayers(teamBlackPlayers);
+    teamWhitePlayers = sortPlayers(teamWhitePlayers);
   } else {
-    teamBlack = shufflePlayers(teamBlack);
-    teamWhite = shufflePlayers(teamWhite);
+    teamBlackPlayers = shufflePlayers(teamBlackPlayers);
+    teamWhitePlayers = shufflePlayers(teamWhitePlayers);
   }
 
-  const teamBlackHeader = `${getTeamTitle(Teams.Black)} (${teamBlack.length})`;
-  const teamWhiteHeader = `${getTeamTitle(Teams.White)} (${teamWhite.length})`;
+  const teamBlackHeader = `${getTeamTitle(Teams.Black)} (${
+    teamBlackPlayers.length
+  } skaters)`;
+  const teamWhiteHeader = `${getTeamTitle(Teams.White)} (${
+    teamWhitePlayers.length
+  } skaters)`;
 
-  const formatTeamList = (team: Player[]) =>
-    formatStringList(
-      team.map(
-        (player) =>
-          `${
-            showSkillLevel ? `[${getPlayerSkillLevel(player)}] ` : ""
-          }${getPlayerName(player)}`
-      )
+  const formatPlayer = (player: Player) => {
+    return `${
+      showSkillLevel ? `[${getPlayerSkillLevel(player)}] ` : ""
+    }\`${getPlayerName(player)}\``;
+  };
+  const formatTeamList = (players: Player[], goalie: Player) =>
+    stringJoin(
+      formatStringList(players.map(formatPlayer)),
+      `*Goalie* ${formatPlayer(goalie)}`
     );
+
+  const teamBlackGoalie = goalies.find(
+    ({ team }) => team === Teams.Black
+  )!.player;
+  const teamWhiteGoalie = goalies.find(
+    ({ team }) => team === Teams.White
+  )!.player;
 
   return stringJoin(
     getSkateTitle(skate),
     "",
     teamBlackHeader,
-    formatTeamList(teamBlack),
+    formatTeamList(teamBlackPlayers, teamBlackGoalie),
     "",
     teamWhiteHeader,
-    formatTeamList(teamWhite),
-    "",
-    ...getSkateGoaliesMessageLines(skate, false, false)
+    formatTeamList(teamWhitePlayers, teamWhiteGoalie)
   );
 };
 
@@ -325,6 +337,8 @@ export const sortPlayers = (players: Player[]): Player[] => {
 export const randomizeTeamsForSkate = (skate: Skate) => {
   const players = getSkatePlayersIn(skate).map(({ player }) => player);
   const shuffledAndSortedPlayers = sortPlayers(shufflePlayers(players));
+  const goalies = getSkateGoaliesIn(skate).map(({ player }) => player);
+  const shuffledGoalies = shufflePlayers(goalies);
 
   const teams: Team = { [Teams.Black]: [], [Teams.White]: [] };
 
@@ -333,6 +347,13 @@ export const randomizeTeamsForSkate = (skate: Skate) => {
       teams[Teams.Black].push(player);
     } else {
       teams[Teams.White].push(player);
+    }
+  });
+  shuffledGoalies.forEach((goalie, index) => {
+    if (index % 2 === 0) {
+      teams[Teams.Black].push(goalie);
+    } else {
+      teams[Teams.White].push(goalie);
     }
   });
 
