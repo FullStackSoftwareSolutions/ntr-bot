@@ -58,7 +58,10 @@ const getSkatePlayersForPosition = (
     .filter(({ position }) => position === positionChecked)
     .sort((a, b) => a.addedOn!.getTime() - b.addedOn!.getTime());
 };
-const getSkatePlayersForPositionIn = (position: Positions, skate: Skate) => {
+export const getSkatePlayersForPositionIn = (
+  position: Positions,
+  skate: Skate
+) => {
   return getSkatePlayersForPosition(position, skate).filter(
     ({ droppedOutOn }) => !droppedOutOn
   );
@@ -88,6 +91,9 @@ const getSkateNumSpotsOpenForPosition = (position: Positions, skate: Skate) => {
   return getSkateNumPlayerSpotsOpen(skate);
 };
 
+export const getSkateGoaliesInWithSubs = (skate: Skate) => {
+  return getSkatePlayersForPositionIn(Positions.Goalie, skate);
+};
 export const getSkateGoaliesIn = (skate: Skate) => {
   return getSkatePlayersForPositionIn(Positions.Goalie, skate).slice(
     0,
@@ -203,16 +209,50 @@ export const getSkateGoaliesMessageLines = (
   const numGoaliesMessage = `*Goalies*${
     showCount ? ` (${numGoalieSpotsFilled}/${totalGoalieSpots})` : ""
   }`;
-  return [numGoaliesMessage, formatStringList(goaliesIn)];
+
+  const goaliesList = formatStringList(goaliesIn, {
+    minSeparatorLength: 13,
+  });
+  const goaliesListSeparatorLength = goaliesList.split("\n")[0]?.length ?? 100;
+
+  const messageLines = [numGoaliesMessage, goaliesList];
+
+  const skateExtraGoalies = getSkateGoaliesSubsIn(skate);
+  if (skateExtraGoalies.length > 0) {
+    const subsTitle = `Sub${
+      skateExtraGoalies.length > 1 ? `s (${skateExtraGoalies.length})` : ""
+    }`;
+    const subsSepatorLength = Math.max(
+      Math.floor((goaliesListSeparatorLength - subsTitle.length) / 2 - 1),
+      2
+    );
+
+    const halfSeparatorLine = "━".repeat(subsSepatorLength);
+    messageLines.push(
+      `┣${halfSeparatorLine} *${subsTitle}* ${halfSeparatorLine}`
+    );
+
+    messageLines.push(
+      formatStringList(
+        skateExtraGoalies.map(({ player }) => `\`${getPlayerName(player)}\``),
+        {
+          hideSeparator: true,
+        }
+      )
+    );
+  }
+
+  return messageLines;
 };
 
 export const getSkatePlayersMessageLines = (skate: Skate, showCount = true) => {
   const playersIn = [
     ...getSkatePlayersIn(skate).map(
-      ({ player, addedOn }, index) =>
-        `[${index + 1}] \`${getPlayerName(player)}\` ${dayjs(addedOn).format(
-          "HH:MM:ss"
-        )} ${getSkatePlayerSubStrikeoutMessage(skate, player)}`
+      ({ player }) =>
+        `\`${getPlayerName(player)}\` ${getSkatePlayerSubStrikeoutMessage(
+          skate,
+          player
+        )}`
     ),
     ...getSkatePlayersOutWithoutSub(skate).map(
       ({ player }) => `⚠️ ~${getPlayerName(player)}~`

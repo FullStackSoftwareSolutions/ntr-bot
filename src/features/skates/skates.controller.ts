@@ -11,7 +11,7 @@ import {
 } from "./skates.db";
 import {
   getEarliestDropoutWithoutSub,
-  getSkatePlayersIn,
+  getSkatePlayersForPositionIn,
   getSkatePlayersInWithSubs,
   getSkatePlayersSubsIn,
   Positions,
@@ -21,6 +21,7 @@ import {
 
 export const updateSkatePlayerOutHandler = async (
   skateId: number,
+  position: Positions,
   playerId: number
 ) => {
   const skate = await getSkateById(skateId);
@@ -28,7 +29,7 @@ export const updateSkatePlayerOutHandler = async (
     throw new Error("No skate found!");
   }
 
-  const playerToSkate = getSkatePlayersInWithSubs(skate).find(
+  const playerToSkate = getSkatePlayersForPositionIn(position, skate).find(
     (playerToSkate) => playerToSkate.player.id === playerId
   );
   if (!playerToSkate) {
@@ -91,13 +92,12 @@ export const getSkateAvailableSubsHandler = async (
     throw new Error("No skate found!");
   }
 
-  const players =
+  const allPlayers =
     position === Positions.Goalie
       ? await getAllGoalies()
       : await getAllPlayers();
-
-  const playersIn = getSkatePlayersInWithSubs(skate);
-  const availableSubs = players.filter(
+  const playersIn = getSkatePlayersForPositionIn(position, skate);
+  const availableSubs = allPlayers.filter(
     (player) => !playersIn.some((playerIn) => playerIn.player.id === player.id)
   );
 

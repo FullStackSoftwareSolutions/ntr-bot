@@ -61,6 +61,7 @@ type Commands = {
     update: {
       skateId?: number;
       playerOutPollKeys?: WhatsAppMessageKey[];
+      goalieOutPollKeys?: WhatsAppMessageKey[];
       subPosition?: Positions;
       subPlayerGoaliePollKeys?: WhatsAppMessageKey[];
     };

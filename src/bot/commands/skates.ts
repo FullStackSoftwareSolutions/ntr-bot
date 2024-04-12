@@ -26,6 +26,10 @@ import {
   Positions,
   getSkatePlayersWithSubs,
   getSkateTeamsMessage,
+  getSkatePlayersIn,
+  getSkateGoaliesIn,
+  getSkateGoaliesInWithSubs,
+  getSkatePlayersInWithSubs,
 } from "~/features/skates/skates.model";
 import { Skate } from "~/features/skates/skates.type";
 import { useSkateState, useState, useUpdateSkateState } from "../state";
@@ -44,7 +48,8 @@ import {
 import { formatCurrency } from "~/formatting/currency";
 
 enum SkateActionsPollOptions {
-  PlayerGoalieOut = "Player/Goalie Out",
+  PlayerOut = "Player Out",
+  GoalieOut = "Goalie Out",
   SubstitutePlayer = "Sub Player",
   SubstituteGoalie = "Sub Goalie",
   ShuffleTeams = "Shuffle Teams",
@@ -81,6 +86,7 @@ export const onPollSelection = async (
   const bookingState = useSkateState(player.id);
   const actionPollKey = bookingState?.read.actionPollKey;
   const playerOutPollKeys = bookingState?.update.playerOutPollKeys;
+  const goalieOutPollKeys = bookingState?.update.goalieOutPollKeys;
   const subPollKeys = bookingState?.update.subPlayerGoaliePollKeys;
 
   if (doKeysMatch(actionPollKey, message.key!)) {
@@ -88,6 +94,9 @@ export const onPollSelection = async (
   }
   if (playerOutPollKeys && isKeyInList(message.key, playerOutPollKeys)) {
     return handlePlayerOutPollSelection(message, player);
+  }
+  if (goalieOutPollKeys && isKeyInList(message.key, goalieOutPollKeys)) {
+    return handleGoalieOutPollSelection(message, player);
   }
   if (subPollKeys && isKeyInList(message.key, subPollKeys)) {
     return handleSubPollSelection(message, player);
@@ -127,8 +136,12 @@ const handleSkateActionPollSelection = async (
     await generateTeams(skate, message);
   }
 
-  if (message.body === SkateActionsPollOptions.PlayerGoalieOut) {
+  if (message.body === SkateActionsPollOptions.PlayerOut) {
     await sendPlayerOutPollMessage(senderJid, sessionPlayer.id);
+    return;
+  }
+  if (message.body === SkateActionsPollOptions.GoalieOut) {
+    await sendGoalieOutPollMessage(senderJid, sessionPlayer.id);
     return;
   }
   if (
@@ -173,7 +186,32 @@ const handlePlayerOutPollSelection = async (
     const player = await getPlayerByName(
       getPlayerNameFromPollSelection(message.body!)
     );
-    await updateSkatePlayerOutHandler(skate.id, player!.id);
+    await updateSkatePlayerOutHandler(skate.id, Positions.Player, player!.id);
+  }
+
+  await sendSkateAndActionPollMessages(message, sessionPlayer);
+};
+
+const handleGoalieOutPollSelection = async (
+  message: WhatsAppMessage,
+  sessionPlayer: Player
+) => {
+  const skateState = useSkateState(sessionPlayer.id);
+
+  const skate = await getSkate(skateState?.read.skateId);
+  if (!skate) {
+    throw new Error("No skate selected!");
+  }
+
+  for (const key of skateState?.update.goalieOutPollKeys || []) {
+    await sendMessage(getSenderFromMessage(message), { delete: key });
+  }
+
+  if (message.body !== PollOptions.Cancel) {
+    const player = await getPlayerByName(
+      getPlayerNameFromPollSelection(message.body!)
+    );
+    await updateSkatePlayerOutHandler(skate.id, Positions.Goalie, player!.id);
   }
 
   await sendSkateAndActionPollMessages(message, sessionPlayer);
@@ -233,16 +271,25 @@ export const sendActionPollMessage = async (
     throw new Error("No skate selected!");
   }
 
+  const availablePlayerSubs = await getSkateAvailableSubsHandler(
+    skate.id,
+    Positions.Player
+  );
+  const availableGoalieSubs = await getSkateAvailableSubsHandler(
+    skate.id,
+    Positions.Goalie
+  );
+
   const options = [
     ...Object.values(SkateActionsPollOptions),
     PollOptions.Cancel,
   ].filter((option) => {
-    // if (option === SkateActionsPollOptions.SubstitutePlayer) {
-    //   return getSkateNumPlayerSpotsOpen(skate) > 0;
-    // }
-    // if (option === SkateActionsPollOptions.SubstituteGoalie) {
-    //   return getSkateNumGoalieSpotsOpen(skate) > 0;
-    // }
+    if (option === SkateActionsPollOptions.SubstitutePlayer) {
+      return availablePlayerSubs.length > 0;
+    }
+    if (option === SkateActionsPollOptions.SubstituteGoalie) {
+      return availableGoalieSubs.length > 0;
+    }
     return true;
   });
 
@@ -270,7 +317,7 @@ export const sendPlayerOutPollMessage = async (
     throw new Error("No skate selected!");
   }
 
-  const players = await getSkatePlayersAndGoaliesIn(skate).map(
+  const players = await getSkatePlayersInWithSubs(skate).map(
     ({ player }) => `⛔️ ${getPlayerName(player)}`
   );
   const polls = await sendPolls(senderJid, {
@@ -281,6 +328,31 @@ export const sendPlayerOutPollMessage = async (
 
   useUpdateSkateState(playerId, (draft) => {
     draft.update.playerOutPollKeys = polls.map((p) => p.key);
+  });
+};
+
+export const sendGoalieOutPollMessage = async (
+  senderJid: string,
+  playerId: number
+) => {
+  const skateState = useSkateState(playerId);
+
+  const skate = await getSkate(skateState?.read.skateId);
+  if (!skate) {
+    throw new Error("No skate selected!");
+  }
+
+  const players = await getSkateGoaliesInWithSubs(skate).map(
+    ({ player }) => `⛔️ ${getPlayerName(player)}`
+  );
+  const polls = await sendPolls(senderJid, {
+    name: "🤕 Select the goalie that's out",
+    values: [...players, PollOptions.Cancel],
+    selectableCount: 1,
+  });
+
+  useUpdateSkateState(playerId, (draft) => {
+    draft.update.goalieOutPollKeys = polls.map((p) => p.key);
   });
 };
 
