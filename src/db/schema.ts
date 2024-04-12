@@ -67,26 +67,24 @@ export const skatesRelations = relations(skates, ({ one, many }) => ({
   playersToSkates: many(playersToSkates),
 }));
 
-export const playersToSkates = pgTable(
-  "players_to_skates",
-  {
-    playerId: integer("player_id")
-      .notNull()
-      .references(() => players.id, { onDelete: "cascade" }),
-    skateId: integer("skate_id")
-      .notNull()
-      .references(() => skates.id, { onDelete: "cascade" }),
-    substitutePlayerId: integer("substitute_player_id").references(
-      () => players.id
-    ),
-    position: varchar("position").notNull().default(Positions.Player),
-    droppedOutOn: timestamp("dropped_out_on"),
-    team: varchar("team"),
-  },
-  (t) => ({
-    pk: primaryKey({ columns: [t.playerId, t.skateId] }),
-  })
-);
+export const playersToSkates = pgTable("players_to_skates", {
+  id: serial("id").unique().primaryKey(),
+  playerId: integer("player_id")
+    .notNull()
+    .references(() => players.id, { onDelete: "cascade" }),
+  skateId: integer("skate_id")
+    .notNull()
+    .references(() => skates.id, { onDelete: "cascade" }),
+  substitutePlayerId: integer("substitute_player_id").references(
+    () => players.id
+  ),
+  position: varchar("position").notNull().default(Positions.Player),
+  addedOn: timestamp("added_on")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  droppedOutOn: timestamp("dropped_out_on"),
+  team: varchar("team"),
+});
 
 export const playersToSkatesRelations = relations(
   playersToSkates,

@@ -197,6 +197,27 @@
       "when": 1712930143233,
       "tag": "0027_rare_juggernaut",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "5",
+      "when": 1712930869424,
+      "tag": "0028_odd_hammerhead",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "5",
+      "when": 1712938458302,
+      "tag": "0029_wonderful_shiver_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "5",
+      "when": 1712939486040,
+      "tag": "0030_illegal_stryfe",
+      "breakpoints": true
     }
   ]
 }

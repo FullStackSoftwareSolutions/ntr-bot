@@ -12,6 +12,7 @@ export const getSkateById = async (id: number) => {
           player: true,
           substitutePlayer: true,
         },
+        orderBy: asc(playersToSkates.addedOn),
       },
     },
   });
@@ -28,6 +29,7 @@ export const getSkatesForBooking = async (bookingId: number) =>
           player: true,
           substitutePlayer: true,
         },
+        orderBy: asc(playersToSkates.addedOn),
       },
     },
     where: eq(skates.bookingId, bookingId),
@@ -43,6 +45,7 @@ export const getFutureSkatesForBooking = async (bookingId: number) =>
           player: true,
           substitutePlayer: true,
         },
+        orderBy: asc(playersToSkates.addedOn),
       },
     },
     where: and(
@@ -99,8 +102,7 @@ export const removePlayersFromSkate = async (
 };
 
 export const updateSkatePlayer = async (
-  skateId: number,
-  playerId: number,
+  playerToSkateId: number,
   {
     team,
     substitutePlayerId,
@@ -114,12 +116,7 @@ export const updateSkatePlayer = async (
   await db
     .update(playersToSkates)
     .set({ team, substitutePlayerId, droppedOutOn })
-    .where(
-      and(
-        eq(playersToSkates.skateId, skateId),
-        eq(playersToSkates.playerId, playerId)
-      )
-    );
+    .where(eq(playersToSkates.id, playerToSkateId));
 };
 
 export const addPlayerToSkate = async (

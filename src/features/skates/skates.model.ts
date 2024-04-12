@@ -50,50 +50,85 @@ export const getSkatesMessage = (skates: Skate[]) => {
   );
 };
 
-const haveSkateTeamsBeenGenerated = (skate: Skate) => {
-  return skate.playersToSkates.some(({ team }) => team !== null);
+const getSkatePlayersForPosition = (
+  positionChecked: Positions,
+  skate: Skate
+) => {
+  return skate.playersToSkates
+    .filter(({ position }) => position === positionChecked)
+    .sort((a, b) => a.addedOn!.getTime() - b.addedOn!.getTime());
+};
+const getSkatePlayersForPositionIn = (position: Positions, skate: Skate) => {
+  return getSkatePlayersForPosition(position, skate).filter(
+    ({ droppedOutOn }) => !droppedOutOn
+  );
+};
+const getSkatePlayersForPositionOut = (position: Positions, skate: Skate) => {
+  return getSkatePlayersForPosition(position, skate).filter(
+    ({ droppedOutOn }) => droppedOutOn
+  );
+};
+const getSkatePlayersForPositionOutWithoutSub = (
+  position: Positions,
+  skate: Skate
+) => {
+  const numSpots = getSkateNumSpotsOpenForPosition(position, skate);
+
+  const playersOut = getSkatePlayersForPositionOut(position, skate).filter(
+    ({ substitutePlayer }) => !substitutePlayer
+  );
+  return playersOut
+    .slice(0, numSpots)
+    .sort((a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime());
+};
+const getSkateNumSpotsOpenForPosition = (position: Positions, skate: Skate) => {
+  if (position === Positions.Goalie) {
+    return getSkateNumGoalieSpotsOpen(skate);
+  }
+  return getSkateNumPlayerSpotsOpen(skate);
 };
 
 export const getSkateGoaliesIn = (skate: Skate) => {
-  return skate.playersToSkates.filter(
-    ({ position, droppedOutOn }) =>
-      position === Positions.Goalie && !droppedOutOn
+  return getSkatePlayersForPositionIn(Positions.Goalie, skate).slice(
+    0,
+    skate.booking.numGoalies
+  );
+};
+export const getSkateGoaliesSubsIn = (skate: Skate) => {
+  return getSkatePlayersForPositionIn(Positions.Goalie, skate).slice(
+    skate.booking.numGoalies
   );
 };
 export const getSkateGoaliesOut = (skate: Skate) => {
-  return skate.playersToSkates
-    .filter(
-      ({ position, droppedOutOn }) =>
-        position === Positions.Goalie && droppedOutOn
-    )
-    .sort((a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime());
-};
-export const getSkateGoaliesOutWithoutSub = (skate: Skate) => {
-  return skate.playersToSkates.filter(
-    ({ position, droppedOutOn, substitutePlayer }) =>
-      position === Positions.Goalie && droppedOutOn && !substitutePlayer
+  return getSkatePlayersForPositionOut(Positions.Goalie, skate).sort(
+    (a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime()
   );
 };
+export const getSkateGoaliesOutWithoutSub = (skate: Skate) => {
+  return getSkatePlayersForPositionOutWithoutSub(Positions.Goalie, skate);
+};
 
+export const getSkatePlayersInWithSubs = (skate: Skate) => {
+  return getSkatePlayersForPositionIn(Positions.Player, skate);
+};
 export const getSkatePlayersIn = (skate: Skate) => {
-  return skate.playersToSkates.filter(
-    ({ position, droppedOutOn }) =>
-      position === Positions.Player && !droppedOutOn
+  return getSkatePlayersForPositionIn(Positions.Player, skate).slice(
+    0,
+    skate.booking.numPlayers
+  );
+};
+export const getSkatePlayersSubsIn = (skate: Skate) => {
+  return getSkatePlayersForPositionIn(Positions.Player, skate).slice(
+    skate.booking.numPlayers
   );
 };
 export const getSkatePlayersOut = (skate: Skate) => {
-  return skate.playersToSkates
-    .filter(
-      ({ position, droppedOutOn }) =>
-        position === Positions.Player && droppedOutOn
-    )
-    .sort((a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime());
+  return getSkatePlayersForPositionOut(Positions.Player, skate).sort(
+    (a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime()
+  );
 };
 export const getSkatePlayersOutWithoutSub = (skate: Skate) => {
-  return skate.playersToSkates.filter(
-    ({ position, droppedOutOn, substitutePlayer }) =>
-      position === Positions.Player && droppedOutOn && !substitutePlayer
-  );
+  return getSkatePlayersForPositionOutWithoutSub(Positions.Player, skate);
 };
 export const getSkatePlayersWithSubs = (skate: Skate) => {
   return skate.playersToSkates.filter(
@@ -105,7 +140,6 @@ export const getSkatePlayersWithSubs = (skate: Skate) => {
 export const getSkatePlayersAndGoaliesIn = (skate: Skate) => {
   return skate.playersToSkates.filter(({ droppedOutOn }) => !droppedOutOn);
 };
-
 export const getSkateTotalGoalieSpots = (skate: Skate) => {
   return skate.booking?.numGoalies ?? 0;
 };
@@ -125,7 +159,7 @@ export const getSkateNumPlayerSpotsOpen = (skate: Skate) => {
   return getSkateTotalPlayerSpots(skate) - getSkateNumPlayerSpotsFilled(skate);
 };
 
-export const getSkatePlayerSub = (skate: Skate, player: Player) => {
+export const getSlakateSubstitubeForPlayer = (skate: Skate, player: Player) => {
   return skate.playersToSkates.find(
     ({ substitutePlayer, droppedOutOn }) =>
       substitutePlayer?.id === player.id && !!droppedOutOn
@@ -133,7 +167,7 @@ export const getSkatePlayerSub = (skate: Skate, player: Player) => {
 };
 
 const getSkatePlayerSubStrikeoutMessage = (skate: Skate, player: Player) => {
-  const sub = getSkatePlayerSub(skate, player);
+  const sub = getSlakateSubstitubeForPlayer(skate, player);
   if (!sub) {
     return "";
   }
@@ -172,6 +206,61 @@ export const getSkateGoaliesMessageLines = (
   return [numGoaliesMessage, formatStringList(goaliesIn)];
 };
 
+export const getSkatePlayersMessageLines = (skate: Skate, showCount = true) => {
+  const playersIn = [
+    ...getSkatePlayersIn(skate).map(
+      ({ player, addedOn }, index) =>
+        `[${index + 1}] \`${getPlayerName(player)}\` ${dayjs(addedOn).format(
+          "HH:MM:ss"
+        )} ${getSkatePlayerSubStrikeoutMessage(skate, player)}`
+    ),
+    ...getSkatePlayersOutWithoutSub(skate).map(
+      ({ player }) => `⚠️ ~${getPlayerName(player)}~`
+    ),
+  ];
+
+  const totalPlayerSpots = getSkateTotalPlayerSpots(skate);
+  const numPlayerSpotsFilled = getSkateNumPlayerSpotsFilled(skate);
+
+  const numPlayersMessage = `*Players*${
+    showCount ? ` (${numPlayerSpotsFilled}/${totalPlayerSpots})` : ""
+  }`;
+
+  const playersList = formatStringList(playersIn, {
+    minSeparatorLength: 13,
+  });
+  const playersListSeparatorLength = playersList.split("\n")[0]?.length ?? 100;
+
+  const messageLines = [numPlayersMessage, playersList];
+
+  const skateExtraPlayers = getSkatePlayersSubsIn(skate);
+  if (skateExtraPlayers.length > 0) {
+    const subsTitle = `Sub${
+      skateExtraPlayers.length > 1 ? `s (${skateExtraPlayers.length})` : ""
+    }`;
+    const subsSepatorLength = Math.max(
+      Math.floor((playersListSeparatorLength - subsTitle.length) / 2 - 1),
+      2
+    );
+
+    const halfSeparatorLine = "━".repeat(subsSepatorLength);
+    messageLines.push(
+      `┣${halfSeparatorLine} *${subsTitle}* ${halfSeparatorLine}`
+    );
+
+    messageLines.push(
+      formatStringList(
+        skateExtraPlayers.map(({ player }) => `\`${getPlayerName(player)}\``),
+        {
+          hideSeparator: true,
+        }
+      )
+    );
+  }
+
+  return messageLines;
+};
+
 export const getPlayersOutMessageLines = (skate: Skate) => {
   const playersOut = getSkatePlayersOut(skate).map(
     ({ player, substitutePlayer }) =>
@@ -190,22 +279,7 @@ export const getPlayersOutMessageLines = (skate: Skate) => {
 export const getSkateMessage = (skate: Skate) => {
   const header = getSkateTitle(skate);
 
-  const playersIn = [
-    ...getSkatePlayersIn(skate).map(
-      ({ player }) =>
-        `\`${getPlayerName(player)}\`${getSkatePlayerSubStrikeoutMessage(
-          skate,
-          player
-        )}`
-    ),
-    ...getSkatePlayersOutWithoutSub(skate).map(
-      ({ player }) => `⚠️ ~${getPlayerName(player)}~`
-    ),
-  ];
   const numGoalieSpotsOpen = getSkateNumGoalieSpotsOpen(skate);
-
-  const totalPlayerSpots = getSkateTotalPlayerSpots(skate);
-  const numPlayerSpotsFilled = getSkateNumPlayerSpotsFilled(skate);
   const numPlayerSpotsOpen = getSkateNumPlayerSpotsOpen(skate);
 
   const fullMessage = `🛑 *Full - No spots open*`;
@@ -228,27 +302,14 @@ export const getSkateMessage = (skate: Skate) => {
     }
   }
 
-  const numPlayersMessage = `*Players* (${numPlayerSpotsFilled}/${totalPlayerSpots})`;
-
-  //if (!haveSkateTeamsBeenGenerated(skate)) {
   return stringJoin(
     header,
     ...statusMessages,
     "",
-    numPlayersMessage,
-    formatStringList(playersIn),
+    ...getSkatePlayersMessageLines(skate),
     "",
     ...getSkateGoaliesMessageLines(skate)
   );
-  //}
-
-  // return formatList([
-  //   {
-  //     id: skate.id,
-  //     scheduledOn: getSkateTimeMessage(skate),
-  //     players: getPlayersText(skate),
-  //   },
-  // ]);
 };
 
 export const getSkateTeamsMessage = (skate: Skate, showSkillLevel = false) => {
@@ -364,11 +425,5 @@ export const getEarliestDropoutWithoutSub = (
   skate: Skate,
   subPosition: Positions
 ) => {
-  return skate.playersToSkates
-    .filter(
-      ({ droppedOutOn, substitutePlayer, position }) =>
-        droppedOutOn && !substitutePlayer && position === subPosition
-    )
-    .sort((a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime())[0]
-    ?.player;
+  return getSkatePlayersForPositionOutWithoutSub(subPosition, skate)?.[0];
 };

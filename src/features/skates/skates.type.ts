@@ -5,8 +5,10 @@ export type Skate = {
   id: number;
   scheduledOn: Date;
   playersToSkates: {
+    id: number;
     player: Player;
     team: string | null;
+    addedOn: Date;
     droppedOutOn: Date | null;
     substitutePlayer: Player | null;
     position: string;

@@ -12,6 +12,8 @@ import {
 import {
   getEarliestDropoutWithoutSub,
   getSkatePlayersIn,
+  getSkatePlayersInWithSubs,
+  getSkatePlayersSubsIn,
   Positions,
   randomizeTeamsForSkate,
   Teams,
@@ -26,18 +28,24 @@ export const updateSkatePlayerOutHandler = async (
     throw new Error("No skate found!");
   }
 
-  const player = skate.playersToSkates.find(
-    (playerToSkate) => playerToSkate.playerId === playerId
+  const playerToSkate = getSkatePlayersInWithSubs(skate).find(
+    (playerToSkate) => playerToSkate.player.id === playerId
   );
-  if (!player) {
+  if (!playerToSkate) {
     throw new Error("Player not found in skate!");
   }
 
-  if (player.droppedOutOn) {
+  if (playerToSkate.droppedOutOn) {
     throw new Error("Player is already out!");
   }
 
-  await updateSkatePlayer(skateId, playerId, { droppedOutOn: new Date() });
+  // need to look if there is a sub for this player
+  const subPlayerToSkate = getSkatePlayersSubsIn(skate)?.[0];
+
+  await updateSkatePlayer(playerToSkate.id, {
+    droppedOutOn: new Date(),
+    substitutePlayerId: subPlayerToSkate?.player.id ?? null,
+  });
 };
 
 export const addSkateSubPlayerHandler = async (
@@ -50,22 +58,25 @@ export const addSkateSubPlayerHandler = async (
     throw new Error("No skate found!");
   }
 
-  const dropoutPlayer = getEarliestDropoutWithoutSub(skate, position);
-  if (!dropoutPlayer) {
-    throw new Error("No dropout player found!");
-  }
+  const dropoutPlayerToSkate = getEarliestDropoutWithoutSub(skate, position);
+  // if (!dropoutPlayer) {
+  //   throw new Error("No dropout player found!");
+  // }
 
-  if (dropoutPlayer.id === playerId) {
-    await updateSkatePlayer(skateId, playerId, {
+  // if dropout player is the same as the player to be added, remove the dropout
+  if (dropoutPlayerToSkate?.player.id === playerId) {
+    await updateSkatePlayer(dropoutPlayerToSkate.id, {
       droppedOutOn: null,
       substitutePlayerId: null,
     });
     return;
   }
 
-  await updateSkatePlayer(skateId, dropoutPlayer.id, {
-    substitutePlayerId: playerId,
-  });
+  if (dropoutPlayerToSkate) {
+    await updateSkatePlayer(dropoutPlayerToSkate.id, {
+      substitutePlayerId: playerId,
+    });
+  }
   await addPlayerToSkate(skateId, playerId, {
     position,
   });
@@ -85,7 +96,7 @@ export const getSkateAvailableSubsHandler = async (
       ? await getAllGoalies()
       : await getAllPlayers();
 
-  const playersIn = getSkatePlayersIn(skate);
+  const playersIn = getSkatePlayersInWithSubs(skate);
   const availableSubs = players.filter(
     (player) => !playersIn.some((playerIn) => playerIn.player.id === player.id)
   );

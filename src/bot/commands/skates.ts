@@ -237,12 +237,12 @@ export const sendActionPollMessage = async (
     ...Object.values(SkateActionsPollOptions),
     PollOptions.Cancel,
   ].filter((option) => {
-    if (option === SkateActionsPollOptions.SubstitutePlayer) {
-      return getSkateNumPlayerSpotsOpen(skate) > 0;
-    }
-    if (option === SkateActionsPollOptions.SubstituteGoalie) {
-      return getSkateNumGoalieSpotsOpen(skate) > 0;
-    }
+    // if (option === SkateActionsPollOptions.SubstitutePlayer) {
+    //   return getSkateNumPlayerSpotsOpen(skate) > 0;
+    // }
+    // if (option === SkateActionsPollOptions.SubstituteGoalie) {
+    //   return getSkateNumGoalieSpotsOpen(skate) > 0;
+    // }
     return true;
   });
 

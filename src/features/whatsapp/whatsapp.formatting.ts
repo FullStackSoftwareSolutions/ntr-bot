@@ -7,6 +7,8 @@ export type FormatTableConfig = {
 } & TableUserConfig;
 
 export type FormatListConfig = {
+  minSeparatorLength?: number;
+  hideSeparator?: boolean;
   header?: {
     content: string;
   };
@@ -18,7 +20,13 @@ export const formatStringList = (rows: string[], config?: FormatListConfig) => {
   const maxValueLength = rows.reduce((maxLength, row) => {
     return row.length > maxLength ? row.length : maxLength;
   }, 0);
-  const separatorLine = "┏" + "━".repeat(maxValueLength);
+  const separatorLine = config?.hideSeparator
+    ? ""
+    : `┏${"━".repeat(
+        config?.minSeparatorLength
+          ? Math.max(config.minSeparatorLength, maxValueLength)
+          : maxValueLength
+      )}\n`;
 
   const data = rows
     .map((row) => {
@@ -30,7 +38,7 @@ export const formatStringList = (rows: string[], config?: FormatListConfig) => {
   let headerString = config?.header?.content
     ? `${config.header.content}\n`
     : "";
-  let listString = `${separatorLine}\n${data}`;
+  let listString = `${separatorLine}${data}`;
 
   return `${headerString}${listString}`;
 };
