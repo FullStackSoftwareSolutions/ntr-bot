@@ -2,6 +2,7 @@ import { Player } from "../players/players.type";
 
 export type BookingCreate = {
   name: string;
+  announceName: string | null;
   numPlayers: number;
   numGoalies: number;
   location: string;
@@ -10,6 +11,8 @@ export type BookingCreate = {
   startDate: string;
   endDate: string;
   bookedById: number;
+  whatsAppGroupJid: string | null;
+  notifyGroup: boolean;
 };
 
 export type Booking = {
@@ -25,6 +28,7 @@ export type Booking = {
   endDate: string | null;
   bookedById: number | null;
   whatsAppGroupJid: string | null;
+  notifyGroup: boolean;
   announceName: string | null;
   playersToBookings: {
     amountPaid: string | null;

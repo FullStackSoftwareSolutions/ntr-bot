@@ -1,0 +1,1 @@
+ALTER TABLE "bookings" ALTER COLUMN "notify_group" SET NOT NULL;

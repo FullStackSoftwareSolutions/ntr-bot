@@ -6,6 +6,11 @@ import { formatList, stringJoin } from "../whatsapp/whatsapp.formatting";
 import { getPlayerName } from "../players/players.model";
 import { formatCurrency } from "~/formatting/currency";
 import { Positions } from "../skates/skates.model";
+import { parseBoolean } from "~/bot/inputs";
+import {
+  getSenderFromMessage,
+  WhatsAppMessage,
+} from "../whatsapp/whatsapp.model";
 
 dayjs.extend(utcPlugin);
 
@@ -76,6 +81,16 @@ export const getPlayersAmountPaidForBooking = (booking: Booking) => {
     (total, { amountPaid }) => total + Number(amountPaid ?? 0),
     0
   );
+};
+
+export const getBookingNotifyJid = (
+  booking: BookingWithoutPlayers,
+  message: WhatsAppMessage
+) => {
+  if (booking.notifyGroup && booking.whatsAppGroupJid) {
+    return booking.whatsAppGroupJid;
+  }
+  return getSenderFromMessage(message);
 };
 
 export const getBookingMessage = (booking: Booking) => {
@@ -170,4 +185,13 @@ export const bookingFieldPrompts: {
   scheduledTime: "What time is it at?",
   startDate: "What day does it start?",
   endDate: "What day does it end?",
+  whatsAppGroupJid: {
+    prompt: "What is the WhatsApp group JID?",
+    required: false,
+  },
+  notifyGroup: {
+    prompt: "Should the group by notified?",
+    parse: parseBoolean,
+    required: false,
+  },
 };

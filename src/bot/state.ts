@@ -30,6 +30,10 @@ type Commands = {
   bookings: {
     update: {
       bookingId?: number;
+      field?: {
+        key?: keyof BookingCreate;
+        pollKey?: WhatsAppMessageKey | null;
+      };
       players?: {
         removePlayerIds: number[];
         addPlayerIds: number[];

@@ -123,6 +123,7 @@ export const bookings = pgTable("bookings", {
   endDate: date("end_date"),
   bookedById: integer("booked_by_id").references(() => players.id),
   whatsAppGroupJid: varchar("whatsapp_group_jid"),
+  notifyGroup: boolean("notify_group").notNull().default(false),
 });
 
 export const bookingsRelations = relations(bookings, ({ one, many }) => ({

@@ -230,25 +230,25 @@ export const getSkateMessage = (skate: Skate) => {
 
   const numPlayersMessage = `*Players* (${numPlayerSpotsFilled}/${totalPlayerSpots})`;
 
-  if (!haveSkateTeamsBeenGenerated(skate)) {
-    return stringJoin(
-      header,
-      ...statusMessages,
-      "",
-      numPlayersMessage,
-      formatStringList(playersIn),
-      "",
-      ...getSkateGoaliesMessageLines(skate)
-    );
-  }
+  //if (!haveSkateTeamsBeenGenerated(skate)) {
+  return stringJoin(
+    header,
+    ...statusMessages,
+    "",
+    numPlayersMessage,
+    formatStringList(playersIn),
+    "",
+    ...getSkateGoaliesMessageLines(skate)
+  );
+  //}
 
-  return formatList([
-    {
-      id: skate.id,
-      scheduledOn: getSkateTimeMessage(skate),
-      players: getPlayersText(skate),
-    },
-  ]);
+  // return formatList([
+  //   {
+  //     id: skate.id,
+  //     scheduledOn: getSkateTimeMessage(skate),
+  //     players: getPlayersText(skate),
+  //   },
+  // ]);
 };
 
 export const getSkateTeamsMessage = (skate: Skate, showSkillLevel = false) => {

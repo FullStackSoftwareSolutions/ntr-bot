@@ -10,6 +10,7 @@ export enum Command {
   PlayersEdit = "players.edit",
   Bookings = "bookings",
   BookingsAdd = "bookings.add",
+  BookingsEdit = "bookings.edit",
   BookingsList = "bookings.list",
   Skates = "skates",
 }

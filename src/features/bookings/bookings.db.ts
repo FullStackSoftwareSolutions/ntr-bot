@@ -1,6 +1,7 @@
 import { bookings, playersToBookings } from "~/db/schema";
 import { db } from "../../db";
 import { and, asc, eq, inArray } from "drizzle-orm";
+import { BookingCreate } from "./bookings.type";
 
 export const getAllBookings = async () =>
   db.query.bookings.findMany({
@@ -57,4 +58,12 @@ export const updateBookingPlayersAmountPaid = async (
         inArray(playersToBookings.playerId, playerIds)
       )
     );
+};
+
+export const updateBooking = async (
+  id: number,
+  bookingData: Partial<BookingCreate>
+) => {
+  await db.update(bookings).set(bookingData).where(eq(bookings.id, id));
+  return getBookingById(id);
 };

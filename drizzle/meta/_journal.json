@@ -183,6 +183,20 @@
       "when": 1712772658328,
       "tag": "0025_magenta_colossus",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1712928931861,
+      "tag": "0026_colossal_jazinda",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "5",
+      "when": 1712930143233,
+      "tag": "0027_rare_juggernaut",
+      "breakpoints": true
     }
   ]
 }

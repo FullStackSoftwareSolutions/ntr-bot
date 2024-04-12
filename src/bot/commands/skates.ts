@@ -37,7 +37,10 @@ import {
   shuffleSkateTeamsHandler,
   updateSkatePlayerOutHandler,
 } from "~/features/skates/skates.controller";
-import { getCostPerSkatePerPlayerForBooking } from "~/features/bookings/bookings.model";
+import {
+  getBookingNotifyJid,
+  getCostPerSkatePerPlayerForBooking,
+} from "~/features/bookings/bookings.model";
 import { formatCurrency } from "~/formatting/currency";
 
 enum SkateActionsPollOptions {
@@ -306,19 +309,12 @@ export const sendSubPlayerPollMessage = async (
 };
 
 const announceSkate = async (skate: Skate, message: WhatsAppMessage) => {
-  // const sendToJid =
-  //   skate.booking.whatsAppGroupJid ?? getSenderFromMessage(message);
-  const sendToJid = getSenderFromMessage(message);
-
-  await sendMessage(sendToJid, {
+  await sendMessage(getBookingNotifyJid(skate.booking, message), {
     text: getSkateMessage(skate),
   });
 };
 
 const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
-  const sendToJid =
-    skate.booking.whatsAppGroupJid ?? getSenderFromMessage(message);
-
   const players = getSkatePlayersWithSubs(skate);
   const cost = getCostPerSkatePerPlayerForBooking(skate.booking, true);
 
@@ -336,17 +332,14 @@ const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
       } 👈 ${getMentionFromNumber(player.phoneNumber)}`
   );
 
-  await sendMessage(sendToJid, {
+  await sendMessage(getBookingNotifyJid(skate.booking, message), {
     text: stringJoin(...payments),
     mentions,
   });
 };
 
 const announceTeams = async (skate: Skate, message: WhatsAppMessage) => {
-  const sendToJid =
-    skate.booking.whatsAppGroupJid ?? getSenderFromMessage(message);
-
-  await sendMessage(sendToJid, {
+  await sendMessage(getBookingNotifyJid(skate.booking, message), {
     text: getSkateTeamsMessage(skate),
   });
 };

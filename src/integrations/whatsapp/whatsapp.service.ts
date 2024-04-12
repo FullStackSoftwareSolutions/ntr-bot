@@ -56,7 +56,7 @@ export const initialize = async (auth: {
   return connect();
 };
 
-const logger = pino({ level: "fatal" }) as any;
+const logger = pino({ level: "silent" }) as any;
 
 export const connect = async () => {
   sock = makeWASocket({
