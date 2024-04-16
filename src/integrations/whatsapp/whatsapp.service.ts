@@ -14,6 +14,7 @@ import {
   GroupMetadata,
   PollMessageOptions,
   fetchLatestBaileysVersion,
+  WAPresence,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
@@ -84,6 +85,14 @@ export const connect = async () => {
   sock.ev.on("connection.update", handleConnectionUpdate);
   sock.ev.on("messages.upsert", handleMessagesUpsert);
   sock.ev.on("messages.update", handleMessagesUpdate);
+
+  console.log(getUserJid());
+};
+
+export const getUserJid = () => {
+  const numberAndPort = sock.user?.id.split("@")[0];
+  const number = numberAndPort?.split(":")[0];
+  return `${number}@${sock.user?.id.split("@")[1]}`;
 };
 
 async function getMessage(
@@ -287,6 +296,10 @@ export const sendMessage = (
   options?: MiscMessageGenerationOptions
 ) => {
   return sock.sendMessage(toJid, message, options);
+};
+
+export const updatePresence = (toJid: string, presence: WAPresence) => {
+  return sock.sendPresenceUpdate(presence, toJid);
 };
 
 const MAX_POLL_OPTIONS = 12;

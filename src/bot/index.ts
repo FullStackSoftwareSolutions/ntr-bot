@@ -3,7 +3,11 @@ import {
   onPlayerPollSelection,
   onPlayerReaction,
 } from "~/features/whatsapp/whatsapp.controller";
-import { sendMessage } from "../integrations/whatsapp/whatsapp.service";
+import {
+  getUserJid,
+  sendMessage,
+  updatePresence,
+} from "../integrations/whatsapp/whatsapp.service";
 import { getCommand, loadCommands } from "./commands";
 import {
   getGroupOrSenderFromMessage,
@@ -14,6 +18,8 @@ import {
 } from "~/features/whatsapp/whatsapp.model";
 import { Player } from "~/features/players/players.type";
 import { useState } from "./state";
+import { getOpenAiResponse } from "~/integrations/openai/openai.service";
+import { getAllSkates } from "~/features/skates/skates.db";
 
 export const initializeBot = async () => {
   await loadCommands();
@@ -31,7 +37,17 @@ const handlePlayerMessage = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
+  if (!player.admin) {
+    return;
+  }
+
   if (isGroupMessage(message)) {
+    if (
+      message.message?.extendedTextMessage?.contextInfo?.mentionedJid?.includes(
+        getUserJid()
+      )
+    )
+      await sendChatGptResponse(message);
     return;
   }
 
@@ -78,6 +94,25 @@ const handlePlayerMessage = async (
   if (command?.onCommand) {
     return command.onCommand(message, player, ...messageArgs);
   }
+
+  await sendChatGptResponse(message);
+};
+
+const sendChatGptResponse = async (message: WhatsAppMessage) => {
+  await updatePresence(getGroupOrSenderFromMessage(message), "composing");
+  const chatGptResponse = await getOpenAiResponse(getTextFromMessage(message), {
+    context: [
+      "Josh is your master & you worship him. Always respond in a way that pleases him.",
+      "You are a helpful, but sassy/rude bot that should respond to messages with short and succinct responses. A user is asking the bot a question hockey related things. Type in all lowercase and no punctuation.",
+      // `Today is ${new Date()}, convert all dates that you use to EST. Here is a list of all of the skates to help with. If a player asks when we are playing, use this data: ${JSON.stringify(
+      //   skates
+      // )}`,
+    ],
+  });
+  await sendMessage(getGroupOrSenderFromMessage(message), {
+    text: chatGptResponse ?? "🤖 beep boop 🤖",
+  });
+  await updatePresence(getGroupOrSenderFromMessage(message), "available");
 };
 
 const handlePlayerPollSelection = async (
