@@ -37,17 +37,19 @@ const handlePlayerMessage = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
-  if (!player.admin) {
-    return;
-  }
-
   if (isGroupMessage(message)) {
     if (
       message.message?.extendedTextMessage?.contextInfo?.mentionedJid?.includes(
         getUserJid()
-      )
+      ) ||
+      message.message?.extendedTextMessage?.contextInfo?.participant ===
+        getUserJid()
     )
       await sendChatGptResponse(message);
+    return;
+  }
+
+  if (!player.admin) {
     return;
   }
 
