@@ -138,6 +138,7 @@ export const getBookingMessage = (booking: Booking) => {
     "📆 *Booking*",
     formatList([
       {
+        id: booking.id,
         name: booking.name,
         skates: `(${dates.length}) ${dates
           .map((date) => dayjs(date).format("MMM D"))

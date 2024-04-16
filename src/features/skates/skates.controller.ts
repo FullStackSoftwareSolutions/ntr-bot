@@ -12,7 +12,7 @@ import {
 import {
   getEarliestDropoutWithoutSub,
   getSkatePlayersForPositionIn,
-  getSkatePlayersInWithSubs,
+  getSkatePlayersForPositionSubsIn,
   getSkatePlayersSubsIn,
   Positions,
   randomizeTeamsForSkate,
@@ -41,7 +41,10 @@ export const updateSkatePlayerOutHandler = async (
   }
 
   // need to look if there is a sub for this player
-  const subPlayerToSkate = getSkatePlayersSubsIn(skate)?.[0];
+  const subPlayerToSkate = getSkatePlayersForPositionSubsIn(
+    position,
+    skate
+  )?.[0];
 
   await updateSkatePlayer(playerToSkate.id, {
     droppedOutOn: new Date(),

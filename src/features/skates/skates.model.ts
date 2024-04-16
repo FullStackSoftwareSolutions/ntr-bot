@@ -66,6 +66,14 @@ export const getSkatePlayersForPositionIn = (
     ({ droppedOutOn }) => !droppedOutOn
   );
 };
+export const getSkatePlayersForPositionSubsIn = (
+  position: Positions,
+  skate: Skate
+) => {
+  return getSkatePlayersForPositionIn(position, skate).slice(
+    getSkateTotalSpotsForPosition(position, skate)
+  );
+};
 const getSkatePlayersForPositionOut = (position: Positions, skate: Skate) => {
   return getSkatePlayersForPosition(position, skate).filter(
     ({ droppedOutOn }) => droppedOutOn
@@ -90,7 +98,12 @@ const getSkateNumSpotsOpenForPosition = (position: Positions, skate: Skate) => {
   }
   return getSkateNumPlayerSpotsOpen(skate);
 };
-
+const getSkateTotalSpotsForPosition = (position: Positions, skate: Skate) => {
+  if (position === Positions.Goalie) {
+    return getSkateTotalGoalieSpots(skate);
+  }
+  return getSkateTotalPlayerSpots(skate);
+};
 export const getSkateGoaliesInWithSubs = (skate: Skate) => {
   return getSkatePlayersForPositionIn(Positions.Goalie, skate);
 };
@@ -141,6 +154,15 @@ export const getSkatePlayersWithSubs = (skate: Skate) => {
     ({ position, droppedOutOn, substitutePlayer }) =>
       position === Positions.Player && !!droppedOutOn && !!substitutePlayer
   );
+};
+export const getSkatePlayersWithSubsUnpaid = (skate: Skate) => {
+  return getSkatePlayersWithSubs(skate).filter(({ substitutePlayer }) => {
+    return (
+      getSkatePlayersForPosition(Positions.Player, skate).find(
+        ({ player }) => player.id === substitutePlayer?.id
+      )?.paid === false
+    );
+  });
 };
 
 export const getSkatePlayersAndGoaliesIn = (skate: Skate) => {

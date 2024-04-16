@@ -78,6 +78,7 @@ export const playersToSkates = pgTable("players_to_skates", {
   substitutePlayerId: integer("substitute_player_id").references(
     () => players.id
   ),
+  paid: boolean("paid").notNull().default(false),
   position: varchar("position").notNull().default(Positions.Player),
   addedOn: timestamp("added_on")
     .notNull()

@@ -12,6 +12,7 @@ export type Skate = {
     droppedOutOn: Date | null;
     substitutePlayer: Player | null;
     position: string;
+    paid: boolean;
   }[];
   booking: BookingWithoutPlayers;
 };

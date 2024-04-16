@@ -30,6 +30,7 @@ import {
   getSkateGoaliesIn,
   getSkateGoaliesInWithSubs,
   getSkatePlayersInWithSubs,
+  getSkatePlayersWithSubsUnpaid,
 } from "~/features/skates/skates.model";
 import { Skate } from "~/features/skates/skates.type";
 import { useSkateState, useState, useUpdateSkateState } from "../state";
@@ -387,7 +388,7 @@ const announceSkate = async (skate: Skate, message: WhatsAppMessage) => {
 };
 
 const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
-  const players = getSkatePlayersWithSubs(skate);
+  const players = getSkatePlayersWithSubsUnpaid(skate);
   const cost = getCostPerSkatePerPlayerForBooking(skate.booking, true);
 
   const mentions = players.flatMap(({ player, substitutePlayer }) => [
