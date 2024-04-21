@@ -56,6 +56,7 @@ enum SkateActionsPollOptions {
   ShuffleTeams = "Shuffle Teams",
   Announce = "Announce",
   AnnounceTeams = "Announce Teams",
+  ViewTeams = "View Teams",
   AnnouncePayments = "Announce Payments",
 }
 
@@ -132,6 +133,9 @@ const handleSkateActionPollSelection = async (
   }
   if (message.body === SkateActionsPollOptions.AnnounceTeams) {
     await announceTeams(skate, message);
+  }
+  if (message.body === SkateActionsPollOptions.ViewTeams) {
+    await viewTeams(skate, message);
   }
   if (message.body === SkateActionsPollOptions.ShuffleTeams) {
     await generateTeams(skate, message);
@@ -408,6 +412,12 @@ const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
   await sendMessage(getBookingNotifyJid(skate.booking, message), {
     text: stringJoin(...payments),
     mentions,
+  });
+};
+
+const viewTeams = async (skate: Skate, message: WhatsAppMessage) => {
+  await sendMessage(getSenderFromMessage(message), {
+    text: getSkateTeamsMessage(skate, true),
   });
 };
 

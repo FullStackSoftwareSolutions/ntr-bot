@@ -158,9 +158,10 @@ export const getSkatePlayersWithSubs = (skate: Skate) => {
 export const getSkatePlayersWithSubsUnpaid = (skate: Skate) => {
   return getSkatePlayersWithSubs(skate).filter(({ substitutePlayer }) => {
     return (
-      getSkatePlayersForPosition(Positions.Player, skate).find(
-        ({ player }) => player.id === substitutePlayer?.id
-      )?.paid === false
+      getSkatePlayersForPosition(Positions.Player, skate)
+        .reverse()
+        .find(({ player }) => player.id === substitutePlayer?.id)?.paid ===
+      false
     );
   });
 };

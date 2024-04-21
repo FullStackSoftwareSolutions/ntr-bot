@@ -23,6 +23,7 @@
     "email-validator": "^2.0.4",
     "express": "^4.19.2",
     "immer": "^10.0.4",
+    "install": "^0.13.0",
     "node-localstorage": "^3.0.5",
     "openai": "^4.35.0",
     "pino": "^8.19.0",

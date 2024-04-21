@@ -43,7 +43,7 @@ export const getTextFromMessage = (message: WhatsAppMessage): string => {
     : message.message?.extendedTextMessage?.text!;
 };
 export const getSenderNumberFromMessage = (message: WhatsAppMessage) =>
-  getNumberFromJid(getSenderFromMessage(message));
+  `+${getNumberFromJid(getSenderFromMessage(message))}`;
 
 export const getGroupOrSenderFromMessage = (message: WhatsAppMessage) =>
   message.key?.remoteJid!;
