@@ -8,6 +8,21 @@ export const getPlayerName = (player: Player) =>
   player.nickname ?? player.fullName;
 
 export const getPlayerSkillLevel = (player: Player) => player.skillLevel ?? "C";
+export const getPlayerSkillNumber = (player: Player) => {
+  const skillLevel = getPlayerSkillLevel(player);
+  switch (skillLevel) {
+    case "A":
+      return 10;
+    case "B":
+      return 7;
+    case "C":
+      return 4;
+    case "D":
+      return 2;
+    default:
+      return 5;
+  }
+};
 
 export const playerFieldPrompts: {
   [key in keyof PlayerCreate]?:

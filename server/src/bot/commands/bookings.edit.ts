@@ -22,6 +22,7 @@ import { Command } from "../commands";
 import { getPrompt } from "./bookings.add";
 import { bookingFieldPrompts } from "~/features/bookings/bookings.model";
 import { Player } from "~/features/players/players.type";
+import { updateBookingHandler } from "~/features/bookings/bookings.controller";
 
 const FieldOptions = Object.keys(bookingFieldPrompts);
 
@@ -111,7 +112,7 @@ export const onMessage = async (
       return;
     }
 
-    editBooking = await updateBooking(editBooking.id, {
+    editBooking = await updateBookingHandler(editBooking.id, {
       [state.field.key!]: value,
     });
 

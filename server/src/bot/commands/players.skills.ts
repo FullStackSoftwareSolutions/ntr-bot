@@ -13,6 +13,7 @@ import { sortPlayers } from "~/features/skates/skates.model";
 import {
   getPlayerName,
   getPlayerSkillLevel,
+  getPlayerSkillNumber,
 } from "~/features/players/players.model";
 
 export const onCommand = async (message: WhatsAppMessage, player: Player) => {
@@ -29,7 +30,10 @@ export const onCommand = async (message: WhatsAppMessage, player: Player) => {
   const sortedPlayers = sortPlayers(players);
   const playersText = formatStringList(
     sortedPlayers.map(
-      (player) => `[${getPlayerSkillLevel(player)}] ${getPlayerName(player)}`
+      (player) =>
+        `[${getPlayerSkillLevel(player)}-${getPlayerSkillNumber(
+          player
+        )}] ${getPlayerName(player)}`
     ),
     {
       header: {
@@ -47,7 +51,10 @@ export const onCommand = async (message: WhatsAppMessage, player: Player) => {
   const sortedGoalies = sortPlayers(goalies);
   const goaliesText = formatStringList(
     sortedGoalies.map(
-      (player) => `[${getPlayerSkillLevel(player)}] ${getPlayerName(player)}`
+      (player) =>
+        `[${getPlayerSkillLevel(player)}-${getPlayerSkillNumber(
+          player
+        )}] ${getPlayerName(player)}`
     ),
     {
       header: {

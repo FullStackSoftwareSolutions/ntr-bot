@@ -1,12 +1,18 @@
 import { bookings, playersToBookings } from "~/db/schema";
 import { db } from "../../db";
-import { and, asc, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, gte, inArray } from "drizzle-orm";
 import { BookingCreate } from "./bookings.type";
 
 export const getAllBookings = async () =>
   db.query.bookings.findMany({
     orderBy: asc(bookings.startDate),
   });
+export const getAllFutureBookings = async () =>
+  db.query.bookings.findMany({
+    where: gte(bookings.endDate, new Date().toISOString()),
+    orderBy: asc(bookings.startDate),
+  });
+
 export const getBookingById = async (id: number) =>
   db.query.bookings.findFirst({
     with: {

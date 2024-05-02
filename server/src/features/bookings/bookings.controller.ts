@@ -4,8 +4,9 @@ import {
   getSkatesForBooking,
   updateSkate,
 } from "../skates/skates.db";
-import { createBooking, getBookingById } from "./bookings.db";
+import { createBooking, getBookingById, updateBooking } from "./bookings.db";
 import { getDatesForBooking } from "./bookings.model";
+import { BookingCreate } from "./bookings.type";
 
 export const createBookingHandler = async (bookingData: {
   name: string;
@@ -40,6 +41,7 @@ export const updateBookingDatesHandler = async (bookingId: number) => {
   }
 
   const skates = await getSkatesForBooking(bookingId);
+  console.log(getDatesForBooking(booking));
   for (const [index, date] of getDatesForBooking(booking).entries()) {
     const existingSkate = skates[index];
     if (existingSkate) {
@@ -66,4 +68,17 @@ export const updateBookingPlayersHandler = async (
     addPlayerIds,
     position
   );
+};
+
+export const updateBookingHandler = async (
+  bookingId: number,
+  bookingData: Partial<BookingCreate>
+) => {
+  const booking = await updateBooking(bookingId, bookingData);
+
+  if (bookingData.scheduledTime) {
+    await updateBookingDatesHandler(bookingId);
+  }
+
+  return booking;
 };

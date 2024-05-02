@@ -8,6 +8,7 @@ import {
 import { Player } from "~/features/players/players.type";
 import {
   getAllBookings,
+  getAllFutureBookings,
   getBookingByName,
 } from "~/features/bookings/bookings.db";
 import {
@@ -69,7 +70,7 @@ const sendBookingPollMessage = async (
     return;
   }
 
-  const bookings = await getAllBookings();
+  const bookings = await getAllFutureBookings();
   const poll = await sendMessage(senderJid, {
     poll: {
       name: "Which booking would you like to view?",

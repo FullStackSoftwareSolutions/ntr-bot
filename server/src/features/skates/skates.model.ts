@@ -6,7 +6,11 @@ import {
   formatStringList,
   stringJoin,
 } from "../whatsapp/whatsapp.formatting";
-import { getPlayerName, getPlayerSkillLevel } from "../players/players.model";
+import {
+  getPlayerName,
+  getPlayerSkillLevel,
+  getPlayerSkillNumber,
+} from "../players/players.model";
 import { timeToEmoji } from "~/formatting/time.emoji";
 import { Player } from "../players/players.type";
 
@@ -403,7 +407,9 @@ export const getSkateTeamsMessage = (skate: Skate, showSkillLevel = false) => {
 
   const formatPlayer = (player: Player) => {
     return `${
-      showSkillLevel ? `[${getPlayerSkillLevel(player)}] ` : ""
+      showSkillLevel
+        ? `[${getPlayerSkillLevel(player)}-${getPlayerSkillNumber(player)}] `
+        : ""
     }\`${getPlayerName(player)}\``;
   };
   const formatTeamList = (players: Player[], goalie: Player) =>
@@ -453,8 +459,8 @@ const shufflePlayers = (players: Player[]): Player[] => {
 };
 
 export const sortPlayers = (players: Player[]): Player[] => {
-  return players.sort((a, b) =>
-    getPlayerSkillLevel(a).localeCompare(getPlayerSkillLevel(b))
+  return players.sort(
+    (a, b) => getPlayerSkillNumber(b) - getPlayerSkillNumber(a)
   );
 };
 
@@ -466,11 +472,26 @@ export const randomizeTeamsForSkate = (skate: Skate) => {
 
   const teams: Team = { [Teams.Black]: [], [Teams.White]: [] };
 
+  let firstTeam = Teams.Black;
   shuffledAndSortedPlayers.forEach((player, index) => {
     if (index % 2 === 0) {
-      teams[Teams.Black].push(player);
+      teams[firstTeam].push(player);
     } else {
-      teams[Teams.White].push(player);
+      teams[firstTeam === Teams.Black ? Teams.White : Teams.Black].push(player);
+
+      const blackTotalScore = teams[Teams.Black].reduce(
+        (acc, player) => acc + getPlayerSkillNumber(player),
+        0
+      );
+      const whiteTotalScore = teams[Teams.White].reduce(
+        (acc, player) => acc + getPlayerSkillNumber(player),
+        0
+      );
+      if (blackTotalScore > whiteTotalScore) {
+        firstTeam = Teams.White;
+      } else {
+        firstTeam = Teams.Black;
+      }
     }
   });
   shuffledGoalies.forEach((goalie, index) => {
