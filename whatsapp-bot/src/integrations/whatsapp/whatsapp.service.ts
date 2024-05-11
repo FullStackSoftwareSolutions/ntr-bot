@@ -126,7 +126,11 @@ const handleConnectionUpdate = (update: Partial<ConnectionState>) => {
 
     if (statusCode === DisconnectReason.loggedOut) {
       console.info(chalk.black(chalk.bgRed(" 🪵 Whatsapp logged out")));
-      unlinkSync(storePath);
+      try {
+        unlinkSync(storePath);
+      } catch {
+        console.log("Store not found");
+      }
 
       connect();
     }
