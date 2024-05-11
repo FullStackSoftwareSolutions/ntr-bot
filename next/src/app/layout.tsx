@@ -1,8 +1,10 @@
 import "~/styles/globals.css";
 
-import { GeistSans } from "geist/font/sans";
+import { Jost } from "next/font/google";
 
 import ClientProviders from "~/providers/ClientProviders";
+import { ClerkProvider } from "@clerk/nextjs";
+import Navbar from "~/components/layouts/Navbar";
 
 export const metadata = {
   title: "Create T3 App",
@@ -10,16 +12,30 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+const font = Jost({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
-        <ClientProviders>{children}</ClientProviders>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning className={font.className}>
+        <head />
+        <body className="flex flex-col">
+          <ClientProviders>
+            <Navbar />
+            <main className="flex flex-1 flex-col overflow-y-auto">
+              {children}
+            </main>
+          </ClientProviders>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
