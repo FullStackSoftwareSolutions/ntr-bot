@@ -1,6 +1,6 @@
 import path from "path";
 import { readdir } from "fs/promises";
-import { commandsPath } from "~/paths";
+import { commandsPath } from "@whatsapp/paths";
 
 export enum Command {
   Help = "help",

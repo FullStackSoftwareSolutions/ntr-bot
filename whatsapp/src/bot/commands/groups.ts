@@ -1,12 +1,12 @@
 import {
   getAllGroups,
   sendMessage,
-} from "~/integrations/whatsapp/whatsapp.service";
+} from "@whatsapp/integrations/whatsapp/whatsapp.service";
 import { formatList } from "../../features/whatsapp/whatsapp.formatting";
 import {
   getSenderFromMessage,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
 
 export const onCommand = async (message: WhatsAppMessage) => {
   const whatsAppGroups = await getAllGroups();

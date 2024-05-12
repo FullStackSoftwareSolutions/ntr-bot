@@ -17,6 +17,7 @@ export type BookingCreate = {
 
 export type Booking = {
   id: number;
+  slug: string | null;
   name: string | null;
   numPlayers: number;
   numGoalies: number;

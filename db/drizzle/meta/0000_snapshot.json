@@ -1,10 +1,8 @@
 {
-  "id": "ac57310b-8935-4b9d-9760-eb42a43eb389",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "players": {
+    "public.players": {
       "name": "players",
       "schema": "",
       "columns": {
@@ -61,28 +59,28 @@
       "uniqueConstraints": {
         "players_id_unique": {
           "name": "players_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         },
         "players_email_unique": {
           "name": "players_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         },
         "players_phone_number_unique": {
           "name": "players_phone_number_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "phone_number"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "whatsapp_auth": {
+    "public.whatsapp_auth": {
       "name": "whatsapp_auth",
       "schema": "",
       "columns": {
@@ -113,10 +111,10 @@
       "uniqueConstraints": {
         "whatsapp_auth_key_unique": {
           "name": "whatsapp_auth_key_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "key"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     }
@@ -124,8 +122,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "ac57310b-8935-4b9d-9760-eb42a43eb389",
+  "prevId": "00000000-0000-0000-0000-000000000000"
 }

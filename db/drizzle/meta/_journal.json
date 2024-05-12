@@ -225,6 +225,20 @@
       "when": 1713220381977,
       "tag": "0031_mushy_shard",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "5",
+      "when": 1715537059290,
+      "tag": "0032_wealthy_lady_bullseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "6",
+      "when": 1715537703109,
+      "tag": "0033_luxuriant_nightcrawler",
+      "breakpoints": true
     }
   ]
 }

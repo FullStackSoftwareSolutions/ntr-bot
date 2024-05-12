@@ -2,7 +2,7 @@ import {
   onPlayerMessage,
   onPlayerPollSelection,
   onPlayerReaction,
-} from "~/features/whatsapp/whatsapp.controller";
+} from "@whatsapp/features/whatsapp/whatsapp.controller";
 import {
   getUserJid,
   sendMessage,
@@ -15,11 +15,11 @@ import {
   getTextFromMessage,
   isGroupMessage,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
-import { Player } from "~/features/players/players.type";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
+import { Player } from "@whatsapp/features/players/players.type";
 import { useState } from "./state";
-import { getOpenAiResponse } from "~/integrations/openai/openai.service";
-import { getAllSkates } from "~/features/skates/skates.db";
+import { getOpenAiResponse } from "@whatsapp/integrations/openai/openai.service";
+import { getAllSkates } from "@whatsapp/features/skates/skates.db";
 
 export const initializeBot = async () => {
   await loadCommands();

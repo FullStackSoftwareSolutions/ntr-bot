@@ -13,9 +13,9 @@ import {
   isPollAnswer,
   PollOptions,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
 import { useState } from "../state";
-import { Player } from "~/features/players/players.type";
+import { Player } from "@whatsapp/features/players/players.type";
 import { Command } from "../commands";
 import { AnyMessageContent } from "@whiskeysockets/baileys";
 

@@ -1,4 +1,8 @@
-import { parseBoolean, parseEmail, parsePhoneNumber } from "~/bot/inputs";
+import {
+  parseBoolean,
+  parseEmail,
+  parsePhoneNumber,
+} from "@whatsapp/bot/inputs";
 import { Player, PlayerCreate } from "./players.type";
 
 export const getPlayerWhatsappJid = (player: Player) =>

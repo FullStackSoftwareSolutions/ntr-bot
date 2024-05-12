@@ -26,7 +26,8 @@
     "paths": {
       "@db/*": ["./db/src/*"],
       "@whatsapp/*": ["./whatsapp/src/*"],
-      "@next/*": ["./next/src/*"]
+      "@next/*": ["./next/src/*"],
+      "@formatting/*": ["./formatting/src/*"]
     }
   },
   "include": [

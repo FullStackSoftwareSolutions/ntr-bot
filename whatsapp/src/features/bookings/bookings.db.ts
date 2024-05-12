@@ -1,4 +1,4 @@
-import { bookings, playersToBookings } from "~/db/schema";
+import { bookings, playersToBookings } from "@whatsapp/db/schema";
 import { db } from "../../db";
 import { and, asc, eq, gte, inArray } from "drizzle-orm";
 import { BookingCreate } from "./bookings.type";

@@ -1,19 +1,10 @@
-"use client";
-
-import { api } from "@next/trpc/react";
+import BookingsList from "@next/components/features/bookings/BookingsList";
 
 export default function Home() {
-  const { data: skates } = api.skates.getAll.useQuery();
-
-  console.log(skates);
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <h1 className="text-4xl font-bold">🤖 beep boop</h1>
-      {skates?.map((skate) => (
-        <div key={skate.id}>
-          <h2>{skate.booking.name}</h2>
-        </div>
-      ))}
+    <div className="container flex flex-1 flex-col items-start gap-6 p-8">
+      <h1 className="m-12 text-4xl font-bold">🤖 beep boop</h1>
+      <BookingsList />
     </div>
   );
 }

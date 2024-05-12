@@ -19,13 +19,7 @@
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "incremental": true,
-
-    /* Path Aliases */
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"]
-    }
+    "incremental": true
   },
   "include": [
     ".eslintrc.cjs",
@@ -36,5 +30,6 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "extends": "../tsconfig.json"
 }

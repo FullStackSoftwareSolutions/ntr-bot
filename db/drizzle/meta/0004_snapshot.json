@@ -1,10 +1,8 @@
 {
-  "id": "b674d394-8f9a-442d-a23a-97051f4d8b80",
-  "prevId": "f496ad11-7ff4-4980-8a97-48c38da78186",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "bookings": {
+    "public.bookings": {
       "name": "bookings",
       "schema": "",
       "columns": {
@@ -68,29 +66,29 @@
         "bookings_booked_by_id_players_id_fk": {
           "name": "bookings_booked_by_id_players_id_fk",
           "tableFrom": "bookings",
-          "tableTo": "players",
           "columnsFrom": [
             "booked_by_id"
           ],
+          "tableTo": "players",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "bookings_id_unique": {
           "name": "bookings_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "players": {
+    "public.players": {
       "name": "players",
       "schema": "",
       "columns": {
@@ -153,28 +151,28 @@
       "uniqueConstraints": {
         "players_id_unique": {
           "name": "players_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         },
         "players_email_unique": {
           "name": "players_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         },
         "players_phone_number_unique": {
           "name": "players_phone_number_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "phone_number"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "players_to_skates": {
+    "public.players_to_skates": {
       "name": "players_to_skates",
       "schema": "",
       "columns": {
@@ -196,28 +194,28 @@
         "players_to_skates_player_id_players_id_fk": {
           "name": "players_to_skates_player_id_players_id_fk",
           "tableFrom": "players_to_skates",
-          "tableTo": "players",
           "columnsFrom": [
             "player_id"
           ],
+          "tableTo": "players",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "players_to_skates_skate_id_skates_id_fk": {
           "name": "players_to_skates_skate_id_skates_id_fk",
           "tableFrom": "players_to_skates",
-          "tableTo": "skates",
           "columnsFrom": [
             "skate_id"
           ],
+          "tableTo": "skates",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -231,7 +229,7 @@
       },
       "uniqueConstraints": {}
     },
-    "skates": {
+    "public.skates": {
       "name": "skates",
       "schema": "",
       "columns": {
@@ -259,29 +257,29 @@
         "skates_booking_id_bookings_id_fk": {
           "name": "skates_booking_id_bookings_id_fk",
           "tableFrom": "skates",
-          "tableTo": "bookings",
           "columnsFrom": [
             "booking_id"
           ],
+          "tableTo": "bookings",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "skates_id_unique": {
           "name": "skates_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "whatsapp_auth": {
+    "public.whatsapp_auth": {
       "name": "whatsapp_auth",
       "schema": "",
       "columns": {
@@ -312,10 +310,10 @@
       "uniqueConstraints": {
         "whatsapp_auth_key_unique": {
           "name": "whatsapp_auth_key_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "key"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     }
@@ -323,8 +321,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "b674d394-8f9a-442d-a23a-97051f4d8b80",
+  "prevId": "f496ad11-7ff4-4980-8a97-48c38da78186"
 }

@@ -52,6 +52,7 @@ export const playersRelations = relations(players, ({ many }) => ({
 
 export const skates = pgTable("skates", {
   id: serial("id").unique().primaryKey(),
+  slug: varchar("slug"),
   scheduledOn: timestamp("scheduled_on").notNull(),
   bookingId: integer("booking_id")
     .notNull()
@@ -108,6 +109,7 @@ export const playersToSkatesRelations = relations(
 
 export const bookings = pgTable("bookings", {
   id: serial("id").unique().primaryKey(),
+  slug: varchar("slug").notNull().unique(),
   name: varchar("name").notNull().unique(),
   announceName: varchar("announce_name"),
   numPlayers: integer("num_players").default(14).notNull(),

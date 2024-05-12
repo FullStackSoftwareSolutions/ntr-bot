@@ -18,7 +18,7 @@ import {
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
-import { WhatsAppMessage } from "~/features/whatsapp/whatsapp.model";
+import { WhatsAppMessage } from "@whatsapp/features/whatsapp/whatsapp.model";
 import { unlinkSync } from "fs";
 import { generateRefProvider } from "./hash";
 import path from "path";

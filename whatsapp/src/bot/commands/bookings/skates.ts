@@ -1,14 +1,14 @@
-import { useBookingState, useUpdateBookingState } from "~/bot/state";
-import { updateBookingPlayersHandler } from "~/features/bookings/bookings.controller";
-import { getBookingById } from "~/features/bookings/bookings.db";
-import { getBookingMessage } from "~/features/bookings/bookings.model";
+import { useBookingState, useUpdateBookingState } from "@whatsapp/bot/state";
+import { updateBookingPlayersHandler } from "@whatsapp/features/bookings/bookings.controller";
+import { getBookingById } from "@whatsapp/features/bookings/bookings.db";
+import { getBookingMessage } from "@whatsapp/features/bookings/bookings.model";
 import {
   getAllPlayersAndGoalies,
   getPlayersByNames,
   getPlayersForBooking,
-} from "~/features/players/players.db";
-import { getPlayerName } from "~/features/players/players.model";
-import { Player } from "~/features/players/players.type";
+} from "@whatsapp/features/players/players.db";
+import { getPlayerName } from "@whatsapp/features/players/players.model";
+import { Player } from "@whatsapp/features/players/players.type";
 import {
   doKeysMatch,
   getSenderFromMessage,
@@ -16,13 +16,13 @@ import {
   PollOptions,
   WhatsAppMessage,
   WhatsAppMessageKey,
-} from "~/features/whatsapp/whatsapp.model";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
 import {
   sendMessage,
   sendPolls,
-} from "~/integrations/whatsapp/whatsapp.service";
+} from "@whatsapp/integrations/whatsapp/whatsapp.service";
 import { bookingCommandPrompt } from "../bookings";
-import { Positions } from "~/features/skates/skates.model";
+import { Positions } from "@whatsapp/features/skates/skates.model";
 
 export const onPollSelection = async (
   message: WhatsAppMessage,

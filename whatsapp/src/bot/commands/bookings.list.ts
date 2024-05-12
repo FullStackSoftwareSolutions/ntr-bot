@@ -4,8 +4,8 @@ import { formatList } from "../../features/whatsapp/whatsapp.formatting";
 import {
   getSenderFromMessage,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
-import { Player } from "~/features/players/players.type";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
+import { Player } from "@whatsapp/features/players/players.type";
 
 export const onCommand = async (message: WhatsAppMessage, player: Player) => {
   const bookings = await getAllBookings();

@@ -14,10 +14,10 @@ import {
   isKeyInList,
   PollOptions,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
-import { Player } from "~/features/players/players.type";
-import { getSkateById } from "~/features/skates/skates.db";
-import { getPlayerName } from "~/features/players/players.model";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
+import { Player } from "@whatsapp/features/players/players.type";
+import { getSkateById } from "@whatsapp/features/skates/skates.db";
+import { getPlayerName } from "@whatsapp/features/players/players.model";
 import {
   getSkateMessage,
   getSkateNumGoalieSpotsOpen,
@@ -31,22 +31,22 @@ import {
   getSkateGoaliesInWithSubs,
   getSkatePlayersInWithSubs,
   getSkatePlayersWithSubsUnpaid,
-} from "~/features/skates/skates.model";
-import { Skate } from "~/features/skates/skates.type";
+} from "@whatsapp/features/skates/skates.model";
+import { Skate } from "@whatsapp/features/skates/skates.type";
 import { useSkateState, useState, useUpdateSkateState } from "../state";
 import { Command } from "../commands";
-import { getPlayerByName } from "~/features/players/players.db";
+import { getPlayerByName } from "@whatsapp/features/players/players.db";
 import {
   addSkateSubPlayerHandler,
   getSkateAvailableSubsHandler,
   shuffleSkateTeamsHandler,
   updateSkatePlayerOutHandler,
-} from "~/features/skates/skates.controller";
+} from "@whatsapp/features/skates/skates.controller";
 import {
   getBookingNotifyJid,
   getCostPerSkatePerPlayerForBooking,
-} from "~/features/bookings/bookings.model";
-import { formatCurrency } from "~/formatting/currency";
+} from "@whatsapp/features/bookings/bookings.model";
+import { formatCurrency } from "@formatting/currency";
 
 enum SkateActionsPollOptions {
   PlayerOut = "Player Out",

@@ -1,4 +1,4 @@
-import { playersToSkates, skates } from "~/db/schema";
+import { playersToSkates, skates } from "@whatsapp/db/schema";
 import { db } from "../../db";
 import { and, asc, eq, gt, inArray } from "drizzle-orm";
 

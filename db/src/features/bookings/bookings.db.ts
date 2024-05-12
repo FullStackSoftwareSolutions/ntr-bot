@@ -13,6 +13,17 @@ export const getAllFutureBookings = async () =>
     orderBy: asc(bookings.startDate),
   });
 
+export const getBookingBySlug = async (slug: string) =>
+  db.query.bookings.findFirst({
+    with: {
+      playersToBookings: {
+        with: {
+          player: true,
+        },
+      },
+    },
+    where: eq(bookings.slug, slug),
+  });
 export const getBookingById = async (id: number) =>
   db.query.bookings.findFirst({
     with: {

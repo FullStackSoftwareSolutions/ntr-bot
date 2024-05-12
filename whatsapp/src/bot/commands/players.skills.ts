@@ -6,15 +6,18 @@ import {
 import {
   getSenderFromMessage,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
-import { Player } from "~/features/players/players.type";
-import { getAllGoalies, getAllPlayers } from "~/features/players/players.db";
-import { sortPlayers } from "~/features/skates/skates.model";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
+import { Player } from "@whatsapp/features/players/players.type";
+import {
+  getAllGoalies,
+  getAllPlayers,
+} from "@whatsapp/features/players/players.db";
+import { sortPlayers } from "@whatsapp/features/skates/skates.model";
 import {
   getPlayerName,
   getPlayerSkillLevel,
   getPlayerSkillNumber,
-} from "~/features/players/players.model";
+} from "@whatsapp/features/players/players.model";
 
 export const onCommand = async (message: WhatsAppMessage, player: Player) => {
   const players = await getAllPlayers();

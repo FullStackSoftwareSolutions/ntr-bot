@@ -14,7 +14,7 @@ import {
   primaryKey,
   text,
 } from "drizzle-orm/pg-core";
-import { Positions } from "~/features/skates/skates.model";
+import { Positions } from "@whatsapp/features/skates/skates.model";
 
 export const players = pgTable(
   "players",

@@ -1,17 +1,17 @@
-import { Player, PlayerCreate } from "~/features/players/players.type";
+import { Player, PlayerCreate } from "@whatsapp/features/players/players.type";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
 import {
   formatList,
   stringJoin,
-} from "~/features/whatsapp/whatsapp.formatting";
+} from "@whatsapp/features/whatsapp/whatsapp.formatting";
 import {
   getSenderFromMessage,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
-import { createPlayerHandler } from "~/features/players/players.controller";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
+import { createPlayerHandler } from "@whatsapp/features/players/players.controller";
 import { useState } from "../state";
 import { Command } from "../commands";
-import { playerFieldPrompts } from "~/features/players/players.model";
+import { playerFieldPrompts } from "@whatsapp/features/players/players.model";
 
 export const onCommand = async (
   message: WhatsAppMessage,

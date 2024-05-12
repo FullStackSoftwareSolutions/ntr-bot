@@ -4,9 +4,9 @@ import { Booking, BookingCreate, BookingWithoutPlayers } from "./bookings.type";
 import utcPlugin from "dayjs/plugin/utc";
 import { formatList, stringJoin } from "../whatsapp/whatsapp.formatting";
 import { getPlayerName } from "../players/players.model";
-import { formatCurrency } from "~/formatting/currency";
+import { formatCurrency } from "@formatting/currency";
 import { Positions } from "../skates/skates.model";
-import { parseBoolean } from "~/bot/inputs";
+import { parseBoolean } from "@whatsapp/bot/inputs";
 import {
   getSenderFromMessage,
   WhatsAppMessage,

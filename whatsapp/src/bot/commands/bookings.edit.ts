@@ -15,14 +15,17 @@ import {
   getSenderFromMessage,
   PollOptions,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
 import { useState } from "../state";
-import { Booking, BookingCreate } from "~/features/bookings/bookings.type";
+import {
+  Booking,
+  BookingCreate,
+} from "@whatsapp/features/bookings/bookings.type";
 import { Command } from "../commands";
 import { getPrompt } from "./bookings.add";
-import { bookingFieldPrompts } from "~/features/bookings/bookings.model";
-import { Player } from "~/features/players/players.type";
-import { updateBookingHandler } from "~/features/bookings/bookings.controller";
+import { bookingFieldPrompts } from "@whatsapp/features/bookings/bookings.model";
+import { Player } from "@whatsapp/features/players/players.type";
+import { updateBookingHandler } from "@whatsapp/features/bookings/bookings.controller";
 
 const FieldOptions = Object.keys(bookingFieldPrompts);
 

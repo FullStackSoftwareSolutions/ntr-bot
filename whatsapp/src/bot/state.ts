@@ -1,12 +1,12 @@
 import { createStore } from "zustand/vanilla";
 import { immer } from "zustand/middleware/immer";
-import { WhatsAppMessageKey } from "~/features/whatsapp/whatsapp.model";
+import { WhatsAppMessageKey } from "@whatsapp/features/whatsapp/whatsapp.model";
 import { produce } from "immer";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { LocalStorage } from "node-localstorage";
-import { PlayerCreate } from "~/features/players/players.type";
-import { BookingCreate } from "~/features/bookings/bookings.type";
-import { Positions } from "~/features/skates/skates.model";
+import { PlayerCreate } from "@whatsapp/features/players/players.type";
+import { BookingCreate } from "@whatsapp/features/bookings/bookings.type";
+import { Positions } from "@whatsapp/features/skates/skates.model";
 
 type Commands = {
   activeCommand: string | null;

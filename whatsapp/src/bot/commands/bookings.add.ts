@@ -1,16 +1,16 @@
-import { BookingCreate } from "~/features/bookings/bookings.type";
+import { BookingCreate } from "@whatsapp/features/bookings/bookings.type";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
 import {
   formatList,
   stringJoin,
-} from "~/features/whatsapp/whatsapp.formatting";
+} from "@whatsapp/features/whatsapp/whatsapp.formatting";
 import {
   getSenderFromMessage,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
-import { Player } from "~/features/players/players.type";
-import { createBookingHandler } from "~/features/bookings/bookings.controller";
-import { bookingFieldPrompts } from "~/features/bookings/bookings.model";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
+import { Player } from "@whatsapp/features/players/players.type";
+import { createBookingHandler } from "@whatsapp/features/bookings/bookings.controller";
+import { bookingFieldPrompts } from "@whatsapp/features/bookings/bookings.model";
 import { useState } from "../state";
 import { Command } from "../commands";
 

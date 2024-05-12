@@ -11,7 +11,7 @@ import {
   getPlayerSkillLevel,
   getPlayerSkillNumber,
 } from "../players/players.model";
-import { timeToEmoji } from "~/formatting/time.emoji";
+import { timeToEmoji } from "@formatting/time";
 import { Player } from "../players/players.type";
 
 export enum Teams {

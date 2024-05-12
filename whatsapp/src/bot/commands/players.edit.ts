@@ -12,12 +12,12 @@ import {
   getSenderFromMessage,
   PollOptions,
   WhatsAppMessage,
-} from "~/features/whatsapp/whatsapp.model";
+} from "@whatsapp/features/whatsapp/whatsapp.model";
 import { useState } from "../state";
-import { Player, PlayerCreate } from "~/features/players/players.type";
+import { Player, PlayerCreate } from "@whatsapp/features/players/players.type";
 import { Command } from "../commands";
 import { getPrompt } from "./players.add";
-import { playerFieldPrompts } from "~/features/players/players.model";
+import { playerFieldPrompts } from "@whatsapp/features/players/players.model";
 
 const FieldOptions = Object.keys(playerFieldPrompts);
 
