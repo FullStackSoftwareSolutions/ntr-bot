@@ -32,6 +32,6 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-  "eclude": ["node_modules"],
+  "exclude": ["node_modules"],
   "extends": "../tsconfig.json"
 }

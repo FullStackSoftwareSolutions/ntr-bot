@@ -3,6 +3,8 @@ import {
   getFutureSkatesForBooking,
   getSkatesForBooking,
 } from "@db/features/skates/skates.db";
+import { getJidFromNumber } from "@whatsapp/features/whatsapp/whatsapp.model";
+import { trpc } from "@whatsapp/trpc/client";
 
 export const getAllSkatesHandler = async () => {
   return getAllSkates();
@@ -29,6 +31,9 @@ export const announceSkateHandler = async ({
 }: {
   skateId: number;
 }) => {
-  console.log("whats app time bitch");
+  const message = await trpc.sendMessage.mutate({
+    toJid: getJidFromNumber("+14164644510"),
+    message: "test",
+  });
   // TODO
 };

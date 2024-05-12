@@ -19,6 +19,7 @@
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "jsx": "preserve",
     "incremental": true,
 
     /* Path Aliases */
@@ -30,14 +31,5 @@
       "@formatting/*": ["./formatting/src/*"]
     }
   },
-  "include": [
-    ".eslintrc.cjs",
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.js",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "native"]
 }

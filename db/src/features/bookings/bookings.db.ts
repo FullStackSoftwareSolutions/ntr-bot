@@ -50,6 +50,7 @@ export const getBookingByName = async (name: string) =>
 
 export const createBooking = async (bookingData: {
   name: string;
+  slug: string;
   numPlayers: number;
   location: string;
   cost: string;
