@@ -1,5 +1,5 @@
-import { skatesRouter } from "~/server/api/routers/skates";
-import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { skatesRouter } from "@next/features/skates.router";
+import { createCallerFactory, createTRPCRouter } from "@next/server/api/trpc";
 
 /**
  * This is the primary router for your server.

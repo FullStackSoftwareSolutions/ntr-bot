@@ -1,10 +1,10 @@
-import "~/styles/globals.css";
+import "@next/styles/globals.css";
 
 import { Jost } from "next/font/google";
 
-import ClientProviders from "~/providers/ClientProviders";
 import { ClerkProvider } from "@clerk/nextjs";
-import Navbar from "~/components/layouts/Navbar";
+import Navbar from "@next/components/layouts/Navbar";
+import ClientProviders from "@next/providers/ClientProviders";
 
 export const metadata = {
   title: "Create T3 App",

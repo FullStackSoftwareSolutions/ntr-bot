@@ -1,0 +1,1 @@
+ALTER TABLE "players_to_skates" ADD COLUMN "added_on" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL;

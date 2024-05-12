@@ -1,0 +1,25 @@
+{
+  "name": "ntr-bot-db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "migrate:gen": "drizzle-kit generate:pg && npm run migrate",
+    "migrate": "tsx src/db/migrate.ts",
+    "studio": "drizzle-kit studio"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.30.10",
+    "node-localstorage": "^3.0.5",
+    "postgres": "^3.4.4",
+    "tsx": "^4.9.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.18",
+    "pg": "^8.11.5"
+  }
+}

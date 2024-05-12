@@ -2,7 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import { useState } from "react";
 import SuperJSON from "superjson";
-import { api, getBaseUrl, getQueryClient } from "~/trpc/react";
+import { api, getBaseUrl, getQueryClient } from "@next/trpc/react";
 
 export function TRPCProvider(props: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
