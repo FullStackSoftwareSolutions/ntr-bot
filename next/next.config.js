@@ -5,6 +5,14 @@
 await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  // ...
+  webpack: (config, { webpack }) => {
+    config.externals.push("cloudflare:sockets");
+    config.externalsType = "commonjs";
+
+    return config;
+  },
+};
 
 export default config;

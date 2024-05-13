@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "@next/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
   getAllPlayersHandler,
   getPlayerByEmailHandler,
@@ -6,8 +6,8 @@ import {
 import { z } from "zod";
 
 export const playersRouter = createTRPCRouter({
-  getAll: publicProcedure.query(() => getAllPlayersHandler()),
-  getByEmail: publicProcedure
+  getAll: protectedProcedure.query(() => getAllPlayersHandler()),
+  getByEmail: protectedProcedure
     .input(
       z.object({
         email: z.string(),

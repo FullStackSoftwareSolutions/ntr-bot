@@ -31,11 +31,15 @@ export const players = pgTable(
     admin: boolean("admin").notNull().default(false),
     isPlayer: boolean("is_player").notNull().default(true),
     isGoalie: boolean("is_goalie").notNull().default(false),
+    clerkUserId: varchar("clerk_user_id").unique(),
   },
   (players) => ({
     playersEmailIdx: index("players_email_idx").on(players.email),
     playersPhoneNumberIdx: index("players_phone_number_idx").on(
       players.phoneNumber
+    ),
+    playersClerkUserIdIdx: index("players_clerk_user_id_idx").on(
+      players.clerkUserId
     ),
   })
 );

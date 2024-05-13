@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "@next/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
   getAllBookingsHandler,
   getAllFutureBookingsHandler,
@@ -7,7 +7,7 @@ import {
 import { z } from "zod";
 
 export const bookingsRouter = createTRPCRouter({
-  getBySlug: publicProcedure
+  getBySlug: protectedProcedure
     .input(
       z.object({
         slug: z.string(),
@@ -16,6 +16,6 @@ export const bookingsRouter = createTRPCRouter({
     .query(({ input }) => {
       return getBookingBySlugHandler(input.slug);
     }),
-  getAll: publicProcedure.query(() => getAllBookingsHandler()),
-  getAllFuture: publicProcedure.query(() => getAllFutureBookingsHandler()),
+  getAll: protectedProcedure.query(() => getAllBookingsHandler()),
+  getAllFuture: protectedProcedure.query(() => getAllFutureBookingsHandler()),
 });

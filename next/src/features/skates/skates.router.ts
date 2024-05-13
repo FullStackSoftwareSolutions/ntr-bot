@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "@next/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
   announceSkateHandler,
   getAllFutureSkatesForBookingHandler,
@@ -10,19 +10,19 @@ import {
 import { z } from "zod";
 
 export const skatesRouter = createTRPCRouter({
-  getAll: publicProcedure.query(() => getAllSkatesHandler()),
-  getFuture: publicProcedure.query(() => getFutureSkatesHandler()),
-  getAllForBooking: publicProcedure
+  getAll: protectedProcedure.query(() => getAllSkatesHandler()),
+  getFuture: protectedProcedure.query(() => getFutureSkatesHandler()),
+  getAllForBooking: protectedProcedure
     .input(z.object({ bookingId: z.number() }))
     .query(({ input: { bookingId } }) =>
       getAllSkatesForBookingHandler({ bookingId }),
     ),
-  getAllFutureForBooking: publicProcedure
+  getAllFutureForBooking: protectedProcedure
     .input(z.object({ bookingId: z.number() }))
     .query(({ input: { bookingId } }) =>
       getAllFutureSkatesForBookingHandler({ bookingId }),
     ),
-  getBySlugs: publicProcedure
+  getBySlugs: protectedProcedure
     .input(
       z.object({
         bookingSlug: z.string(),
@@ -35,7 +35,7 @@ export const skatesRouter = createTRPCRouter({
         skateSlug,
       }),
     ),
-  announce: publicProcedure
+  announce: protectedProcedure
     .input(
       z.object({
         skateId: z.number(),
