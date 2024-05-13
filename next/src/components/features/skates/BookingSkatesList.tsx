@@ -18,7 +18,7 @@ const BookingSkatesList = ({
   });
 
   return (
-    <div className={cn("flex flex-wrap gap-4", className)}>
+    <div className={cn("flex flex-wrap items-start gap-4", className)}>
       {skates?.map((skate) => <SkateCard key={skate.id} skate={skate} />)}
     </div>
   );

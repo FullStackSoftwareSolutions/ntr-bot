@@ -22,37 +22,23 @@ type SkateCardProps = {
 };
 
 const SkateCard = ({ skate }: SkateCardProps) => {
-  const mutation = api.skates.announce.useMutation();
-
-  const announceSkate = () => {
-    mutation.mutate({ skateId: skate.id });
-  };
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{getSkateTimeMessage(skate)}</CardTitle>
-        <CardDescription>
-          {formatDateRelative(skate.scheduledOn)}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col items-start gap-4">
-        <SkateOpenSpots skate={skate} />
-        <SkateFilledSpots skate={skate} />
-      </CardContent>
-      <CardFooter>
-        <Button className="flex-1" onClick={() => announceSkate()}>
-          Announce
-        </Button>
-        {skate.slug && (
-          <Button className="flex-1" asChild>
-            <Link href={`/bookings/${skate.booking.slug}/${skate.slug}`}>
-              Manage
-            </Link>
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+    <Button asChild variant="ghost" className="h-auto p-0.5 text-start">
+      <Link href={`/booking/${skate.booking.slug}/${skate.slug}`}>
+        <Card>
+          <CardHeader>
+            <CardTitle>{getSkateTimeMessage(skate)}</CardTitle>
+            <CardDescription>
+              {formatDateRelative(skate.scheduledOn)}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col items-start gap-4">
+            <SkateOpenSpots skate={skate} />
+            <SkateFilledSpots skate={skate} />
+          </CardContent>
+        </Card>
+      </Link>
+    </Button>
   );
 };
 

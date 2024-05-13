@@ -5,6 +5,7 @@ import {
   getAllSkatesForBookingHandler,
   getAllSkatesHandler,
   getFutureSkatesHandler,
+  getSkateBySlugsHandler,
 } from "./skates.controller";
 import { z } from "zod";
 
@@ -20,6 +21,19 @@ export const skatesRouter = createTRPCRouter({
     .input(z.object({ bookingId: z.number() }))
     .query(({ input: { bookingId } }) =>
       getAllFutureSkatesForBookingHandler({ bookingId }),
+    ),
+  getBySlugs: publicProcedure
+    .input(
+      z.object({
+        bookingSlug: z.string(),
+        skateSlug: z.string(),
+      }),
+    )
+    .query(({ input: { bookingSlug, skateSlug } }) =>
+      getSkateBySlugsHandler({
+        bookingSlug,
+        skateSlug,
+      }),
     ),
   announce: publicProcedure
     .input(
