@@ -23,8 +23,32 @@ export const getAllSkates = async () =>
   db.query.skates.findMany({
     with: {
       booking: true,
+      playersToSkates: {
+        with: {
+          player: true,
+          substitutePlayer: true,
+        },
+        orderBy: asc(playersToSkates.addedOn),
+      },
     },
   });
+
+export const getFutureSkates = async () =>
+  db.query.skates.findMany({
+    with: {
+      booking: true,
+      playersToSkates: {
+        with: {
+          player: true,
+          substitutePlayer: true,
+        },
+        orderBy: asc(playersToSkates.addedOn),
+      },
+    },
+    where: and(gt(skates.scheduledOn, new Date())),
+    orderBy: asc(skates.scheduledOn),
+  });
+
 export const getSkatesForBooking = async (bookingId: number) =>
   db.query.skates.findMany({
     with: {

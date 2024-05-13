@@ -1,5 +1,6 @@
 import {
   getAllSkates,
+  getFutureSkates,
   getFutureSkatesForBooking,
   getSkatesForBooking,
 } from "@db/features/skates/skates.db";
@@ -8,6 +9,10 @@ import { trpc } from "@whatsapp/trpc/client";
 
 export const getAllSkatesHandler = async () => {
   return getAllSkates();
+};
+
+export const getFutureSkatesHandler = async () => {
+  return getFutureSkates();
 };
 
 export const getAllSkatesForBookingHandler = async ({

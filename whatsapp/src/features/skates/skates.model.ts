@@ -192,7 +192,7 @@ export const getSkateNumPlayerSpotsOpen = (skate: Skate) => {
   return getSkateTotalPlayerSpots(skate) - getSkateNumPlayerSpotsFilled(skate);
 };
 
-export const getSlakateSubstitubeForPlayer = (skate: Skate, player: Player) => {
+export const getSkateSubstitubeForPlayer = (skate: Skate, player: Player) => {
   return skate.playersToSkates.find(
     ({ substitutePlayer, droppedOutOn }) =>
       substitutePlayer?.id === player.id && !!droppedOutOn
@@ -200,7 +200,7 @@ export const getSlakateSubstitubeForPlayer = (skate: Skate, player: Player) => {
 };
 
 const getSkatePlayerSubStrikeoutMessage = (skate: Skate, player: Player) => {
-  const sub = getSlakateSubstitubeForPlayer(skate, player);
+  const sub = getSkateSubstitubeForPlayer(skate, player);
   if (!sub) {
     return "";
   }
