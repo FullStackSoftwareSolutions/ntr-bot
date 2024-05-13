@@ -59,6 +59,11 @@ export const getPlayerByPhoneNumber = async (number: string) =>
     where: eq(players.phoneNumber, number),
   });
 
+export const getPlayerByEmail = async (email: string) =>
+  db.query.players.findFirst({
+    where: eq(players.email, email),
+  });
+
 export const getPlayersForBooking = async (bookingId: number) =>
   db
     .select({

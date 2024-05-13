@@ -10,16 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@next/components/ui/card";
-import {
-  getSkateNumGoalieSpotsOpen,
-  getSkateNumPlayerSpotsOpen,
-  getSkateTimeMessage,
-} from "@next/features/skates/skates.model";
+import { getSkateTimeMessage } from "@next/features/skates/skates.model";
 import { api } from "@next/trpc/react";
 import Link from "next/link";
 import { formatDateRelative } from "@formatting/dates/calendar";
-import { TriangleAlertIcon } from "lucide-react";
-import { Badge } from "@next/components/ui/badge";
 import SkateOpenSpots from "./SkateOpenSpots";
 import SkateFilledSpots from "./SkateFilledSpots";
 

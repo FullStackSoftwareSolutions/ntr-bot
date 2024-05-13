@@ -6,6 +6,15 @@ export const getPlayerWhatsappJid = (player: Player) =>
 export const getPlayerName = (player: Player) =>
   player.nickname ?? player.fullName;
 
+export const getPlayerInitials = (player: Player) => {
+  const names = player.fullName.split(" ");
+
+  if (names.length === 0) return "";
+  if (names.length === 1) return names[0]!.charAt(0);
+
+  return `${names[0]!.charAt(0)}${names[names.length - 1]!.charAt(0)}`;
+};
+
 export const getPlayerSkillLevel = (player: Player) => player.skillLevel ?? "C";
 export const getPlayerSkillNumber = (player: Player) => {
   const skillLevel = getPlayerSkillLevel(player);
