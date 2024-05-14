@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Skate } from "./skates.type";
+import { Skate } from "@db/features/skates/skates.type";
 
 import {
   formatList,
@@ -12,7 +12,7 @@ import {
   getPlayerSkillNumber,
 } from "../players/players.model";
 import { timeToEmoji } from "@formatting/time";
-import { Player } from "../players/players.type";
+import { Player } from "@db/features/players/players.type";
 
 export enum Teams {
   Black = "black",

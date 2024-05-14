@@ -21,7 +21,7 @@ const Booking = ({ slug }: BookingProps) => {
         <h1 className="text-3xl">{booking.name}</h1>
 
         <div className="flex items-center gap-4">
-          <h2 className="text-xl text-muted">{booking.announceName}</h2>
+          <h2 className="text-xl text-foreground/40">{booking.announceName}</h2>
 
           <div className="flex items-center gap-1">
             <MapPinIcon className="text-secondary" />

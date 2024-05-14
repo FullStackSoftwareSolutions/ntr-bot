@@ -3,12 +3,18 @@ import {
   getAllSkates,
   getFutureSkates,
   getFutureSkatesForBooking,
+  getSkateById,
   getSkateBySlugAndBooking,
-  getSkateBySlugs,
   getSkatesForBooking,
+  updateSkatePlayer,
 } from "@db/features/skates/skates.db";
 import { getJidFromNumber } from "@whatsapp/features/whatsapp/whatsapp.model";
 import { trpc } from "@whatsapp/trpc/client";
+import {
+  getSkatePlayersForPositionIn,
+  getSkatePlayersForPositionSubsIn,
+  type Positions,
+} from "./skates.model";
 
 export const getAllSkatesHandler = async () => {
   return getAllSkates();
@@ -52,14 +58,47 @@ export const getSkateBySlugsHandler = async ({
   });
 };
 
-export const announceSkateHandler = async ({
+export const skateDropOutPlayerHandler = async ({
+  skateId,
+  playerId,
+  position,
+}: {
+  skateId: number;
+  playerId: number;
+  position: Positions;
+}) => {
+  const skate = await getSkateById(skateId);
+  if (!skate) {
+    throw new Error("No skate found!");
+  }
+
+  const playerToSkate = getSkatePlayersForPositionIn(position, skate).find(
+    (playerToSkate) => playerToSkate.player.id === playerId,
+  );
+  if (!playerToSkate) {
+    throw new Error("Player not found in skate!");
+  }
+
+  if (playerToSkate.droppedOutOn) {
+    throw new Error("Player is already out!");
+  }
+
+  // need to look if there is a sub for this player
+  const subPlayerToSkate = getSkatePlayersForPositionSubsIn(
+    position,
+    skate,
+  )?.[0];
+
+  await updateSkatePlayer(playerToSkate.id, {
+    droppedOutOn: new Date(),
+    substitutePlayerId: subPlayerToSkate?.player.id ?? null,
+  });
+};
+
+export const announceSpotsSkateHandler = async ({
   skateId,
 }: {
   skateId: number;
 }) => {
-  const message = await trpc.sendMessage.mutate({
-    toJid: getJidFromNumber("+14164644510"),
-    message: "test",
-  });
-  // TODO
+  await trpc.skates.announceSpots.mutate({ skateId });
 };

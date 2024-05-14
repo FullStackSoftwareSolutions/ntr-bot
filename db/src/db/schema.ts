@@ -21,8 +21,8 @@ export const players = pgTable(
     id: serial("id").unique().primaryKey(),
     fullName: varchar("full_name", { length: 256 }).notNull(),
     nickname: varchar("nickname", { length: 256 }),
-    email: varchar("email").unique().notNull(),
-    phoneNumber: varchar("phone_number").notNull().unique(),
+    email: varchar("email").unique(),
+    phoneNumber: varchar("phone_number").unique(),
     skillLevel: varchar("skill_level"),
     notes: text("notes"),
     dateAdded: timestamp("date_added")

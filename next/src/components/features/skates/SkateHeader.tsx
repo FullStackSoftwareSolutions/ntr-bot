@@ -1,19 +1,20 @@
 "use client";
 
 import { api } from "@next/trpc/react";
-import { MapPinIcon } from "lucide-react";
-import SkateCard from "./SkateCard";
-import { formatDateRelative } from "@formatting/dates/calendar";
 import { getSkateTimeMessage } from "@next/features/skates/skates.model";
 import SkateOpenSpots from "./SkateOpenSpots";
-import SkateFilledSpots from "./SkateFilledSpots";
 
-type SkateProps = {
+type SkateHeaderProps = {
   bookingSlug: string;
   skateSlug: string;
+  children: React.ReactNode;
 };
 
-const Skate = ({ bookingSlug, skateSlug }: SkateProps) => {
+const SkateHeader = ({
+  bookingSlug,
+  skateSlug,
+  children,
+}: SkateHeaderProps) => {
   const { data: skate } = api.skates.getBySlugs.useQuery({
     bookingSlug,
     skateSlug,
@@ -27,13 +28,13 @@ const Skate = ({ bookingSlug, skateSlug }: SkateProps) => {
     <div className="flex flex-col items-start gap-8">
       <div>
         <h1 className="text-3xl">{getSkateTimeMessage(skate)}</h1>
-        <p className="text-lg text-muted">{skate.booking.name}</p>
+        <p className="text-lg text-foreground/40">{skate.booking.name}</p>
       </div>
 
       <SkateOpenSpots skate={skate} />
-      <SkateFilledSpots skate={skate} />
+      {children}
     </div>
   );
 };
 
-export default Skate;
+export default SkateHeader;

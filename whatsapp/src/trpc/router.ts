@@ -1,20 +1,8 @@
-import { sendMessage } from "@whatsapp/integrations/whatsapp/whatsapp.service";
-import { publicProcedure, router } from "./server";
-import { z } from "zod";
+import { router } from "./server";
+import { skatesRouter } from "@whatsapp/api/skates.router";
 
 export const appRouter = router({
-  sendMessage: publicProcedure
-    .input(
-      z.object({
-        toJid: z.string(),
-        message: z.string(),
-      })
-    )
-    .mutation(({ input: { toJid, message } }) =>
-      sendMessage(toJid, {
-        text: message,
-      })
-    ),
+  skates: skatesRouter,
 });
 
 // Export type router type signature,

@@ -21,7 +21,7 @@ type PlayerCardProps = {
 const PlayerCard = ({ player }: PlayerCardProps) => {
   return (
     <Button asChild variant="ghost" className="h-auto p-0.5 text-start">
-      <Link href={`/player/${encodeURIComponent(player.email)}`}>
+      <Link href={`/player/${encodeURIComponent(player.email ?? player.id)}`}>
         <Card className="w-full overflow-hidden hover:bg-card/90 sm:w-64">
           <CardHeader>
             <CardTitle className="flex flex-wrap items-start gap-2 whitespace-pre-wrap">
@@ -35,7 +35,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                 {player.isGoalie && <Badge variant="outline">Goalie</Badge>}
                 {player.isPlayer && <Badge variant="outline">Player</Badge>}
               </div>
-              <div className="text-muted">
+              <div className="text-foreground/40">
                 <p>{player.email}</p>
                 <p>{player.phoneNumber}</p>
               </div>

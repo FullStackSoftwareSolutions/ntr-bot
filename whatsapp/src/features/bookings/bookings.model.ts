@@ -85,12 +85,14 @@ export const getPlayersAmountPaidForBooking = (booking: Booking) => {
 
 export const getBookingNotifyJid = (
   booking: BookingWithoutPlayers,
-  message: WhatsAppMessage
+  message?: WhatsAppMessage
 ) => {
   if (booking.notifyGroup && booking.whatsAppGroupJid) {
     return booking.whatsAppGroupJid;
   }
-  return getSenderFromMessage(message);
+  if (message) {
+    return getSenderFromMessage(message);
+  }
 };
 
 export const getBookingMessage = (booking: Booking) => {

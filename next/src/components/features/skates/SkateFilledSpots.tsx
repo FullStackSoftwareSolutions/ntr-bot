@@ -1,49 +1,49 @@
-import { type Player } from "@db/features/players/players.type";
 import { type Skate } from "@db/features/skates/skates.type";
-import { getPlayerName } from "@next/features/players/players.model";
 import {
-  getSkateGoaliesIn,
-  getSkatePlayersIn,
+  getSkatePlayersForPosition,
+  Positions,
 } from "@next/features/skates/skates.model";
+import SkateSpotCard from "./SkateSpotCard";
+import SkateAddSubButton from "./SkateAddSubButton";
 
 type SkateFilledSpotsProps = {
   skate: Skate;
 };
 
 const SkateFilledSpots = ({ skate }: SkateFilledSpotsProps) => {
-  const players = getSkatePlayersIn(skate);
-  const goalies = getSkateGoaliesIn(skate);
+  const players = getSkatePlayersForPosition(Positions.Player, skate);
+  const goalies = getSkatePlayersForPosition(Positions.Goalie, skate);
 
   return (
-    <div className="">
+    <div className="flex flex-col items-start">
       <h3 className="text-xl">Players</h3>
-      <ul className="m-4">
-        {players.map(({ player }) => (
-          <li key={player.id}>
-            <SkateFilledSpot player={player} />
-          </li>
+      <div className="m-4 flex flex-wrap items-stretch justify-stretch gap-2">
+        {players.map(({ player, droppedOutOn }) => (
+          <SkateSpotCard
+            key={player.id}
+            position={Positions.Player}
+            player={player}
+            skate={skate}
+            droppedOutOn={droppedOutOn}
+          />
         ))}
-      </ul>
+        <SkateAddSubButton skate={skate} position={Positions.Player} />
+      </div>
       <h3 className="text-xl">Goalies</h3>
-      <ul className="m-4">
-        {goalies.map(({ player }) => (
-          <li key={player.id}>
-            <SkateFilledSpot player={player} />
-          </li>
+      <div className="m-4 flex flex-wrap items-stretch justify-stretch gap-2">
+        {goalies.map(({ player, droppedOutOn }) => (
+          <SkateSpotCard
+            key={player.id}
+            position={Positions.Goalie}
+            player={player}
+            skate={skate}
+            droppedOutOn={droppedOutOn}
+          />
         ))}
-      </ul>
+        <SkateAddSubButton skate={skate} position={Positions.Goalie} />
+      </div>
     </div>
   );
 };
-
-type SkateFilledSpotProps = {
-  player: Player;
-};
-
-const SkateFilledSpot = ({ player }: SkateFilledSpotProps) => (
-  <div>
-    <span>{getPlayerName(player)}</span>
-  </div>
-);
 
 export default SkateFilledSpots;

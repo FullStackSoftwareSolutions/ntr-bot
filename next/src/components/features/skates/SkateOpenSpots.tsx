@@ -15,7 +15,7 @@ const SkateOpenSpots = ({ skate }: SkateOpenSpotsProps) => {
   const numPlayerSpotsOpen = getSkateNumPlayerSpotsOpen(skate);
 
   return (
-    <>
+    <div className="flex flex-col items-start gap-1">
       {numGoalieSpotsOpen > 0 && (
         <Badge
           variant="destructive"
@@ -33,7 +33,7 @@ const SkateOpenSpots = ({ skate }: SkateOpenSpotsProps) => {
           {numPlayerSpotsOpen > 1 ? "s" : ""} open
         </Badge>
       )}
-    </>
+    </div>
   );
 };
 

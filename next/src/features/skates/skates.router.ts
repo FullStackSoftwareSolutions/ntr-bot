@@ -1,13 +1,15 @@
 import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
-  announceSkateHandler,
+  announceSpotsSkateHandler,
   getAllFutureSkatesForBookingHandler,
   getAllSkatesForBookingHandler,
   getAllSkatesHandler,
   getFutureSkatesHandler,
   getSkateBySlugsHandler,
+  skateDropOutPlayerHandler,
 } from "./skates.controller";
 import { z } from "zod";
+import { type Positions } from "./skates.model";
 
 export const skatesRouter = createTRPCRouter({
   getAll: protectedProcedure.query(() => getAllSkatesHandler()),
@@ -35,11 +37,28 @@ export const skatesRouter = createTRPCRouter({
         skateSlug,
       }),
     ),
-  announce: protectedProcedure
+  dropOutPlayer: protectedProcedure
+    .input(
+      z.object({
+        skateId: z.number(),
+        playerId: z.number(),
+        position: z.string(),
+      }),
+    )
+    .mutation(({ input: { skateId, playerId, position } }) =>
+      skateDropOutPlayerHandler({
+        skateId,
+        playerId,
+        position: position as Positions,
+      }),
+    ),
+  announceSpots: protectedProcedure
     .input(
       z.object({
         skateId: z.number(),
       }),
     )
-    .mutation(({ input: { skateId } }) => announceSkateHandler({ skateId })),
+    .mutation(({ input: { skateId } }) =>
+      announceSpotsSkateHandler({ skateId }),
+    ),
 });

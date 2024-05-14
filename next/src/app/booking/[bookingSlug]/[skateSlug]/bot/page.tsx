@@ -1,9 +1,9 @@
 "use client";
 
-import SkateFilledSpots from "@next/components/features/skates/SkateFilledSpots";
+import AnnounceSkateSpotsButton from "@next/components/features/skates/bot/AnnounceSkateSpotsButton";
 import { api } from "@next/trpc/react";
 
-export default function BookingSkatePage({
+export default function SkateBotPageTab({
   params,
 }: {
   params: { bookingSlug: string; skateSlug: string };
@@ -17,5 +17,9 @@ export default function BookingSkatePage({
     return null;
   }
 
-  return <SkateFilledSpots skate={skate} />;
+  return (
+    <div className="flex">
+      <AnnounceSkateSpotsButton skate={skate} />
+    </div>
+  );
 }

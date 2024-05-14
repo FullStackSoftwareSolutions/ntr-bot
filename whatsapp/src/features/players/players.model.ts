@@ -1,9 +1,9 @@
+import { Player, PlayerCreate } from "@db/features/players/players.type";
 import {
   parseBoolean,
   parseEmail,
   parsePhoneNumber,
 } from "@whatsapp/bot/inputs";
-import { Player, PlayerCreate } from "./players.type";
 
 export const getPlayerWhatsappJid = (player: Player) =>
   `${player.phoneNumber}@s.whatsapp.net`;

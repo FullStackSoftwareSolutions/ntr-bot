@@ -27,13 +27,25 @@ export const getSkateTimeMessage = (skate: Skate) => {
   return formatDateTimeWithEmoji(skate.scheduledOn);
 };
 
-const getSkatePlayersForPosition = (
+export const getSkatePlayersForPosition = (
   positionChecked: Positions,
   skate: Skate,
 ) => {
   return skate.playersToSkates
     .filter(({ position }) => (position as Positions) === positionChecked)
-    .sort((a, b) => a.addedOn.getTime() - b.addedOn.getTime());
+    .sort((a, b) => {
+      if (!a.droppedOutOn && b.droppedOutOn) {
+        return -1;
+      }
+      if (a.droppedOutOn && !b.droppedOutOn) {
+        return 1;
+      }
+
+      if (a.droppedOutOn && b.droppedOutOn) {
+        return a.droppedOutOn.getTime() - b.droppedOutOn.getTime();
+      }
+      return a.addedOn.getTime() - b.addedOn.getTime();
+    });
 };
 export const getSkatePlayersForPositionIn = (
   position: Positions,
