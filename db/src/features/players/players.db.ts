@@ -24,7 +24,7 @@ export const updatePlayerClerkUserId = async (
 
 export const getAllPlayersAndGoalies = async () =>
   db.query.players.findMany({
-    orderBy: asc(players.dateAdded),
+    orderBy: [asc(players.dateAdded), asc(players.id)],
   });
 export const getAllPlayers = async () =>
   db.query.players.findMany({

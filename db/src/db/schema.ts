@@ -23,7 +23,8 @@ export const players = pgTable(
     nickname: varchar("nickname", { length: 256 }),
     email: varchar("email").unique(),
     phoneNumber: varchar("phone_number").unique(),
-    skillLevel: varchar("skill_level"),
+    skillLevelLetter: varchar("skill_level_letter"),
+    skillLevel: integer("skill_level"),
     notes: text("notes"),
     dateAdded: timestamp("date_added")
       .notNull()

@@ -11,17 +11,22 @@ import Link from "next/link";
 import {
   getPlayerName,
   getPlayerSkillLevel,
+  getPlayerSkillNumber,
 } from "@next/features/players/players.model";
 import { Badge } from "@next/components/ui/badge";
 
 type PlayerAvatarPopoverProps = {
   player: Player;
+  tabindex?: number;
 };
 
-const PlayerAvatarPopover = ({ player }: PlayerAvatarPopoverProps) => {
+const PlayerAvatarPopover = ({
+  player,
+  ...props
+}: PlayerAvatarPopoverProps) => {
   return (
     <Popover>
-      <PopoverTrigger>
+      <PopoverTrigger {...props}>
         <PlayerAvatar player={player} />
       </PopoverTrigger>
       <PopoverContent className="w-auto">
@@ -31,6 +36,7 @@ const PlayerAvatarPopover = ({ player }: PlayerAvatarPopoverProps) => {
             <h3 className="whitespace-nowrap text-3xl">
               {getPlayerName(player)}
             </h3>
+            <Badge variant="secondary">{getPlayerSkillNumber(player)}</Badge>
             <Badge variant="secondary">{getPlayerSkillLevel(player)}</Badge>
             <Button asChild variant="ghost" className="ml-auto">
               <Link href={`/player/${player.email}`}>

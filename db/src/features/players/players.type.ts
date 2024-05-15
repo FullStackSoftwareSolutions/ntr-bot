@@ -5,7 +5,8 @@ export type Player = {
   nickname: string | null;
   phoneNumber: string | null;
   admin: boolean;
-  skillLevel: string | null;
+  skillLevel: number | null;
+  skillLevelLetter: string | null;
   isPlayer: boolean;
   isGoalie: boolean;
   notes: string | null;
@@ -17,7 +18,7 @@ export type PlayerCreate = {
   fullName: string;
   nickname: string;
   phoneNumber: string;
-  skillLevel: string;
+  skillLevel: number | null;
   isPlayer: boolean;
   isGoalie: boolean;
   notes: string;

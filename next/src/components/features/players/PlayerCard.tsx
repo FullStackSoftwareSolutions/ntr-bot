@@ -10,7 +10,7 @@ import {
 } from "@next/components/ui/card";
 import {
   getPlayerName,
-  getPlayerSkillLevel,
+  getPlayerSkillNumber,
 } from "@next/features/players/players.model";
 import Link from "next/link";
 
@@ -27,7 +27,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
             <CardTitle className="flex flex-wrap items-start gap-2 whitespace-pre-wrap">
               {getPlayerName(player)}
               <Badge variant="secondary" className="ml-auto">
-                {getPlayerSkillLevel(player)}
+                {getPlayerSkillNumber(player)}
               </Badge>
             </CardTitle>
             <CardDescription className="flex flex-col gap-4">

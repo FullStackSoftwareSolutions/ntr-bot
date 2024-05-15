@@ -3,11 +3,10 @@
 import { type Player } from "@db/features/players/players.type";
 import { formatDateTime } from "@formatting/dates";
 import { Badge } from "@next/components/ui/badge";
-import { Button } from "@next/components/ui/button";
 import { Card, CardFooter } from "@next/components/ui/card";
 import {
   getPlayerName,
-  getPlayerSkillLevel,
+  getPlayerSkillNumber,
 } from "@next/features/players/players.model";
 import PlayerAvatarPopover from "../players/PlayerAvatarPopover";
 import SkateDropOutButton from "./SkateDropOutButton";
@@ -33,7 +32,7 @@ const SkateSpotCard = ({
         <PlayerAvatarPopover player={player} />
         {getPlayerName(player)}
         <Badge variant="secondary" className="ml-auto">
-          {getPlayerSkillLevel(player)}
+          {getPlayerSkillNumber(player)}
         </Badge>
       </div>
       {!!droppedOutOn && (

@@ -8,6 +8,7 @@ import {
 } from "@next/features/players/players.model";
 import { api } from "@next/trpc/react";
 import PlayerAvatar from "./PlayerAvatar";
+import PlayerSkillEditForm from "./edit/PlayerSkillEditForm";
 
 type PlayerProps = {
   email: string;
@@ -52,6 +53,7 @@ const Player = ({ email }: PlayerProps) => {
           <p>{player.notes}</p>
         </div>
       )}
+      <PlayerSkillEditForm player={player} />
     </div>
   );
 };

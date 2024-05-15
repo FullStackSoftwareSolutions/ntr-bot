@@ -15,8 +15,13 @@ export const getPlayerInitials = (player: Player) => {
   return `${names[0]!.charAt(0)}${names[names.length - 1]!.charAt(0)}`;
 };
 
-export const getPlayerSkillLevel = (player: Player) => player.skillLevel ?? "C";
+export const getPlayerSkillLevel = (player: Player) =>
+  player.skillLevelLetter ?? "C";
 export const getPlayerSkillNumber = (player: Player) => {
+  if (player.skillLevel != null) {
+    return player.skillLevel;
+  }
+
   const skillLevel = getPlayerSkillLevel(player);
   switch (skillLevel) {
     case "A":
