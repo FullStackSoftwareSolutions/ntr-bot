@@ -14,7 +14,6 @@ import {
   primaryKey,
   text,
 } from "drizzle-orm/pg-core";
-import { Positions } from "@whatsapp/features/skates/skates.model";
 
 export const players = pgTable(
   "players",
@@ -22,8 +21,8 @@ export const players = pgTable(
     id: serial("id").unique().primaryKey(),
     fullName: varchar("full_name", { length: 256 }).notNull(),
     nickname: varchar("nickname", { length: 256 }),
-    email: varchar("email").unique().notNull(),
-    phoneNumber: varchar("phone_number").notNull().unique(),
+    email: varchar("email").unique(),
+    phoneNumber: varchar("phone_number").unique(),
     skillLevelLetter: varchar("skill_level_letter"),
     skillLevel: integer("skill_level"),
     notes: text("notes"),
@@ -33,11 +32,15 @@ export const players = pgTable(
     admin: boolean("admin").notNull().default(false),
     isPlayer: boolean("is_player").notNull().default(true),
     isGoalie: boolean("is_goalie").notNull().default(false),
+    clerkUserId: varchar("clerk_user_id").unique(),
   },
   (players) => ({
     playersEmailIdx: index("players_email_idx").on(players.email),
     playersPhoneNumberIdx: index("players_phone_number_idx").on(
       players.phoneNumber
+    ),
+    playersClerkUserIdIdx: index("players_clerk_user_id_idx").on(
+      players.clerkUserId
     ),
   })
 );
@@ -54,6 +57,7 @@ export const playersRelations = relations(players, ({ many }) => ({
 
 export const skates = pgTable("skates", {
   id: serial("id").unique().primaryKey(),
+  slug: varchar("slug"),
   scheduledOn: timestamp("scheduled_on").notNull(),
   bookingId: integer("booking_id")
     .notNull()
@@ -80,7 +84,7 @@ export const playersToSkates = pgTable("players_to_skates", {
     () => players.id
   ),
   paid: boolean("paid").notNull().default(false),
-  position: varchar("position").notNull().default(Positions.Player),
+  position: varchar("position").notNull().default("Player"),
   addedOn: timestamp("added_on")
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
@@ -110,6 +114,7 @@ export const playersToSkatesRelations = relations(
 
 export const bookings = pgTable("bookings", {
   id: serial("id").unique().primaryKey(),
+  slug: varchar("slug").notNull().unique(),
   name: varchar("name").notNull().unique(),
   announceName: varchar("announce_name"),
   numPlayers: integer("num_players").default(14).notNull(),
@@ -145,7 +150,7 @@ export const playersToBookings = pgTable(
       .notNull()
       .references(() => bookings.id),
     amountPaid: numeric("amount_paid"),
-    position: varchar("position").notNull().default(Positions.Player),
+    position: varchar("position").notNull().default("Player"),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.playerId, t.bookingId] }),

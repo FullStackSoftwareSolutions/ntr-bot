@@ -386,33 +386,48 @@ export const sendSubPlayerPollMessage = async (
 };
 
 const announceSkate = async (skate: Skate, message: WhatsAppMessage) => {
-  await sendMessage(getBookingNotifyJid(skate.booking, message), {
-    text: getSkateMessage(skate),
-  });
+  const bookingNotifyJid = getBookingNotifyJid(skate.booking, message);
+  if (bookingNotifyJid) {
+    await sendMessage(bookingNotifyJid, {
+      text: getSkateMessage(skate),
+    });
+  }
 };
 
 const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
   const players = getSkatePlayersWithSubsUnpaid(skate);
   const cost = getCostPerSkatePerPlayerForBooking(skate.booking, true);
 
-  const mentions = players.flatMap(({ player, substitutePlayer }) => [
-    getJidFromNumber(player.phoneNumber),
-    getJidFromNumber(substitutePlayer!.phoneNumber),
-  ]);
-
-  const payments = players.map(
-    ({ player, substitutePlayer }) =>
-      `💰 ${getMentionFromNumber(
-        substitutePlayer!.phoneNumber
-      )} send ${formatCurrency(cost)} to ${
-        player.email
-      } 👈 ${getMentionFromNumber(player.phoneNumber)}`
+  const mentions: string[] = players.flatMap(({ player, substitutePlayer }) =>
+    [
+      player.phoneNumber ? getJidFromNumber(player.phoneNumber) : null,
+      substitutePlayer!.phoneNumber
+        ? getJidFromNumber(substitutePlayer!.phoneNumber)
+        : null,
+    ].filter((val) => val != null)
   );
 
-  await sendMessage(getBookingNotifyJid(skate.booking, message), {
-    text: stringJoin(...payments),
-    mentions,
+  const payments = players.map(({ player, substitutePlayer }) => {
+    const subMentionOrName = substitutePlayer!.phoneNumber
+      ? getMentionFromNumber(substitutePlayer!.phoneNumber)
+      : getPlayerName(substitutePlayer!);
+
+    const playerMentionOrName = player!.phoneNumber
+      ? getMentionFromNumber(player!.phoneNumber)
+      : getPlayerName(player!);
+
+    return `💰 ${subMentionOrName} send ${formatCurrency(cost)} to ${
+      player.email
+    } 👈 ${playerMentionOrName}`;
   });
+
+  const bookingNotifyJid = getBookingNotifyJid(skate.booking, message);
+  if (bookingNotifyJid) {
+    await sendMessage(bookingNotifyJid, {
+      text: stringJoin(...payments),
+      mentions,
+    });
+  }
 };
 
 const viewTeams = async (skate: Skate, message: WhatsAppMessage) => {
@@ -422,9 +437,12 @@ const viewTeams = async (skate: Skate, message: WhatsAppMessage) => {
 };
 
 const announceTeams = async (skate: Skate, message: WhatsAppMessage) => {
-  await sendMessage(getBookingNotifyJid(skate.booking, message), {
-    text: getSkateTeamsMessage(skate),
-  });
+  const bookingNotifyJid = getBookingNotifyJid(skate.booking, message);
+  if (bookingNotifyJid) {
+    await sendMessage(bookingNotifyJid, {
+      text: getSkateTeamsMessage(skate),
+    });
+  }
 };
 
 const generateTeams = async (skate: Skate, message: WhatsAppMessage) => {

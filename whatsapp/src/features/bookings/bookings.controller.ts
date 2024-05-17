@@ -7,6 +7,7 @@ import {
 import { createBooking, getBookingById, updateBooking } from "./bookings.db";
 import { getDatesForBooking } from "./bookings.model";
 import { BookingCreate } from "./bookings.type";
+import slugify from "slugify";
 
 export const createBookingHandler = async (bookingData: {
   name: string;
@@ -18,7 +19,11 @@ export const createBookingHandler = async (bookingData: {
   endDate: string;
   bookedById: number;
 }) => {
-  const booking = await createBooking(bookingData);
+  const slug = slugify(bookingData.name);
+  const booking = await createBooking({
+    slug,
+    ...bookingData,
+  });
 
   if (!booking) {
     throw new Error("Failed to create booking");

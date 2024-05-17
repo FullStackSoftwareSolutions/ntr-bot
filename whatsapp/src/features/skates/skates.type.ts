@@ -3,6 +3,7 @@ import { Player } from "../players/players.type";
 
 export type Skate = {
   id: number;
+  slug: string | null;
   scheduledOn: Date;
   playersToSkates: {
     id: number;

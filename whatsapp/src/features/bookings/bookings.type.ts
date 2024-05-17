@@ -1,4 +1,4 @@
-import { Player } from "../players/players.type";
+import { Player } from "@db/features/players/players.type";
 
 export type BookingCreate = {
   name: string;
@@ -17,6 +17,7 @@ export type BookingCreate = {
 
 export type Booking = {
   id: number;
+  slug: string | null;
   name: string | null;
   numPlayers: number;
   numGoalies: number;
