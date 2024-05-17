@@ -81,6 +81,26 @@ const getSkatePlayersForPositionOutWithoutSub = (
     .slice(0, numSpots)
     .sort((a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime());
 };
+export const getSkateNumSpotsForPositionUnfilled = (
+  position: Positions,
+  skate: Skate,
+) => {
+  const numSpots = getSkateTotalSpotsForPosition(position, skate);
+  const numPlayersIn = getSkatePlayersForPosition(position, skate).length;
+
+  return Math.max(numSpots - numPlayersIn, 0);
+};
+export const doesSkateHaveUnfilledSpotsForPosition = (
+  position: Positions,
+  skate: Skate,
+) => getSkateNumSpotsForPositionUnfilled(position, skate) > 0;
+export const getSkateNextDropoutWithoutSub = (
+  skate: Skate,
+  subPosition: Positions,
+) => {
+  return getSkatePlayersForPositionOutWithoutSub(subPosition, skate)?.[0];
+};
+
 const getSkateNumSpotsOpenForPosition = (position: Positions, skate: Skate) => {
   if (position === Positions.Goalie) {
     return getSkateNumGoalieSpotsOpen(skate);

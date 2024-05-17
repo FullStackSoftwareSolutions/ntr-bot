@@ -11,7 +11,8 @@ export const getPlayerWhatsappJid = (player: Player) =>
 export const getPlayerName = (player: Player) =>
   player.nickname ?? player.fullName;
 
-export const getPlayerSkillLevel = (player: Player) => player.skillLevel ?? "C";
+export const getPlayerSkillLevel = (player: Player) =>
+  player.skillLevelLetter ?? "C";
 export const getPlayerSkillNumber = (player: Player) => {
   const skillLevel = getPlayerSkillLevel(player);
   switch (skillLevel) {

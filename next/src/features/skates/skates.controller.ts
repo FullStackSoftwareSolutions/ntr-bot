@@ -1,5 +1,6 @@
 import { getBookingBySlug } from "@db/features/bookings/bookings.db";
 import {
+  addPlayerToSkate,
   getAllSkates,
   getFutureSkates,
   getFutureSkatesForBooking,
@@ -8,13 +9,16 @@ import {
   getSkatesForBooking,
   updateSkatePlayer,
 } from "@db/features/skates/skates.db";
-import { getJidFromNumber } from "@whatsapp/features/whatsapp/whatsapp.model";
 import { trpc } from "@whatsapp/trpc/client";
 import {
+  doesSkateHaveUnfilledSpotsForPosition,
+  getSkateNextDropoutWithoutSub,
+  getSkateNumSpotsForPositionUnfilled,
   getSkatePlayersForPositionIn,
   getSkatePlayersForPositionSubsIn,
-  type Positions,
+  Positions,
 } from "./skates.model";
+import { getAllGoalies, getAllPlayers } from "@db/features/players/players.db";
 
 export const getAllSkatesHandler = async () => {
   return getAllSkates();
@@ -55,6 +59,44 @@ export const getSkateBySlugsHandler = async ({
   return getSkateBySlugAndBooking({
     slug: skateSlug,
     bookingId: booking.id,
+  });
+};
+
+export const skateSubInPlayerHandler = async ({
+  skateId,
+  playerId,
+  position,
+}: {
+  skateId: number;
+  playerId: number;
+  position: Positions;
+}) => {
+  const skate = await getSkateById(skateId);
+  if (!skate) {
+    throw new Error("No skate found!");
+  }
+
+  if (doesSkateHaveUnfilledSpotsForPosition(position, skate)) {
+    const dropoutPlayerToSkate = getSkateNextDropoutWithoutSub(skate, position);
+
+    // if dropout player is the same as the player to be added, remove the dropout
+    if (dropoutPlayerToSkate?.player.id === playerId) {
+      await updateSkatePlayer(dropoutPlayerToSkate.id, {
+        droppedOutOn: null,
+        substitutePlayerId: null,
+      });
+      return;
+    }
+
+    if (dropoutPlayerToSkate) {
+      await updateSkatePlayer(dropoutPlayerToSkate.id, {
+        substitutePlayerId: playerId,
+      });
+    }
+  }
+
+  await addPlayerToSkate(skateId, playerId, {
+    position,
   });
 };
 
@@ -101,4 +143,28 @@ export const announceSpotsSkateHandler = async ({
   skateId: number;
 }) => {
   await trpc.skates.announceSpots.mutate({ skateId });
+};
+
+export const getSkateAvailableSubsHandler = async ({
+  skateId,
+  position,
+}: {
+  skateId: number;
+  position: Positions;
+}) => {
+  const skate = await getSkateById(skateId);
+  if (!skate) {
+    throw new Error("No skate found!");
+  }
+
+  const allPlayers =
+    position === Positions.Goalie
+      ? await getAllGoalies()
+      : await getAllPlayers();
+  const playersIn = getSkatePlayersForPositionIn(position, skate);
+  const availableSubs = allPlayers.filter(
+    (player) => !playersIn.some((playerIn) => playerIn.player.id === player.id),
+  );
+
+  return availableSubs;
 };

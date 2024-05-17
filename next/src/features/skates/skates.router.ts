@@ -5,11 +5,13 @@ import {
   getAllSkatesForBookingHandler,
   getAllSkatesHandler,
   getFutureSkatesHandler,
+  getSkateAvailableSubsHandler,
   getSkateBySlugsHandler,
   skateDropOutPlayerHandler,
+  skateSubInPlayerHandler,
 } from "./skates.controller";
 import { z } from "zod";
-import { type Positions } from "./skates.model";
+import { Positions } from "./skates.model";
 
 export const skatesRouter = createTRPCRouter({
   getAll: protectedProcedure.query(() => getAllSkatesHandler()),
@@ -35,6 +37,34 @@ export const skatesRouter = createTRPCRouter({
       getSkateBySlugsHandler({
         bookingSlug,
         skateSlug,
+      }),
+    ),
+  getAvailableSubs: protectedProcedure
+    .input(
+      z.object({
+        skateId: z.number(),
+        position: z.nativeEnum(Positions),
+      }),
+    )
+    .query(({ input: { skateId, position } }) =>
+      getSkateAvailableSubsHandler({
+        skateId,
+        position,
+      }),
+    ),
+  subInPlayer: protectedProcedure
+    .input(
+      z.object({
+        skateId: z.number(),
+        playerId: z.number(),
+        position: z.string(),
+      }),
+    )
+    .mutation(({ input: { skateId, playerId, position } }) =>
+      skateSubInPlayerHandler({
+        skateId,
+        playerId,
+        position: position as Positions,
       }),
     ),
   dropOutPlayer: protectedProcedure
