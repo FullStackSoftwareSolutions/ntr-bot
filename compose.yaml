@@ -36,6 +36,7 @@ services:
       DB_NAME: ntrbot
       OPENAI_ORG_ID: org-av7OXkHawvIZhfHuSDOfCaNP
       OPENAI_API_KEY: sk-proj-eR6sCxdx8xi6ZBQyI1xmT3BlbkFJKdSRHE31vVt8d8dRLl15
+      TZ: America/Toronto
     expose:
       - 3333
     networks:
