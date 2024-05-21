@@ -2,7 +2,6 @@ import {
   AuthenticationCreds,
   BufferJSON,
   initAuthCreds,
-  SignalDataSet,
   SignalDataTypeMap,
   WAProto,
   type AuthenticationState,

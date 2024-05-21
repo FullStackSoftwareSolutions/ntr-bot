@@ -1,0 +1,21 @@
+services:
+  next:
+    build:
+      context: .
+      additional_contexts:
+        root: ../.
+
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://postgres:postgres@192.168.10.105:5432/ntr-bot"
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: 192.168.10.105
+      DB_NAME: ntrbot
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_bWF0dXJlLXJlaW5kZWVyLTI1LmNsZXJrLmFjY291bnRzLmRldiQ
+      CLERK_SECRET_KEY: sk_test_x9q62XFMnPdRPe4Gjtm3lewbjKjojnWaJiKaGMrP2t
+      NEXT_PUBLIC_CLERK_FRONTEND_API: https://mature-reindeer-25.clerk.accounts.dev
+      WEBHOOK_SECRET: whsec_SVwfUDBbmb/obWNmIVKiayaZccJqfgYQ

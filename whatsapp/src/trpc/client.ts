@@ -7,7 +7,7 @@ import type { AppRouter } from "./router";
 export const trpc = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: "http://localhost:3333",
+      url: process.env.WHATSAPP_TRPC_URL ?? "http://localhost:3333",
     }),
   ],
 });

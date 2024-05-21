@@ -18,7 +18,10 @@ import {
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
-import { WhatsAppMessage } from "@whatsapp/features/whatsapp/whatsapp.model";
+import {
+  WhatsAppConnectionState,
+  WhatsAppMessage,
+} from "@whatsapp/features/whatsapp/whatsapp.model";
 import { unlinkSync } from "fs";
 import { generateRefProvider } from "./hash";
 import path from "path";
@@ -61,6 +64,7 @@ const logger = pino({ level: "silent" }) as any;
 
 export const connect = async () => {
   sock = makeWASocket({
+    version: [2, 2413, 1],
     printQRInTerminal: true,
     auth: {
       creds: authState.creds,
@@ -117,25 +121,37 @@ const handleConnectionUpdate = (update: Partial<ConnectionState>) => {
   const { connection, lastDisconnect } = update;
   const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
 
-  if (connection === "close") {
-    if (statusCode !== DisconnectReason.loggedOut) {
-      console.info(chalk.black(chalk.bgRed(" ❌ Whatsapp connection closed")));
+  eventEmitter.emit("connectionUpdate", {
+    ...update,
+    statusCode,
+  });
 
-      connect();
-    }
-
+  if (connection === "open") {
+    console.info(chalk.black(chalk.bgGreen(" 🛜 Whatsapp connection open ")));
+  } else if (connection === "close") {
     if (statusCode === DisconnectReason.loggedOut) {
       console.info(chalk.black(chalk.bgRed(" 🪵 Whatsapp logged out")));
+    } else {
+      console.info(chalk.black(chalk.bgRed(" ❌ Whatsapp connection closed")));
+    }
+  } else if (connection != null) {
+    console.info(connection);
+  }
+
+  if (statusCode) {
+    console.info(`disconnect - ${DisconnectReason[statusCode]}`);
+  }
+
+  if (connection === "close") {
+    if (statusCode === DisconnectReason.loggedOut) {
       try {
         unlinkSync(storePath);
       } catch {
         console.log("Store not found");
       }
-
-      connect();
     }
-  } else if (connection === "open") {
-    console.info(chalk.black(chalk.bgGreen(" 🛜 Whatsapp connection open ")));
+
+    connect();
   }
 };
 
@@ -292,6 +308,12 @@ export const onReaction = (cb: (message: WhatsAppMessage) => void) => {
 
 export const onPollSelection = (cb: (message: WhatsAppMessage) => void) => {
   eventEmitter.on("pollSelection", cb);
+};
+
+export const onConnectionUpdate = (
+  cb: (message: WhatsAppConnectionState) => void
+) => {
+  eventEmitter.on("connectionUpdate", cb);
 };
 
 export const sendMessage = (

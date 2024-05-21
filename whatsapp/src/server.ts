@@ -11,4 +11,4 @@ const server = createHTTPServer({
   router: appRouter,
 });
 
-server.listen(3333);
+server.listen(process.env.WHATSAPP_TRPC_PORT ?? 3333);

@@ -42,9 +42,15 @@ const FormSchema = z.object({
 });
 
 const SkateAddSubButton = ({ skate, position }: SkateAddSubButtonProps) => {
+  const utils = api.useUtils();
   const [open, setOpen] = useState(false);
+
   const { mutate, isPending } = api.skates.subInPlayer.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await utils.skates.getBySlugs.invalidate({
+        skateSlug: skate.slug!,
+        bookingSlug: skate.booking.slug!,
+      });
       handleOpenChange(false);
     },
   });

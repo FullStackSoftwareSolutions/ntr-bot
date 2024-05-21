@@ -19,7 +19,6 @@ import {
 import { Player } from "@whatsapp/features/players/players.type";
 import { useState } from "./state";
 import { getOpenAiResponse } from "@whatsapp/integrations/openai/openai.service";
-import { getAllSkates } from "@whatsapp/features/skates/skates.db";
 
 export const initializeBot = async () => {
   await loadCommands();

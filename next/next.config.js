@@ -6,6 +6,7 @@ await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
 const config = {
+  output: "standalone",
   // ...
   webpack: (config, { webpack }) => {
     config.externals.push("cloudflare:sockets");

@@ -1,6 +1,7 @@
 import {
   AnyMessageContent,
   MiscMessageGenerationOptions,
+  WAConnectionState,
   WAProto,
 } from "@whiskeysockets/baileys";
 
@@ -23,6 +24,24 @@ export type WhatsAppMessage = {
 };
 export type WhatsAppMessageContent = AnyMessageContent;
 export type WhatsAppMessageOptions = MiscMessageGenerationOptions;
+export type WhatsAppConnection = "open" | "connecting" | "close";
+export type WhatsAppConnectionState = {
+  /** connection is now open, connecting or closed */
+  connection: WhatsAppConnection;
+  statusCode: number;
+  /** the error that caused the connection to close */
+  lastDisconnect?: {
+    error: Error | undefined;
+    date: Date;
+  };
+  /** is this a new login */
+  isNewLogin?: boolean;
+  /** the current QR code */
+  qr?: string;
+  /** has the device received all pending notifications while it was offline */
+  receivedPendingNotifications?: boolean;
+  isOnline?: boolean;
+};
 
 export enum PollOptions {
   Confirm = "✅ Confirm",

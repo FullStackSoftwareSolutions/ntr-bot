@@ -1,4 +1,5 @@
-import { SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import WhatsAppQrCode from "@next/components/features/whatsapp/WhatsAppQrCode";
 import { Button } from "@next/components/ui/button";
 
 export default function Home() {
@@ -20,6 +21,9 @@ export default function Home() {
           </Button>
         </div>
       </SignedOut>
+      <SignedIn>
+        <WhatsAppQrCode />
+      </SignedIn>
     </div>
   );
 }

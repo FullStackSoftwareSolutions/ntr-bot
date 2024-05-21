@@ -4,6 +4,7 @@ import {
   sendMessage as sendWhatsappMessage,
 } from "../../integrations/whatsapp/whatsapp.service";
 import {
+  deleteAllWhatsappAuthData,
   deleteWhatsappAuthData,
   getWhatsappAuthData,
   upsertWhatsappAuthData,
@@ -12,11 +13,14 @@ import {
   onMessage as onWhatsAppMessage,
   onPollSelection as onWhatsAppPollSelection,
   onReaction as onWhatsAppReaction,
+  onConnectionUpdate as onWhatsAppConnectionUpdate,
 } from "../../integrations/whatsapp/whatsapp.service";
 import { getPlayerByPhoneNumber } from "../players/players.db";
 import {
   getGroupOrSenderFromMessage,
   getSenderNumberFromMessage,
+  WhatsAppConnection,
+  WhatsAppConnectionState,
   WhatsAppMessage,
   WhatsAppMessageContent,
   WhatsAppMessageOptions,
@@ -24,6 +28,10 @@ import {
 import EventEmitter from "node:events";
 import { Player } from "../players/players.type";
 import chalk from "chalk";
+import { DisconnectReason } from "@whiskeysockets/baileys";
+
+let qr: string | null = null;
+let connectionStatus: WhatsAppConnection | null = null;
 
 export const connectToWhatsapp = async () => {
   const auth = await useWhatsappAuth({
@@ -37,6 +45,7 @@ export const connectToWhatsapp = async () => {
   onWhatsAppMessage(handleMessage);
   onWhatsAppReaction(handleReaction);
   onWhatsAppPollSelection(handlePollSelection);
+  onWhatsAppConnectionUpdate(handleConnectionUpdate);
 };
 
 const getPlayerFromMessage = async (message: WhatsAppMessage) => {
@@ -116,6 +125,17 @@ const handlePollSelection = async (message: WhatsAppMessage) => {
 
   messageEventEmitter.emit(PlayerEvents.PollSelection, message, player);
 };
+const handleConnectionUpdate = async (update: WhatsAppConnectionState) => {
+  qr = update.qr ?? null;
+  connectionStatus = update.connection ?? connectionStatus;
+
+  if (
+    connectionStatus === "close" &&
+    update.statusCode === DisconnectReason.loggedOut
+  ) {
+    await deleteAllWhatsappAuthData();
+  }
+};
 
 export const onPlayerMessage = (
   cb: (message: WhatsAppMessage, player: Player) => void
@@ -132,3 +152,6 @@ export const onPlayerPollSelection = (
 ) => {
   messageEventEmitter.on(PlayerEvents.PollSelection, cb);
 };
+
+export const getConnectionStatus = () => connectionStatus;
+export const getQrCode = () => qr;

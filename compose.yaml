@@ -1,0 +1,86 @@
+services:
+  next:
+    build:
+      context: ./next
+      additional_contexts:
+        root: ./
+    ports:
+      - "3000:3000"
+    environment:
+      WHATSAPP_TRPC_URL: http://whatsapp:3333
+      WHATSAPP_TRPC_PORT: 3333
+      DB_USER: postgres
+      DB_PASSWORD: y7FswrQHkWTSekEb
+      DB_HOST: db
+      DB_NAME: ntrbot
+    networks:
+      - ntr-bot
+    depends_on:
+      db:
+        condition: service_healthy
+
+  whatsapp:
+    build:
+      context: ./whatsapp
+      additional_contexts:
+        root: ./
+    restart: always
+    volumes:
+      - C:\Users\joshm\Development\ntr-bot\state:/usr/src/app/whatsapp/state
+    environment:
+      WHATSAPP_TRPC_URL: http://whatsapp:3333
+      WHATSAPP_TRPC_PORT: 3333
+      DB_USER: postgres
+      DB_PASSWORD: y7FswrQHkWTSekEb
+      DB_HOST: db
+      DB_NAME: ntrbot
+      OPENAI_ORG_ID: org-av7OXkHawvIZhfHuSDOfCaNP
+      OPENAI_API_KEY: sk-proj-eR6sCxdx8xi6ZBQyI1xmT3BlbkFJKdSRHE31vVt8d8dRLl15
+    expose:
+      - 3333
+    networks:
+      - ntr-bot
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=ntrbot
+      - POSTGRES_PASSWORD=y7FswrQHkWTSekEb
+    expose:
+      - 5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ntr-bot
+
+  migration:
+    build:
+      context: ./db
+      additional_contexts:
+        root: ./
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: y7FswrQHkWTSekEb
+      DB_HOST: db
+      DB_NAME: ntrbot
+    networks:
+      - ntr-bot
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  ntr-bot:
+
+volumes:
+  db-data:

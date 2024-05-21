@@ -7,7 +7,7 @@
   "scripts": {
     "start": "tsx watch --enable-source-maps src/server.ts",
     "migrate:gen": "drizzle-kit generate:pg && npm run migrate",
-    "migrate": "tsx src/db/migrate.ts",
+    "migrate": "tsx ../db/src/db/migrate.ts",
     "studio": "drizzle-kit studio"
   },
   "author": "",
@@ -28,7 +28,7 @@
     "node-localstorage": "^3.0.5",
     "openai": "^4.42.0",
     "pino": "^9.0.0",
-    "postgres": "^3.4.4",
+    "postgres": "3.3",
     "qrcode-terminal": "^0.12.0",
     "slugify": "^1.6.6",
     "table": "^6.8.2",
@@ -37,7 +37,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.20.18",
+    "drizzle-kit": "^0.21.1",
     "pg": "^8.11.5"
   }
 }

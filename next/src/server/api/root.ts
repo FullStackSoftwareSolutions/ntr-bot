@@ -1,6 +1,7 @@
 import { bookingsRouter } from "@next/features/bookings/bookings.router";
 import { playersRouter } from "@next/features/players/players.router";
 import { skatesRouter } from "@next/features/skates/skates.router";
+import { whatsappRouter } from "@next/features/whatsapp/whatsapp.router";
 import { createCallerFactory, createTRPCRouter } from "@next/server/api/trpc";
 
 /**
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   skates: skatesRouter,
   bookings: bookingsRouter,
   players: playersRouter,
+  whatsapp: whatsappRouter,
 });
 
 // export type definition of API

@@ -17,3 +17,5 @@ export const upsertWhatsappAuthData = async (key: string, data: any) =>
 
 export const deleteWhatsappAuthData = async (key: string) =>
   db.delete(whatsappAuth).where(eq(whatsappAuth.key, key));
+
+export const deleteAllWhatsappAuthData = async () => db.delete(whatsappAuth);

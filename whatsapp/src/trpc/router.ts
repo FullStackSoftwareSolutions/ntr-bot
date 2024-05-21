@@ -1,7 +1,9 @@
+import { connectionRouter } from "@whatsapp/api/connection/connection.router";
 import { router } from "./server";
-import { skatesRouter } from "@whatsapp/api/skates.router";
+import { skatesRouter } from "@whatsapp/api/skates/skates.router";
 
 export const appRouter = router({
+  connection: connectionRouter,
   skates: skatesRouter,
 });
 

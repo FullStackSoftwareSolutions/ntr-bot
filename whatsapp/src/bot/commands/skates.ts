@@ -404,7 +404,7 @@ const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
       substitutePlayer!.phoneNumber
         ? getJidFromNumber(substitutePlayer!.phoneNumber)
         : null,
-    ].filter((val) => val != null)
+    ].filter<string>((val) => val != null)
   );
 
   const payments = players.map(({ player, substitutePlayer }) => {

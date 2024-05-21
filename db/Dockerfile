@@ -7,6 +7,7 @@
 ARG NODE_VERSION=18.18.2
 
 FROM node:${NODE_VERSION}-alpine
+#USER node
 
 # Use production node environment by default.
 ENV NODE_ENV production
@@ -22,10 +23,9 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
 
+
 # Copy the rest of the source files into the image.
 COPY --chown=node --from=root . .
 
-WORKDIR /app/whatsapp
-
-# Run the application.
-CMD npm start
+WORKDIR /app/db
+CMD npm run migrate

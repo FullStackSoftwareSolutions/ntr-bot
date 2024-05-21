@@ -36,7 +36,7 @@ const isAuthed = t.middleware(async ({ next, ctx }) => {
   if (!ctx.auth.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  console.log(ctx.auth.userId);
+
   const user = await getPlayerByClerkUserId(ctx.auth.userId);
   if (!user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
