@@ -12,6 +12,8 @@ jobs:
     env:
       CONTEXT_SUBDIR: next
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -24,16 +26,16 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: "${{ github.server_url }}/${{ github.repository }}.git#${{ github.ref }}:${{ env.CONTEXT_SUBDIR }}"
+          context: ./next
           push: true
           tags: joshkay/ntrbot-next:latest
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
   docker-whatsapp:
     runs-on: ubuntu-latest
     env:
       CONTEXT_SUBDIR: whatsapp
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -46,8 +48,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: "${{ github.server_url }}/${{ github.repository }}.git#${{ github.ref }}:${{ env.CONTEXT_SUBDIR }}"
+          context: ./whatsapp
           push: true
           tags: joshkay/ntrbot-whatsapp:latest
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
