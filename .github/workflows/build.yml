@@ -27,6 +27,8 @@ jobs:
           context: "${{ github.server_url }}/${{ github.repository }}.git#${{ github.ref }}:${{ env.CONTEXT_SUBDIR }}"
           push: true
           tags: joshkay/ntrbot-next:latest
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
   docker-whatsapp:
     runs-on: ubuntu-latest
     env:
@@ -47,3 +49,5 @@ jobs:
           context: "${{ github.server_url }}/${{ github.repository }}.git#${{ github.ref }}:${{ env.CONTEXT_SUBDIR }}"
           push: true
           tags: joshkay/ntrbot-whatsapp:latest
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.MYTOKEN }}
