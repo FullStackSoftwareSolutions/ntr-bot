@@ -29,6 +29,8 @@ jobs:
           context: ./next
           push: true
           tags: joshkay/ntrbot-next:latest
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
   docker-whatsapp:
     runs-on: ubuntu-latest
     env:
@@ -51,3 +53,5 @@ jobs:
           context: ./whatsapp
           push: true
           tags: joshkay/ntrbot-whatsapp:latest
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
