@@ -27,8 +27,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./next
-          build-contexts:
-            root: ./
+          build-contexts: |
+            root=./
           push: true
           tags: joshkay/ntrbot-next:latest
   docker-whatsapp:
@@ -51,7 +51,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./whatsapp
-          build-contexts:
-            root: ./
+          build-contexts: |
+            root=./
           push: true
           tags: joshkay/ntrbot-whatsapp:latest
