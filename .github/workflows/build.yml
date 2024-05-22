@@ -9,6 +9,8 @@ on:
 jobs:
   docker-next:
     runs-on: ubuntu-latest
+    env:
+      CONTEXT_SUBDIR: next
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -22,12 +24,13 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./next
-          file: ./next/Dockerfile
+          context: "${{ github.server_url }}/${{ github.repository }}.git#${{ github.ref }}:${{ env.CONTEXT_SUBDIR }}"
           push: true
           tags: joshkay/ntrbot-next:latest
   docker-whatsapp:
     runs-on: ubuntu-latest
+    env:
+      CONTEXT_SUBDIR: whatsapp
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -41,7 +44,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./whatsapp
-          file: ./whatsapp/Dockerfile
+          context: "${{ github.server_url }}/${{ github.repository }}.git#${{ github.ref }}:${{ env.CONTEXT_SUBDIR }}"
           push: true
           tags: joshkay/ntrbot-whatsapp:latest
