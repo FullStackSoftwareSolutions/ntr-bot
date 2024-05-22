@@ -27,10 +27,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./next
+          build-contexts:
+            root: ./
           push: true
           tags: joshkay/ntrbot-next:latest
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
   docker-whatsapp:
     runs-on: ubuntu-latest
     env:
@@ -51,7 +51,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./whatsapp
+          build-contexts:
+            root: ./
           push: true
           tags: joshkay/ntrbot-whatsapp:latest
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
