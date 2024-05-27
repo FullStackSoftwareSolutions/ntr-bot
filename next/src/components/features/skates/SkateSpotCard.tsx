@@ -79,7 +79,7 @@ const SkateSpotCardContent = ({
       )}
       {substitutePlayer && (
         <div className="flex flex-col items-start gap-1 p-2 pt-0">
-          <Badge>{`Substitute: ${getPlayerName(substitutePlayer)}`}</Badge>
+          <Badge>{`Sub - ${getPlayerName(substitutePlayer)}`}</Badge>
         </div>
       )}
       {waitingForSub && (
