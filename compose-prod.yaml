@@ -1,11 +1,11 @@
+version: "3.7"
 services:
   next:
-    build:
-      context: ./next
-      additional_contexts:
-        root: ./
+    container_name: ntrbot-next
+    image: joshkay/ntrbot-next
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "9916:3000"
     environment:
       WHATSAPP_TRPC_URL: http://whatsapp:3333
       WHATSAPP_TRPC_PORT: 3333
@@ -15,18 +15,16 @@ services:
       DB_NAME: ntrbot
     networks:
       - ntr-bot
-    depends_on:
-      db:
-        condition: service_healthy
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
 
   whatsapp:
-    build:
-      context: ./whatsapp
-      additional_contexts:
-        root: ./
-    restart: always
+    container_name: ntrbot-whatsapp
+    image: joshkay/ntrbot-whatsapp
+    restart: unless-stopped
     volumes:
-      - C:\Users\joshm\Development\ntr-bot\state:/usr/src/app/whatsapp/state
+      - /home/josh/ntr-bot/state:/usr/src/app/whatsapp/state
     environment:
       WHATSAPP_TRPC_URL: http://whatsapp:3333
       WHATSAPP_TRPC_PORT: 3333
@@ -41,16 +39,16 @@ services:
       - 3333
     networks:
       - ntr-bot
-    depends_on:
-      migration:
-        condition: service_completed_successfully
+    # depends_on:
+    #   migration:
+    #     condition: service_completed_successfully
 
   db:
-    image: postgres
-    restart: always
+    image: postgres:15
+    restart: unless-stopped
     user: postgres
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - /home/josh/ntr-bot/postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=ntrbot
       - POSTGRES_PASSWORD=y7FswrQHkWTSekEb
@@ -65,24 +63,21 @@ services:
     networks:
       - ntr-bot
 
-  migration:
-    build:
-      context: ./db
-      additional_contexts:
-        root: ./
-    environment:
-      DB_USER: postgres
-      DB_PASSWORD: y7FswrQHkWTSekEb
-      DB_HOST: db
-      DB_NAME: ntrbot
-    networks:
-      - ntr-bot
-    depends_on:
-      db:
-        condition: service_healthy
+  # migration:
+  #   build:
+  #     context: ./db
+  #     additional_contexts:
+  #       root: ./
+  #   environment:
+  #     DB_USER: postgres
+  #     DB_PASSWORD: y7FswrQHkWTSekEb
+  #     DB_HOST: db
+  #     DB_NAME: ntrbot
+  #   networks:
+  #     - ntr-bot
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
 
 networks:
   ntr-bot:
-
-volumes:
-  db-data:
