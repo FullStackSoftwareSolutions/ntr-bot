@@ -8,6 +8,7 @@ import {
   getSkateBySlugAndBooking,
   getSkatesForBooking,
   updateSkatePlayer,
+  updateSkateTeams,
 } from "@db/features/skates/skates.db";
 import { trpc } from "@whatsapp/trpc/client";
 import {
@@ -16,8 +17,10 @@ import {
   getSkatePlayersForPositionIn,
   getSkatePlayersForPositionSubsIn,
   Positions,
+  Teams,
 } from "./skates.model";
 import { getAllGoalies, getAllPlayers } from "@db/features/players/players.db";
+import { randomizeTeamsForSkate } from "./teams/skates.teams.controller";
 
 export const getAllSkatesHandler = async () => {
   return getAllSkates();
@@ -75,7 +78,13 @@ export const skateSubInPlayerHandler = async ({
     throw new Error("No skate found!");
   }
 
+  const areSpotsOpenIgnoringSubs = doesSkateHaveOpenSpotsIgnoringSubs(
+    position,
+    skate,
+  );
   const dropoutPlayerToSkate = getSkateNextDropoutWithoutSub(skate, position);
+
+  const isPlaying = areSpotsOpenIgnoringSubs || !!dropoutPlayerToSkate;
 
   // if dropout player is the same as the player to be added, remove the dropout
   if (dropoutPlayerToSkate?.player.id === playerId) {
@@ -86,17 +95,19 @@ export const skateSubInPlayerHandler = async ({
     return;
   }
 
-  if (!doesSkateHaveOpenSpotsIgnoringSubs(position, skate)) {
-    if (dropoutPlayerToSkate) {
-      await updateSkatePlayer(dropoutPlayerToSkate.id, {
-        substitutePlayerId: playerId,
-      });
-    }
+  if (!areSpotsOpenIgnoringSubs && dropoutPlayerToSkate) {
+    await updateSkatePlayer(dropoutPlayerToSkate.id, {
+      substitutePlayerId: playerId,
+    });
   }
 
   await addPlayerToSkate(skateId, playerId, {
     position,
   });
+
+  if (isPlaying) {
+    await shuffleTeamsSkateHandler({ skateId });
+  }
 };
 
 export const skateDropOutPlayerHandler = async ({
@@ -134,14 +145,35 @@ export const skateDropOutPlayerHandler = async ({
     droppedOutOn: new Date(),
     substitutePlayerId: subPlayerToSkate?.player.id ?? null,
   });
+
+  await shuffleTeamsSkateHandler({ skateId });
 };
 
-export const announceSpotsSkateHandler = async ({
+export const shuffleTeamsSkateHandler = async ({
   skateId,
 }: {
   skateId: number;
 }) => {
-  await trpc.skates.announceSpots.mutate({ skateId });
+  const skate = await getSkateById(skateId);
+  if (!skate) {
+    throw new Error("No skate found!");
+  }
+
+  const teams = randomizeTeamsForSkate(skate);
+  const playersWithTeam = [
+    ...teams[Teams.Black].map((player) => ({
+      playerId: player.id,
+      team: Teams.Black,
+    })),
+    ...teams[Teams.White].map((player) => ({
+      playerId: player.id,
+      team: Teams.White,
+    })),
+  ];
+
+  await updateSkateTeams(skateId, playersWithTeam);
+
+  return await getSkateById(skateId);
 };
 
 export const getSkateAvailableSubsHandler = async ({
@@ -166,4 +198,20 @@ export const getSkateAvailableSubsHandler = async ({
   );
 
   return availableSubs;
+};
+
+export const announceSpotsSkateHandler = async ({
+  skateId,
+}: {
+  skateId: number;
+}) => {
+  await trpc.skates.announceSpots.mutate({ skateId });
+};
+
+export const announceTeamsSkateHandler = async ({
+  skateId,
+}: {
+  skateId: number;
+}) => {
+  await trpc.skates.announceTeams.mutate({ skateId });
 };

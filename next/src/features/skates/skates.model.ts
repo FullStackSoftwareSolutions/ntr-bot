@@ -47,6 +47,10 @@ export const getSkatePlayersForPosition = (
       return a.addedOn.getTime() - b.addedOn.getTime();
     });
 };
+
+export const getSkatePlayersAndGoaliesIn = (skate: Skate) => {
+  return skate.playersToSkates.filter(({ droppedOutOn }) => !droppedOutOn);
+};
 export const getSkatePlayersForPositionIn = (
   position: Positions,
   skate: Skate,
@@ -101,7 +105,7 @@ export const getSkateNumSpotsForPositionUnfilled = (
     getSkatePlayersForPositionIn(position, skate).length +
     getSkatePlayersForPositionOutWithoutSub(position, skate).length;
 
-return Math.max(numSpots - numSpotsInOrOutWithoutSub, 0);
+  return Math.max(numSpots - numSpotsInOrOutWithoutSub, 0);
 };
 export const doesSkateHaveOpenSpotsIgnoringSubs = (
   position: Positions,
@@ -194,9 +198,6 @@ export const getSkatePlayersWithSubsUnpaid = (skate: Skate) => {
   });
 };
 
-export const getSkatePlayersAndGoaliesIn = (skate: Skate) => {
-  return skate.playersToSkates.filter(({ droppedOutOn }) => !droppedOutOn);
-};
 export const getSkateTotalGoalieSpots = (skate: Skate) => {
   return skate.booking?.numGoalies ?? 0;
 };
@@ -221,4 +222,34 @@ export const getSkateSubstitubeForPlayer = (skate: Skate, player: Player) => {
     ({ substitutePlayer, droppedOutOn }) =>
       substitutePlayer?.id === player.id && !!droppedOutOn,
   )?.player;
+};
+
+export const getSkateTeams = (skate: Skate) => {
+  const players = getSkatePlayersIn(skate);
+  const goalies = getSkateGoaliesIn(skate);
+
+  const teamBlackPlayers = players
+    .filter(({ team }) => team === Teams.Black)
+    .map(({ player }) => player);
+  const teamBlackGoalies = goalies
+    .filter(({ team }) => team === Teams.Black)
+    .map(({ player }) => player);
+
+  const teamWhitePlayers = players
+    .filter(({ team }) => team === Teams.White)
+    .map(({ player }) => player);
+  const teamWhiteGoalies = goalies
+    .filter(({ team }) => team === Teams.White)
+    .map(({ player }) => player);
+
+  return {
+    [Teams.Black]: {
+      players: teamBlackPlayers,
+      goalies: teamBlackGoalies,
+    },
+    [Teams.White]: {
+      players: teamWhitePlayers,
+      goalies: teamWhiteGoalies,
+    },
+  };
 };

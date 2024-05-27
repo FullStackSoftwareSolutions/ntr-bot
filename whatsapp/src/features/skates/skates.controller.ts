@@ -13,7 +13,6 @@ import {
   getEarliestDropoutWithoutSub,
   getSkatePlayersForPositionIn,
   getSkatePlayersForPositionSubsIn,
-  getSkatePlayersSubsIn,
   Positions,
   randomizeTeamsForSkate,
   Teams,

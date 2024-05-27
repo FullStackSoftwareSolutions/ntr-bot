@@ -1,6 +1,7 @@
 "use client";
 
 import AnnounceSkateSpotsButton from "@next/components/features/skates/bot/AnnounceSkateSpotsButton";
+import AnnounceSkateTeamsButton from "@next/components/features/skates/bot/AnnounceSkateTeamsButton";
 import { api } from "@next/trpc/react";
 
 export default function SkateBotPageTab({
@@ -18,8 +19,9 @@ export default function SkateBotPageTab({
   }
 
   return (
-    <div className="flex">
+    <div className="flex flex-col items-start gap-4">
       <AnnounceSkateSpotsButton skate={skate} />
+      <AnnounceSkateTeamsButton skate={skate} />
     </div>
   );
 }

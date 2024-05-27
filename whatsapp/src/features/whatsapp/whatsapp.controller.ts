@@ -18,6 +18,7 @@ import {
 import { getPlayerByPhoneNumber } from "../players/players.db";
 import {
   getGroupOrSenderFromMessage,
+  getSenderFromMessage,
   getSenderNumberFromMessage,
   WhatsAppConnection,
   WhatsAppConnectionState,
@@ -86,11 +87,16 @@ enum PlayerEvents {
 
 const handleMessage = async (message: WhatsAppMessage) => {
   const senderJid = getSenderNumberFromMessage(message);
+  const sender = getSenderFromMessage(message);
+  const group = getGroupOrSenderFromMessage(message);
+
+  let senderMessage = `${chalk.bgBlue(senderJid)}`;
+  if (group !== sender) {
+    senderMessage = `${chalk.bgBlue(senderJid)} (${group})`;
+  }
 
   console.info(
-    `${chalk.bgBlue(senderJid)} ${chalk.bgMagenta(message.type)} ${
-      message.body
-    }`
+    `${senderMessage} ${chalk.bgMagenta(message.type)} ${message.body}`
   );
 
   const player = await getPlayerFromMessage(message);

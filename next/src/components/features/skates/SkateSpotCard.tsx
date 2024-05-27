@@ -12,6 +12,7 @@ import PlayerAvatarPopover from "../players/PlayerAvatarPopover";
 import SkateDropOutButton from "./SkateDropOutButton";
 import { type Skate } from "@db/features/skates/skates.type";
 import { type Positions } from "@next/features/skates/skates.model";
+import SkateSpotCardPlayer from "./SkateSpotCardPlayer";
 
 type SkateSpotCardProps = {
   position: Positions;
@@ -70,13 +71,7 @@ const SkateSpotCardContent = ({
 }: SkateSpotCardProps) => {
   return (
     <Card className="flex flex-1 flex-col">
-      <div className="relative flex flex-1 flex-wrap items-center gap-3 whitespace-pre-wrap p-4 text-2xl font-semibold tracking-tight">
-        <PlayerAvatarPopover player={player} />
-        {getPlayerName(player)}
-        <Badge variant="secondary" className="absolute right-0 top-0">
-          {getPlayerSkillNumber(player)}
-        </Badge>
-      </div>
+      <SkateSpotCardPlayer player={player} />
       {!!droppedOutOn && (
         <div className="flex flex-col items-start gap-1 p-2 pt-0">
           <Badge variant="destructive">{`Out @ ${formatDateTime(droppedOutOn)}`}</Badge>
