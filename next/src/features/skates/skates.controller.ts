@@ -11,9 +11,8 @@ import {
 } from "@db/features/skates/skates.db";
 import { trpc } from "@whatsapp/trpc/client";
 import {
-  doesSkateHaveUnfilledSpotsForPosition,
+  doesSkateHaveOpenSpotsIgnoringSubs,
   getSkateNextDropoutWithoutSub,
-  getSkateNumSpotsForPositionUnfilled,
   getSkatePlayersForPositionIn,
   getSkatePlayersForPositionSubsIn,
   Positions,
@@ -76,18 +75,18 @@ export const skateSubInPlayerHandler = async ({
     throw new Error("No skate found!");
   }
 
-  if (doesSkateHaveUnfilledSpotsForPosition(position, skate)) {
-    const dropoutPlayerToSkate = getSkateNextDropoutWithoutSub(skate, position);
+  const dropoutPlayerToSkate = getSkateNextDropoutWithoutSub(skate, position);
 
-    // if dropout player is the same as the player to be added, remove the dropout
-    if (dropoutPlayerToSkate?.player.id === playerId) {
-      await updateSkatePlayer(dropoutPlayerToSkate.id, {
-        droppedOutOn: null,
-        substitutePlayerId: null,
-      });
-      return;
-    }
+  // if dropout player is the same as the player to be added, remove the dropout
+  if (dropoutPlayerToSkate?.player.id === playerId) {
+    await updateSkatePlayer(dropoutPlayerToSkate.id, {
+      droppedOutOn: null,
+      substitutePlayerId: null,
+    });
+    return;
+  }
 
+  if (!doesSkateHaveOpenSpotsIgnoringSubs(position, skate)) {
     if (dropoutPlayerToSkate) {
       await updateSkatePlayer(dropoutPlayerToSkate.id, {
         substitutePlayerId: playerId,

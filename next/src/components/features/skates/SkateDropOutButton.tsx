@@ -21,13 +21,14 @@ type SkateDropOutButtonProps = {
   skate: Skate;
   player: Player;
   position: Positions;
+  children: React.ReactNode;
 };
 
 const SkateDropOutButton = ({
-  className,
   player,
   skate,
   position,
+  children,
 }: SkateDropOutButtonProps) => {
   const utils = api.useUtils();
   const mutation = api.skates.dropOutPlayer.useMutation({
@@ -50,13 +51,16 @@ const SkateDropOutButton = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className={className} variant="destructive">
-          Out
+        <Button
+          variant="ghost"
+          className="flex h-auto items-stretch justify-stretch p-0"
+        >
+          {children}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          <AlertDialogTitle>{getPlayerName(player)}</AlertDialogTitle>
           <AlertDialogDescription>
             <p>{getPlayerName(player)} will be dropped from the skate.</p>
             <p>A new sub will be requested to fill the spot.</p>

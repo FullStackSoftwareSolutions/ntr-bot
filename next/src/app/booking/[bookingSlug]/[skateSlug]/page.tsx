@@ -1,6 +1,6 @@
 "use client";
 
-import SkateFilledSpots from "@next/components/features/skates/SkateFilledSpots";
+import SkateSpots from "@next/components/features/skates/SkateSpots";
 import { api } from "@next/trpc/react";
 
 export default function BookingSkatePage({
@@ -17,5 +17,5 @@ export default function BookingSkatePage({
     return null;
   }
 
-  return <SkateFilledSpots skate={skate} />;
+  return <SkateSpots skate={skate} />;
 }

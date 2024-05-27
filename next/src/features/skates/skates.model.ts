@@ -63,12 +63,15 @@ export const getSkatePlayersForPositionSubsIn = (
     getSkateTotalSpotsForPosition(position, skate),
   );
 };
-const getSkatePlayersForPositionOut = (position: Positions, skate: Skate) => {
+export const getSkatePlayersForPositionOut = (
+  position: Positions,
+  skate: Skate,
+) => {
   return getSkatePlayersForPosition(position, skate).filter(
     ({ droppedOutOn }) => droppedOutOn,
   );
 };
-const getSkatePlayersForPositionOutWithoutSub = (
+export const getSkatePlayersForPositionOutWithoutSub = (
   position: Positions,
   skate: Skate,
 ) => {
@@ -81,19 +84,30 @@ const getSkatePlayersForPositionOutWithoutSub = (
     .slice(0, numSpots)
     .sort((a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime());
 };
+export const getSkatePlayersForPositionOutWithSub = (
+  position: Positions,
+  skate: Skate,
+) => {
+  return getSkatePlayersForPositionOut(position, skate).filter(
+    ({ substitutePlayer }) => !!substitutePlayer,
+  );
+};
 export const getSkateNumSpotsForPositionUnfilled = (
   position: Positions,
   skate: Skate,
 ) => {
   const numSpots = getSkateTotalSpotsForPosition(position, skate);
-  const numPlayersIn = getSkatePlayersForPosition(position, skate).length;
+  const numSpotsInOrOutWithoutSub =
+    getSkatePlayersForPositionIn(position, skate).length +
+    getSkatePlayersForPositionOutWithoutSub(position, skate).length;
 
-  return Math.max(numSpots - numPlayersIn, 0);
+return Math.max(numSpots - numSpotsInOrOutWithoutSub, 0);
 };
-export const doesSkateHaveUnfilledSpotsForPosition = (
+export const doesSkateHaveOpenSpotsIgnoringSubs = (
   position: Positions,
   skate: Skate,
 ) => getSkateNumSpotsForPositionUnfilled(position, skate) > 0;
+
 export const getSkateNextDropoutWithoutSub = (
   skate: Skate,
   subPosition: Positions,
@@ -107,7 +121,10 @@ const getSkateNumSpotsOpenForPosition = (position: Positions, skate: Skate) => {
   }
   return getSkateNumPlayerSpotsOpen(skate);
 };
-const getSkateTotalSpotsForPosition = (position: Positions, skate: Skate) => {
+export const getSkateTotalSpotsForPosition = (
+  position: Positions,
+  skate: Skate,
+) => {
   if (position === Positions.Goalie) {
     return getSkateTotalGoalieSpots(skate);
   }

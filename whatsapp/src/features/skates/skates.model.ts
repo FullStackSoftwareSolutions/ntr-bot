@@ -78,7 +78,10 @@ export const getSkatePlayersForPositionSubsIn = (
     getSkateTotalSpotsForPosition(position, skate)
   );
 };
-const getSkatePlayersForPositionOut = (position: Positions, skate: Skate) => {
+export const getSkatePlayersForPositionOut = (
+  position: Positions,
+  skate: Skate
+) => {
   return getSkatePlayersForPosition(position, skate).filter(
     ({ droppedOutOn }) => droppedOutOn
   );
@@ -102,7 +105,10 @@ const getSkateNumSpotsOpenForPosition = (position: Positions, skate: Skate) => {
   }
   return getSkateNumPlayerSpotsOpen(skate);
 };
-const getSkateTotalSpotsForPosition = (position: Positions, skate: Skate) => {
+export const getSkateTotalSpotsForPosition = (
+  position: Positions,
+  skate: Skate
+) => {
   if (position === Positions.Goalie) {
     return getSkateTotalGoalieSpots(skate);
   }
