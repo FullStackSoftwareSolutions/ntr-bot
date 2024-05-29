@@ -15,6 +15,16 @@ export const getPlayerInitials = (player: Player) => {
   return `${names[0]!.charAt(0)}${names[names.length - 1]!.charAt(0)}`;
 };
 
+export const getPlayerSearchTerms = (player: Player) => {
+  return [
+    player.nickname,
+    player.fullName,
+    player.email,
+    player.phoneNumber,
+    player.notes,
+  ].filter(Boolean);
+};
+
 export const getPlayerSkillLevel = (player: Player) =>
   player.skillLevelLetter ?? "C";
 export const getPlayerSkillNumber = (player: Player) => {

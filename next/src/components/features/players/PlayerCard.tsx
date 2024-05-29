@@ -4,7 +4,6 @@ import { Button } from "@next/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@next/components/ui/card";
@@ -30,7 +29,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                 {getPlayerSkillNumber(player)}
               </Badge>
             </CardTitle>
-            <CardDescription className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
               <div className="my-1 flex gap-1">
                 {player.isGoalie && <Badge variant="outline">Goalie</Badge>}
                 {player.isPlayer && <Badge variant="outline">Player</Badge>}
@@ -39,7 +38,7 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
                 <p>{player.email}</p>
                 <p>{player.phoneNumber}</p>
               </div>
-            </CardDescription>
+            </div>
           </CardHeader>
           {player.notes && (
             <CardContent className="flex flex-col gap-2">
