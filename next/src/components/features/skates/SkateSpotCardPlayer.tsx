@@ -12,10 +12,10 @@ type SkateSpotCardPlayerProps = {
 
 const SkateSpotCardPlayer = ({ player }: SkateSpotCardPlayerProps) => {
   return (
-    <div className="relative flex flex-1 flex-wrap items-center gap-3 whitespace-pre-wrap p-2 text-xl font-semibold tracking-tight">
+    <div className="relative flex flex-wrap items-center gap-3 whitespace-pre-wrap p-2 text-xl font-semibold tracking-tight">
       <PlayerAvatarPopover player={player} />
       {getPlayerName(player)}
-      <Badge variant="secondary" className="absolute right-0 top-0">
+      <Badge variant="secondary" className="absolute right-0 top-0 hidden">
         {getPlayerSkillNumber(player)}
       </Badge>
     </div>

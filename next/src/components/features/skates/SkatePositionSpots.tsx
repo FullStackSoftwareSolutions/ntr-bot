@@ -43,13 +43,15 @@ const SkatePositionSpots = ({ skate, position }: SkatePositionSpotsProps) => {
           <>
             {!!playerToSkate && (
               <SkateSpotCard
-                key={playerToSkate.player.id}
+                key={playerToSkate.id}
+                id={playerToSkate.id}
                 position={position}
                 player={playerToSkate.player}
                 skate={skate}
                 addedOn={playerToSkate.addedOn}
                 droppedOutOn={playerToSkate.droppedOutOn}
                 substitutePlayer={playerToSkate.substitutePlayer}
+                paid={playerToSkate.paid}
               />
             )}
             {!playerToSkate && (
@@ -66,23 +68,28 @@ const SkatePositionSpots = ({ skate, position }: SkatePositionSpotsProps) => {
 
       {playerSubs.map((playerToSkate) => (
         <SkateSpotCard
-          key={playerToSkate.player.id}
+          key={playerToSkate.id}
+          id={playerToSkate.id}
           position={position}
           player={playerToSkate.player}
           skate={skate}
           addedOn={playerToSkate.addedOn}
+          droppedOutOn={playerToSkate.droppedOutOn}
+          paid={playerToSkate.paid}
           waitingForSub
         />
       ))}
 
       {playersOutWithSubs.map((playerToSkate) => (
         <SkateSpotCard
-          key={playerToSkate.player.id}
+          key={playerToSkate.id}
+          id={playerToSkate.id}
           position={position}
           player={playerToSkate.player}
           skate={skate}
           addedOn={playerToSkate.addedOn}
           droppedOutOn={playerToSkate.droppedOutOn}
+          paid={playerToSkate.paid}
           substitutePlayer={playerToSkate.substitutePlayer}
         />
       ))}

@@ -161,15 +161,17 @@ export const updateSkatePlayer = async (
     team,
     substitutePlayerId,
     droppedOutOn,
+    paid,
   }: {
     team?: string | null;
     substitutePlayerId?: number | null;
     droppedOutOn?: Date | null;
+    paid?: boolean;
   }
 ) => {
   await db
     .update(playersToSkates)
-    .set({ team, substitutePlayerId, droppedOutOn })
+    .set({ team, substitutePlayerId, droppedOutOn, paid })
     .where(eq(playersToSkates.id, playerToSkateId));
 };
 
@@ -216,3 +218,6 @@ export const updateSkateTeams = async (
     }
   });
 };
+
+export const deleteSkatePlayer = async (playerToSkateId: number) =>
+  db.delete(playersToSkates).where(eq(playersToSkates.id, playerToSkateId));

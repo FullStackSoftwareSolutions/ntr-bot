@@ -4,17 +4,18 @@ import { type Player } from "@db/features/players/players.type";
 import { formatDateTime } from "@formatting/dates";
 import { Badge } from "@next/components/ui/badge";
 import { Card } from "@next/components/ui/card";
-import {
-  getPlayerName,
-  getPlayerSkillNumber,
-} from "@next/features/players/players.model";
-import PlayerAvatarPopover from "../players/PlayerAvatarPopover";
-import SkateDropOutButton from "./SkateDropOutButton";
+import { getPlayerName } from "@next/features/players/players.model";
+import SkateSpotDialog from "./SkateSpotDialog";
 import { type Skate } from "@db/features/skates/skates.type";
-import { type Positions } from "@next/features/skates/skates.model";
+import {
+  getSkateSubstitubeForPlayer,
+  type Positions,
+} from "@next/features/skates/skates.model";
 import SkateSpotCardPlayer from "./SkateSpotCardPlayer";
+import { DollarSignIcon } from "lucide-react";
 
 type SkateSpotCardProps = {
+  id: number;
   position: Positions;
   player: Player;
   skate: Skate;
@@ -22,82 +23,52 @@ type SkateSpotCardProps = {
   droppedOutOn?: Date | null;
   substitutePlayer?: Player | null;
   waitingForSub?: boolean;
+  paid: boolean;
 };
 
-const SkateSpotCard = ({
-  player,
-  skate,
-  addedOn,
-  droppedOutOn,
-  position,
-  substitutePlayer,
-  waitingForSub,
-}: SkateSpotCardProps) => {
-  if (droppedOutOn) {
-    return (
-      <SkateSpotCardContent
-        player={player}
-        skate={skate}
-        addedOn={addedOn}
-        droppedOutOn={droppedOutOn}
-        position={position}
-        substitutePlayer={substitutePlayer}
-        waitingForSub={waitingForSub}
-      />
-    );
-  }
+const SkateSpotCard = (props: SkateSpotCardProps) => {
+  const {
+    skate,
+    player,
+    addedOn,
+    droppedOutOn,
+    substitutePlayer,
+    waitingForSub,
+    paid,
+  } = props;
+
+  const subForPlayer = !droppedOutOn
+    ? getSkateSubstitubeForPlayer(skate, player)
+    : null;
 
   return (
-    <SkateDropOutButton player={player} skate={skate} position={position}>
-      <SkateSpotCardContent
-        player={player}
-        skate={skate}
-        addedOn={addedOn}
-        droppedOutOn={droppedOutOn}
-        position={position}
-        substitutePlayer={substitutePlayer}
-        waitingForSub={waitingForSub}
-      />
-    </SkateDropOutButton>
-  );
-};
-
-const SkateSpotCardContent = ({
-  player,
-  addedOn,
-  droppedOutOn,
-  substitutePlayer,
-  waitingForSub,
-}: SkateSpotCardProps) => {
-  return (
-    <Card className="flex flex-1 flex-col">
-      <SkateSpotCardPlayer player={player} />
-      {!!droppedOutOn && (
-        <div className="flex flex-col items-start gap-1 p-2 pt-0">
-          <Badge variant="destructive">{`Out @ ${formatDateTime(droppedOutOn)}`}</Badge>
+    <SkateSpotDialog {...props} subForPlayer={subForPlayer}>
+      <Card className="flex flex-1 flex-col">
+        <SkateSpotCardPlayer player={player} />
+        <div className="flex flex-wrap items-start gap-1 p-2 pt-0">
+          {paid && (
+            <Badge variant="secondary" className="flex gap-1 ps-1">
+              <DollarSignIcon size={18} />
+              Paid
+            </Badge>
+          )}
+          {!!droppedOutOn && (
+            <Badge
+              variant={substitutePlayer ? "outline" : "destructive"}
+            >{`Out @ ${formatDateTime(droppedOutOn)}`}</Badge>
+          )}
+          {substitutePlayer && (
+            <Badge variant="outline">{`Covered by ${getPlayerName(substitutePlayer)}`}</Badge>
+          )}
+          {subForPlayer && (
+            <Badge>{`Sub for ${getPlayerName(subForPlayer)}`}</Badge>
+          )}
+          {waitingForSub && (
+            <Badge variant="warning">{`Sub @ ${formatDateTime(addedOn)}`}</Badge>
+          )}
         </div>
-      )}
-      {substitutePlayer && (
-        <div className="flex flex-col items-start gap-1 p-2 pt-0">
-          <Badge>{`Sub - ${getPlayerName(substitutePlayer)}`}</Badge>
-        </div>
-      )}
-      {waitingForSub && (
-        <div className="flex flex-col items-start gap-1 p-2 pt-0">
-          <Badge variant="warning">{`Sub @ ${formatDateTime(addedOn)}`}</Badge>
-        </div>
-      )}
-      {/* {!droppedOutOn && (
-          <CardFooter className="flex max-h-20 flex-col items-stretch gap-2 overflow-hidden border-t p-1">
-            <SkateDropOutButton
-              className="ml-auto"
-              player={player}
-              skate={skate}
-              position={position}
-            />
-          </CardFooter>
-        )} */}
-    </Card>
+      </Card>
+    </SkateSpotDialog>
   );
 };
 

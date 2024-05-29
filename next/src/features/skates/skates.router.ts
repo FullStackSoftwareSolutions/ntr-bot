@@ -9,8 +9,10 @@ import {
   getSkateAvailableSubsHandler,
   getSkateBySlugsHandler,
   shuffleTeamsSkateHandler,
+  skateDeleteSpotHandler,
   skateDropOutPlayerHandler,
   skateSubInPlayerHandler,
+  skateUpdateSpotHandler,
 } from "./skates.controller";
 import { z } from "zod";
 import { Positions } from "./skates.model";
@@ -84,6 +86,22 @@ export const skatesRouter = createTRPCRouter({
         position: position as Positions,
       }),
     ),
+  updateSpot: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        paid: z.boolean(),
+      }),
+    )
+    .mutation(({ input: { id, paid } }) =>
+      skateUpdateSpotHandler({
+        id,
+        paid,
+      }),
+    ),
+  deleteSpot: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(({ input: { id } }) => skateDeleteSpotHandler({ id })),
   shuffleTeams: protectedProcedure
     .input(
       z.object({

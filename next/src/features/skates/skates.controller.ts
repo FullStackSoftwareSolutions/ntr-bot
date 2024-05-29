@@ -1,6 +1,7 @@
 import { getBookingBySlug } from "@db/features/bookings/bookings.db";
 import {
   addPlayerToSkate,
+  deleteSkatePlayer,
   getAllSkates,
   getFutureSkates,
   getFutureSkatesForBooking,
@@ -15,6 +16,7 @@ import {
   doesSkateHaveOpenSpotsIgnoringSubs,
   getSkateNextDropoutWithoutSub,
   getSkatePlayersForPositionIn,
+  getSkatePlayersForPositionOutWithoutSub,
   getSkatePlayersForPositionSubsIn,
   Positions,
   Teams,
@@ -82,13 +84,20 @@ export const skateSubInPlayerHandler = async ({
     position,
     skate,
   );
-  const dropoutPlayerToSkate = getSkateNextDropoutWithoutSub(skate, position);
+  const dropoutsWithoutSub = getSkatePlayersForPositionOutWithoutSub(
+    position,
+    skate,
+  );
+  const dropoutPlayerToSkate = getSkateNextDropoutWithoutSub(position, skate);
 
   const isPlaying = areSpotsOpenIgnoringSubs || !!dropoutPlayerToSkate;
 
   // if dropout player is the same as the player to be added, remove the dropout
-  if (dropoutPlayerToSkate?.player.id === playerId) {
-    await updateSkatePlayer(dropoutPlayerToSkate.id, {
+  const playerWithoutSub = dropoutsWithoutSub.find(
+    (player) => player.player.id === playerId,
+  );
+  if (playerWithoutSub) {
+    await updateSkatePlayer(playerWithoutSub.id, {
       droppedOutOn: null,
       substitutePlayerId: null,
     });
@@ -214,4 +223,18 @@ export const announceTeamsSkateHandler = async ({
   skateId: number;
 }) => {
   await trpc.skates.announceTeams.mutate({ skateId });
+};
+
+export const skateDeleteSpotHandler = ({ id }: { id: number }) => {
+  return deleteSkatePlayer(id);
+};
+
+export const skateUpdateSpotHandler = ({
+  id,
+  paid,
+}: {
+  id: number;
+  paid: boolean;
+}) => {
+  return updateSkatePlayer(id, { paid });
 };

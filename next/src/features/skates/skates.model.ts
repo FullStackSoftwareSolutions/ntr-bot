@@ -113,8 +113,8 @@ export const doesSkateHaveOpenSpotsIgnoringSubs = (
 ) => getSkateNumSpotsForPositionUnfilled(position, skate) > 0;
 
 export const getSkateNextDropoutWithoutSub = (
-  skate: Skate,
   subPosition: Positions,
+  skate: Skate,
 ) => {
   return getSkatePlayersForPositionOutWithoutSub(subPosition, skate)?.[0];
 };

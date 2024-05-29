@@ -28,4 +28,7 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 COPY --chown=node --from=root . .
 
 WORKDIR /app/db
-CMD npm run migrate
+
+RUN npm run migrate
+
+CMD npm run studio
