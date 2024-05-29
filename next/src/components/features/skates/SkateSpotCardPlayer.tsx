@@ -7,17 +7,23 @@ import {
 } from "@next/features/players/players.model";
 
 type SkateSpotCardPlayerProps = {
+  showSkill?: boolean;
   player: Player;
 };
 
-const SkateSpotCardPlayer = ({ player }: SkateSpotCardPlayerProps) => {
+const SkateSpotCardPlayer = ({
+  player,
+  showSkill,
+}: SkateSpotCardPlayerProps) => {
   return (
     <div className="relative flex flex-wrap items-center gap-3 whitespace-pre-wrap p-2 text-xl font-semibold tracking-tight">
       <PlayerAvatarPopover player={player} />
       {getPlayerName(player)}
-      <Badge variant="secondary" className="absolute right-0 top-0 hidden">
-        {getPlayerSkillNumber(player)}
-      </Badge>
+      {showSkill && (
+        <Badge variant="secondary" className="absolute right-0 top-0">
+          {getPlayerSkillNumber(player)}
+        </Badge>
+      )}
     </div>
   );
 };

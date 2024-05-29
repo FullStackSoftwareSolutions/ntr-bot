@@ -61,7 +61,7 @@ const SkateTeam = ({ team, players, goalies }: SkateTeamProps) => {
       <div className="my-4 grid grid-cols-2 items-stretch justify-stretch gap-2 md:grid-cols-2 lg:grid-cols-3">
         {sortedPlayers.map((player) => (
           <Card key={player.id} className="p-2">
-            <SkateSpotCardPlayer player={player} />
+            <SkateSpotCardPlayer showSkill player={player} />
           </Card>
         ))}
       </div>
@@ -69,7 +69,7 @@ const SkateTeam = ({ team, players, goalies }: SkateTeamProps) => {
       <div className="mb-4 mt-2 grid grid-cols-2 items-stretch justify-stretch gap-2 md:grid-cols-2 lg:grid-cols-3">
         {goalies.map((player) => (
           <Card key={player.id} className="p-2">
-            <SkateSpotCardPlayer player={player} />
+            <SkateSpotCardPlayer showSkill player={player} />
           </Card>
         ))}
       </div>
