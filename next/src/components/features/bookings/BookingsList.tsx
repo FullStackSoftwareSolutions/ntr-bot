@@ -45,10 +45,4 @@ const BookingsList = ({ className }: BookingsListProps) => {
   );
 };
 
-const useBookingsList = () => {
-  const { data: bookings } = api.bookings.getAllFuture.useQuery();
-
-  return bookings;
-};
-
 export default BookingsList;

@@ -3,12 +3,15 @@
 import { api } from "@next/trpc/react";
 import BookingSkatesList from "../skates/BookingSkatesList";
 import { MapPinIcon } from "lucide-react";
+import { useState } from "react";
+import { BadgeToggle } from "@next/components/ui/badge-toggle";
 
 type BookingProps = {
   slug: string;
 };
 
 const Booking = ({ slug }: BookingProps) => {
+  const [type, setType] = useState<"future" | "past" | "all">("future");
   const { data: booking } = api.bookings.getBySlug.useQuery({ slug });
 
   if (!booking) {
@@ -29,7 +32,15 @@ const Booking = ({ slug }: BookingProps) => {
           </div>
         </div>
       </div>
-      <BookingSkatesList bookingId={booking.id} />
+      <div className="flex flex-col items-start gap-4">
+        <BadgeToggle
+          checked={type === "past"}
+          onClick={() => setType(type === "past" ? "future" : "past")}
+        >
+          Past skates
+        </BadgeToggle>
+        <BookingSkatesList bookingId={booking.id} type={type} />
+      </div>
     </div>
   );
 };
