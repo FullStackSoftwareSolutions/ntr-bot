@@ -1,6 +1,6 @@
 import { bookings, playersToBookings } from "@db/db/schema";
 import { db } from "@db/db";
-import { and, asc, eq, gte, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, lt } from "drizzle-orm";
 import { BookingCreate } from "./bookings.type";
 
 export const getAllBookings = async () =>
@@ -11,6 +11,11 @@ export const getAllFutureBookings = async () =>
   db.query.bookings.findMany({
     where: gte(bookings.endDate, new Date().toISOString()),
     orderBy: asc(bookings.startDate),
+  });
+export const getAllPastBookings = async () =>
+  db.query.bookings.findMany({
+    where: lt(bookings.startDate, new Date().toISOString()),
+    orderBy: desc(bookings.startDate),
   });
 
 export const getBookingBySlug = async (slug: string) =>

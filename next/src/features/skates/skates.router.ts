@@ -18,17 +18,31 @@ import { z } from "zod";
 import { Positions } from "./skates.model";
 
 export const skatesRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(() => getAllSkatesHandler()),
+  getAll: protectedProcedure
+    .input(
+      z.object({
+        type: z.union([
+          z.literal("future"),
+          z.literal("past"),
+          z.literal("all"),
+        ]),
+      }),
+    )
+    .query(({ input: { type } }) => getAllSkatesHandler({ type })),
   getFuture: protectedProcedure.query(() => getFutureSkatesHandler()),
   getAllForBooking: protectedProcedure
-    .input(z.object({ bookingId: z.number() }))
-    .query(({ input: { bookingId } }) =>
-      getAllSkatesForBookingHandler({ bookingId }),
-    ),
-  getAllFutureForBooking: protectedProcedure
-    .input(z.object({ bookingId: z.number() }))
-    .query(({ input: { bookingId } }) =>
-      getAllFutureSkatesForBookingHandler({ bookingId }),
+    .input(
+      z.object({
+        bookingId: z.number(),
+        type: z.union([
+          z.literal("future"),
+          z.literal("past"),
+          z.literal("all"),
+        ]),
+      }),
+    )
+    .query(({ input: { bookingId, type } }) =>
+      getAllSkatesForBookingHandler({ bookingId, type }),
     ),
   getBySlugs: protectedProcedure
     .input(

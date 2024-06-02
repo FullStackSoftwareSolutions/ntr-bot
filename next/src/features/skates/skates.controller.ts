@@ -5,6 +5,8 @@ import {
   getAllSkates,
   getFutureSkates,
   getFutureSkatesForBooking,
+  getPastSkates,
+  getPastSkatesForBooking,
   getSkateById,
   getSkateBySlugAndBooking,
   getSkatesForBooking,
@@ -24,7 +26,18 @@ import {
 import { getAllGoalies, getAllPlayers } from "@db/features/players/players.db";
 import { randomizeTeamsForSkate } from "./teams/skates.teams.controller";
 
-export const getAllSkatesHandler = async () => {
+export const getAllSkatesHandler = async ({
+  type,
+}: {
+  type: "future" | "past" | "all";
+}) => {
+  if (type === "future") {
+    return getFutureSkates();
+  }
+  if (type === "past") {
+    return getPastSkates();
+  }
+
   return getAllSkates();
 };
 
@@ -34,9 +47,18 @@ export const getFutureSkatesHandler = async () => {
 
 export const getAllSkatesForBookingHandler = async ({
   bookingId,
+  type,
 }: {
   bookingId: number;
+  type: "future" | "past" | "all";
 }) => {
+  if (type === "future") {
+    return getFutureSkatesForBooking(bookingId);
+  }
+  if (type === "past") {
+    return getPastSkatesForBooking(bookingId);
+  }
+
   return getSkatesForBooking(bookingId);
 };
 

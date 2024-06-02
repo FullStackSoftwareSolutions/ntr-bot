@@ -1,6 +1,6 @@
-import { bookings, playersToSkates, skates } from "@db/db/schema";
+import { playersToSkates, skates } from "@db/db/schema";
 import { db } from "@db/db";
-import { and, asc, eq, gt, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, inArray, lt } from "drizzle-orm";
 
 export const getSkateById = async (id: number) => {
   const [skate] = await db.query.skates.findMany({
@@ -67,8 +67,23 @@ export const getFutureSkates = async () =>
         orderBy: asc(playersToSkates.addedOn),
       },
     },
-    where: and(gt(skates.scheduledOn, new Date())),
+    where: and(gte(skates.scheduledOn, new Date())),
     orderBy: asc(skates.scheduledOn),
+  });
+export const getPastSkates = async () =>
+  db.query.skates.findMany({
+    with: {
+      booking: true,
+      playersToSkates: {
+        with: {
+          player: true,
+          substitutePlayer: true,
+        },
+        orderBy: asc(playersToSkates.addedOn),
+      },
+    },
+    where: and(lt(skates.scheduledOn, new Date())),
+    orderBy: desc(skates.scheduledOn),
   });
 
 export const getSkatesForBooking = async (bookingId: number) =>
@@ -101,9 +116,27 @@ export const getFutureSkatesForBooking = async (bookingId: number) =>
     },
     where: and(
       eq(skates.bookingId, bookingId),
-      gt(skates.scheduledOn, new Date())
+      gte(skates.scheduledOn, new Date())
     ),
     orderBy: asc(skates.scheduledOn),
+  });
+export const getPastSkatesForBooking = async (bookingId: number) =>
+  db.query.skates.findMany({
+    with: {
+      booking: true,
+      playersToSkates: {
+        with: {
+          player: true,
+          substitutePlayer: true,
+        },
+        orderBy: asc(playersToSkates.addedOn),
+      },
+    },
+    where: and(
+      eq(skates.bookingId, bookingId),
+      lt(skates.scheduledOn, new Date())
+    ),
+    orderBy: desc(skates.scheduledOn),
   });
 
 export const createSkate = async (skate: {

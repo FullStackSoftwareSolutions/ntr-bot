@@ -7,14 +7,17 @@ import SkateCard from "./SkateCard";
 type BookingSkatesListProps = {
   className?: string;
   bookingId: number;
+  type: "future" | "past" | "all";
 };
 
 const BookingSkatesList = ({
   className,
   bookingId,
+  type,
 }: BookingSkatesListProps) => {
-  const { data: skates } = api.skates.getAllFutureForBooking.useQuery({
+  const { data: skates } = api.skates.getAllForBooking.useQuery({
     bookingId,
+    type,
   });
 
   return (

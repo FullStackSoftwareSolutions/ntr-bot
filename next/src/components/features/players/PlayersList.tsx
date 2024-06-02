@@ -9,6 +9,7 @@ import { useState } from "react";
 import { getPlayerSearchTerms } from "@next/features/players/players.model";
 import { Button } from "@next/components/ui/button";
 import { CheckIcon } from "lucide-react";
+import { BadgeToggle } from "@next/components/ui/badge-toggle";
 
 type PlayersListProps = {
   className?: string;
@@ -34,48 +35,22 @@ const PlayersList = ({ className }: PlayersListProps) => {
     <div className="flex w-full flex-col gap-4">
       <div className="flex flex-col gap-2">
         <div className="flex gap-2">
-          <Button
+          <BadgeToggle
             onClick={() => {
               setShowPlayers(!showPlayers);
             }}
-            variant="ghost"
-            className="h-auto p-0"
+            checked={showPlayers}
           >
-            <Badge variant={showPlayers ? "default" : "outline"}>
-              <div
-                className={cn(
-                  "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-foreground",
-                  showPlayers
-                    ? "text-background-foreground border-background bg-background "
-                    : "opacity-50 [&_svg]:invisible",
-                )}
-              >
-                {showPlayers && <CheckIcon className="size-3" />}
-              </div>
-              Players
-            </Badge>
-          </Button>
-          <Button
+            Players
+          </BadgeToggle>
+          <BadgeToggle
             onClick={() => {
               setShowGoalies(!showGoalies);
             }}
-            variant="ghost"
-            className="h-auto p-0"
+            checked={showGoalies}
           >
-            <Badge variant={showGoalies ? "default" : "outline"}>
-              <div
-                className={cn(
-                  "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-foreground",
-                  showGoalies
-                    ? "text-background-foreground border-background bg-background"
-                    : "opacity-50 [&_svg]:invisible",
-                )}
-              >
-                {showGoalies && <CheckIcon className="size-3" />}
-              </div>
-              Goalies
-            </Badge>
-          </Button>
+            Goalies
+          </BadgeToggle>
         </div>
         <Input
           onChange={(e) => setPlayerSearch(e.target.value)}

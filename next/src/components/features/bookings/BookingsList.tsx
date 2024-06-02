@@ -6,16 +6,27 @@ import BookingSkatesList from "../skates/BookingSkatesList";
 import { Button } from "@next/components/ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
+import { BadgeToggle } from "@next/components/ui/badge-toggle";
+import { useState } from "react";
 
 type BookingsListProps = {
   className?: string;
 };
 
 const BookingsList = ({ className }: BookingsListProps) => {
-  const { data: bookings } = api.bookings.getAllFuture.useQuery();
+  const [type, setType] = useState<"future" | "past" | "all">("future");
+  const { data: bookings } = api.bookings.getAll.useQuery({ type });
 
   return (
     <div className={cn("flex flex-col gap-8", className)}>
+      <div className="flex">
+        <BadgeToggle
+          checked={type === "past"}
+          onClick={() => setType(type === "past" ? "future" : "past")}
+        >
+          Past skates
+        </BadgeToggle>
+      </div>
       {bookings?.map((booking) => (
         <div key={booking.id} className="flex flex-col gap-4">
           <h2 className="flex items-center gap-2 text-2xl">
@@ -27,11 +38,17 @@ const BookingsList = ({ className }: BookingsListProps) => {
             </Button>
           </h2>
 
-          <BookingSkatesList bookingId={booking.id} />
+          <BookingSkatesList bookingId={booking.id} type={type} />
         </div>
       ))}
     </div>
   );
+};
+
+const useBookingsList = () => {
+  const { data: bookings } = api.bookings.getAllFuture.useQuery();
+
+  return bookings;
 };
 
 export default BookingsList;
