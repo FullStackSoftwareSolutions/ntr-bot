@@ -16,10 +16,10 @@ export type Player = {
 export type PlayerCreate = {
   email: string;
   fullName: string;
-  nickname: string;
+  nickname?: string | null;
   phoneNumber: string;
   skillLevel: number | null;
   isPlayer: boolean;
   isGoalie: boolean;
-  notes: string;
+  notes?: string | null;
 };

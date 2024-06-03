@@ -17,7 +17,7 @@ import { Badge } from "@next/components/ui/badge";
 
 type PlayerAvatarPopoverProps = {
   player: Player;
-  tabindex?: number;
+  tabIndex?: number;
 };
 
 const PlayerAvatarPopover = ({

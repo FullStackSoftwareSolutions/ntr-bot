@@ -1,5 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
+  createPlayerHandler,
   getAllPlayersHandler,
   getPlayerByEmailHandler,
   updatePlayerHandler,
@@ -15,6 +16,20 @@ export const playersRouter = createTRPCRouter({
       }),
     )
     .query(({ input: { email } }) => getPlayerByEmailHandler({ email })),
+  create: protectedProcedure
+    .input(
+      z.object({
+        fullName: z.string(),
+        nickName: z.string().optional(),
+        email: z.string().email(),
+        phoneNumber: z.string(),
+        skillLevel: z.number().positive(),
+        isPlayer: z.boolean(),
+        isGoalie: z.boolean(),
+        notes: z.string().optional(),
+      }),
+    )
+    .mutation(({ input }) => createPlayerHandler(input)),
   update: protectedProcedure
     .input(
       z.object({

@@ -1,4 +1,5 @@
 import {
+  createPlayer,
   getAllPlayersAndGoalies,
   getPlayerByEmail,
   updatePlayer,
@@ -18,4 +19,8 @@ export const updatePlayerHandler = async (
   updates: Partial<PlayerCreate>,
 ) => {
   return updatePlayer(playerId, updates);
+};
+
+export const createPlayerHandler = async (input: PlayerCreate) => {
+  return createPlayer(input);
 };
