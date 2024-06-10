@@ -2,7 +2,6 @@ import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
   announceSpotsSkateHandler,
   announceTeamsSkateHandler,
-  getAllFutureSkatesForBookingHandler,
   getAllSkatesForBookingHandler,
   getAllSkatesHandler,
   getFutureSkatesHandler,

@@ -1,6 +1,6 @@
 "use client";
 
-import { validateRequest } from "@next/auth";
+import { type validateRequest } from "@next/auth";
 import { createContext, useContext } from "react";
 
 type ContextType = Awaited<ReturnType<typeof validateRequest>>;

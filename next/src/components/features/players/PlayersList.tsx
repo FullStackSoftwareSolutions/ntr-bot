@@ -4,11 +4,8 @@ import { cn } from "@next/lib/utils";
 import { api } from "@next/trpc/react";
 import PlayerCard from "./PlayerCard";
 import { Input } from "@next/components/ui/input";
-import { Badge } from "@next/components/ui/badge";
 import { useState } from "react";
 import { getPlayerSearchTerms } from "@next/features/players/players.model";
-import { Button } from "@next/components/ui/button";
-import { CheckIcon } from "lucide-react";
 import { BadgeToggle } from "@next/components/ui/badge-toggle";
 
 type PlayersListProps = {

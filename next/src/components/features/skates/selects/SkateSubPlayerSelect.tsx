@@ -6,7 +6,6 @@ import { CommandPopoverVirtualized } from "@next/components/ui/command-popover-v
 import { getPlayerName } from "@next/features/players/players.model";
 import { type Positions } from "@next/features/skates/skates.model";
 import { api } from "@next/trpc/react";
-import { forwardRef } from "react";
 
 type SkateSubPlayerSelectProps = {
   className?: string;
@@ -16,10 +15,13 @@ type SkateSubPlayerSelectProps = {
   onChange: (playerId: number | null) => void;
 };
 
-const SkateSubPlayerSelect = forwardRef<
-  HTMLInputElement,
-  SkateSubPlayerSelectProps
->(({ className, skate, position, value, onChange }, ref) => {
+const SkateSubPlayerSelect = ({
+  className,
+  skate,
+  position,
+  value,
+  onChange,
+}: SkateSubPlayerSelectProps) => {
   const { data: players, isLoading } = api.skates.getAvailableSubs.useQuery({
     skateId: skate.id,
     position,
@@ -39,7 +41,7 @@ const SkateSubPlayerSelect = forwardRef<
       }}
     />
   );
-});
+};
 
 SkateSubPlayerSelect.displayName = "SkateSubPlayerSelect";
 

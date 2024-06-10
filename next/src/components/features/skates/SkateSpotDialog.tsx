@@ -3,8 +3,6 @@ import { type Skate } from "@db/features/skates/skates.type";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,

@@ -23,7 +23,8 @@ export async function GET(request: Request): Promise<Response> {
         Authorization: `Bearer ${tokens.accessToken}`,
       },
     });
-    const githubUser: GitHubUser = await githubUserResponse.json();
+    const githubUser: GitHubUser =
+      (await githubUserResponse.json()) as GitHubUser;
 
     // Replace this with your own DB client.
     const existingUser = await getUserByGithubId(parseInt(githubUser.id));

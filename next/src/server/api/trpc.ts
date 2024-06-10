@@ -1,7 +1,4 @@
-import {
-  getPlayerByEmail,
-  getPlayerById,
-} from "@db/features/players/players.db";
+import { getPlayerByEmail } from "@db/features/players/players.db";
 import { getUserById } from "@db/features/users/users.db";
 import { validateRequest } from "@next/auth";
 import { env } from "@next/env";

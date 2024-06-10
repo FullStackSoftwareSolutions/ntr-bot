@@ -1,4 +1,4 @@
-import { Lucia, User, Session } from "lucia";
+import { Lucia, type User, type Session } from "lucia";
 import { GitHub } from "arctic";
 import { env } from "./env";
 import { cache } from "react";
@@ -38,7 +38,7 @@ export const validateRequest = cache(
     const result = await lucia.validateSession(sessionId);
     // next.js throws when you attempt to set cookie when rendering page
     try {
-      if (result.session && result.session.fresh) {
+      if (result.session?.fresh) {
         const sessionCookie = lucia.createSessionCookie(result.session.id);
         cookies().set(
           sessionCookie.name,

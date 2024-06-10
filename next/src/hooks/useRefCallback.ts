@@ -4,7 +4,7 @@ export const useRefCallback = <T>(): [
   MutableRefObject<T | null>,
   (node: MutableRefObject<T>["current"]) => void,
 ] => {
-  const [_, setReady] = useState(false);
+  const [_ready, setReady] = useState(false);
 
   const ref = useRef<T | null>(null);
   const setRef = useCallback((node: MutableRefObject<T>["current"]) => {

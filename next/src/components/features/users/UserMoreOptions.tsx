@@ -17,7 +17,7 @@ import { api } from "@next/trpc/react";
 import { MoreVerticalIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import ButtonLoading from "@next/components/ui/button-loading";
-import { User } from "@db/features/users/users.type";
+import { type User } from "@db/features/users/users.type";
 
 type UserMoreOptionsProps = {
   user: User;

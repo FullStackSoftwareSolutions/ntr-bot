@@ -1,7 +1,6 @@
 "use client";
 
 import { useSession } from "@next/providers/SessionProvier";
-import React from "react";
 
 type SignedOutProps = {
   children: React.ReactNode;
