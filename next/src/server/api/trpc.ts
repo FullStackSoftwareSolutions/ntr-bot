@@ -1,8 +1,9 @@
-//import { auth } from "@clerk/nextjs/server";
 import {
   getPlayerByEmail,
   getPlayerById,
 } from "@db/features/players/players.db";
+import { getUserById } from "@db/features/users/users.db";
+import { validateRequest } from "@next/auth";
 import { env } from "@next/env";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
@@ -17,8 +18,9 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   }
 
   //const clerkAuth = auth();
+  const auth = await validateRequest();
   return {
-    auth: null, //clerkAuth,
+    auth,
     ...opts,
   };
 };
@@ -53,11 +55,11 @@ const isAuthed = t.middleware(async ({ next, ctx }) => {
     });
   }
 
-  if (!ctx.auth?.userId) {
+  if (!ctx.auth?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const user = await getPlayerById(ctx.auth.userId);
+  const user = await getUserById(ctx.auth.user.id);
   if (!user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }

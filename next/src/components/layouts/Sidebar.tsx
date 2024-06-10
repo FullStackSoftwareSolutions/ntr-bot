@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import PlayerIcon from "@next/svg/PlayerIcon";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
@@ -37,14 +38,17 @@ const Sidebar = () => {
           Pages
         </h2>
         <div className="flex flex-col gap-1">
-          <SidebarLink href="/players" IconComponent={UserRoundIcon}>
-            Players
+          <SidebarLink href="/skates" IconComponent={TrophyIcon}>
+            Skates
           </SidebarLink>
           <SidebarLink href="/bookings" IconComponent={CalendarClockIcon}>
             Bookings
           </SidebarLink>
-          <SidebarLink href="/skates" IconComponent={TrophyIcon}>
-            Skates
+          <SidebarLink href="/players" IconComponent={UserRoundIcon}>
+            Players
+          </SidebarLink>
+          <SidebarLink href="/users" IconComponent={PlayerIcon}>
+            Users
           </SidebarLink>
         </div>
       </SheetContent>
