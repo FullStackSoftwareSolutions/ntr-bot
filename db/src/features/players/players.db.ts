@@ -8,20 +8,6 @@ import {
 } from "@db/db/schema";
 import { PlayerCreate } from "./players.type";
 
-export const getPlayerByClerkUserId = async (clerkUserId: string) =>
-  db.query.players.findFirst({
-    where: eq(players.clerkUserId, clerkUserId),
-  });
-export const updatePlayerClerkUserId = async (
-  email: string,
-  clerkUserId: string
-) =>
-  db
-    .update(players)
-    .set({ clerkUserId })
-    .where(eq(players.email, email))
-    .returning();
-
 export const getAllPlayersAndGoalies = async () =>
   db.query.players.findMany({
     orderBy: [asc(players.dateAdded), asc(players.id)],

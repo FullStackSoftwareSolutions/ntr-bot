@@ -1,3 +1,4 @@
+import { authRouter } from "@next/features/auth/auth.router";
 import { bookingsRouter } from "@next/features/bookings/bookings.router";
 import { playersRouter } from "@next/features/players/players.router";
 import { skatesRouter } from "@next/features/skates/skates.router";
@@ -10,6 +11,7 @@ import { createCallerFactory, createTRPCRouter } from "@next/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  auth: authRouter,
   skates: skatesRouter,
   bookings: bookingsRouter,
   players: playersRouter,

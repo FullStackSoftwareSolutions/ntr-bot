@@ -1,12 +1,18 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+"use client";
+// import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { DarkModeModeToggle } from "../themes/DarkModeToggle";
 import Sidebar from "./Sidebar";
+import SignInButton from "@next/components/features/auth/SignInButton";
+import { useSession } from "@next/providers/SessionProvier";
+import SignOutButton from "@next/components/features/auth/SignOutButton";
 
 export const NAVBAR_HEIGHT = 48;
 export const REMAINING_SCREEN = `calc(100vh - ${NAVBAR_HEIGHT}px)`;
 
-const Navbar = async () => {
+const Navbar = () => {
+  const { user } = useSession();
+
   return (
     <nav
       className="z-20 overflow-hidden shadow-md dark:shadow-dark sm:px-4"
@@ -15,18 +21,17 @@ const Navbar = async () => {
       }}
     >
       <div className="container mx-auto flex h-full items-center gap-2 px-2 py-1">
-        <SignedIn>
-          <Sidebar />
-        </SignedIn>
+        {user && <Sidebar />}
         <Link href="/">🤖 ntr bot</Link>
         <div className="ml-auto flex items-center gap-2">
           <DarkModeModeToggle />
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+          {!user && <SignInButton />}
+          {user && (
+            <>
+              {user.username}
+              <SignOutButton />
+            </>
+          )}
         </div>
       </div>
     </nav>

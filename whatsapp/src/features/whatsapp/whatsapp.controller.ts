@@ -36,6 +36,7 @@ let connectionStatus: WhatsAppConnection | null = null;
 
 export const connectToWhatsapp = async () => {
   const auth = await useWhatsappAuth({
+    resetData: deleteAllWhatsappAuthData,
     deleteData: deleteWhatsappAuthData,
     writeData: upsertWhatsappAuthData,
     readData: getWhatsappAuthData,

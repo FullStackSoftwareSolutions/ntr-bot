@@ -253,6 +253,20 @@
       "when": 1715740425147,
       "tag": "0035_unique_betty_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "6",
+      "when": 1717856090707,
+      "tag": "0036_silent_scrambler",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "6",
+      "when": 1717857431171,
+      "tag": "0037_old_vindicator",
+      "breakpoints": true
     }
   ]
 }

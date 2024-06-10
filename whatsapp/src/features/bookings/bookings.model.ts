@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { Booking, BookingCreate, BookingWithoutPlayers } from "./bookings.type";
 
-import utcPlugin from "dayjs/plugin/utc";
+import utcPlugin from "dayjs/plugin/utc.js";
 import { formatList, stringJoin } from "../whatsapp/whatsapp.formatting";
 import { getPlayerName } from "../players/players.model";
 import { formatCurrency } from "@formatting/currency";

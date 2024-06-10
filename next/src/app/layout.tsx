@@ -2,9 +2,10 @@ import "@next/styles/globals.css";
 
 import { Jost } from "next/font/google";
 
-import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@next/components/layouts/Navbar";
 import ClientProviders from "@next/providers/ClientProviders";
+import { validateRequest } from "@next/auth";
+import { SessionProvider } from "@next/providers/SessionProvier";
 
 export const metadata = {
   title: "ntr bot",
@@ -18,13 +19,15 @@ const font = Jost({
   display: "swap",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await validateRequest();
+
   return (
-    <ClerkProvider>
+    <SessionProvider value={session}>
       <html lang="en" suppressHydrationWarning className={font.className}>
         <head />
         <body className="flex flex-col">
@@ -36,6 +39,6 @@ export default function RootLayout({
           </ClientProviders>
         </body>
       </html>
-    </ClerkProvider>
+    </SessionProvider>
   );
 }

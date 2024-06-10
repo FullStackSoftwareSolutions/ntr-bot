@@ -15,6 +15,7 @@ import {
   PollMessageOptions,
   fetchLatestBaileysVersion,
   WAPresence,
+  AuthenticationCreds,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
@@ -39,6 +40,7 @@ const storePath = path.resolve(`./state/store.json`);
 let sock: ReturnType<typeof makeWASocket>;
 let authState: AuthenticationState;
 let saveCreds: () => Promise<void>;
+let resetCreds: () => Promise<AuthenticationCreds>;
 let store: ReturnType<typeof makeInMemoryStore>;
 
 const eventEmitter = new EventEmitter();
@@ -46,6 +48,7 @@ const eventEmitter = new EventEmitter();
 export const initialize = async (auth: {
   state: AuthenticationState;
   saveCreds: () => Promise<void>;
+  reset: () => Promise<AuthenticationCreds>;
 }) => {
   store = makeInMemoryStore({ logger });
   store.readFromFile(storePath);
@@ -53,6 +56,7 @@ export const initialize = async (auth: {
 
   authState = auth.state;
   saveCreds = auth.saveCreds;
+  resetCreds = auth.reset;
 
   const { version, isLatest } = await fetchLatestBaileysVersion();
   console.log(`using WA v${version.join(".")}, isLatest: ${isLatest}`);
@@ -60,7 +64,7 @@ export const initialize = async (auth: {
   return connect();
 };
 
-const logger = pino({ level: "silent" }) as any;
+const logger = pino({ level: "info" }) as any;
 
 export const connect = async () => {
   sock = makeWASocket({
@@ -71,7 +75,7 @@ export const connect = async () => {
       keys: makeCacheableSignalKeyStore(authState.keys, logger),
     },
     logger: logger,
-    browser: ["NTR Bot", "", ""],
+    browser: [process.env.WHATS_APP_LINKED_DEVICE_NAME ?? "NTR Bot", "", ""],
     syncFullHistory: false,
     generateHighQualityLinkPreview: true,
     getMessage,
@@ -94,9 +98,14 @@ export const connect = async () => {
 };
 
 export const getUserJid = () => {
-  const numberAndPort = sock.user?.id.split("@")[0];
+  const userId = sock.user?.id;
+  if (!userId) {
+    return null;
+  }
+
+  const numberAndPort = userId.split("@")[0];
   const number = numberAndPort?.split(":")[0];
-  return `${number}@${sock.user?.id.split("@")[1]}`;
+  return `${number}@${userId.split("@")[1]}`;
 };
 
 async function getMessage(
@@ -117,7 +126,7 @@ const saveStoreAutomatically = () => {
   }, 1_000);
 };
 
-const handleConnectionUpdate = (update: Partial<ConnectionState>) => {
+const handleConnectionUpdate = async (update: Partial<ConnectionState>) => {
   const { connection, lastDisconnect } = update;
   const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
 
@@ -144,15 +153,25 @@ const handleConnectionUpdate = (update: Partial<ConnectionState>) => {
 
   if (connection === "close") {
     if (statusCode === DisconnectReason.loggedOut) {
-      try {
-        unlinkSync(storePath);
-      } catch {
-        console.log("Store not found");
-      }
+      await logoutClearCreds();
     }
 
     connect();
   }
+};
+
+const logoutClearCreds = async () => {
+  try {
+    authState.creds = await resetCreds();
+    unlinkSync(storePath);
+  } catch {
+    console.log("Store not found");
+  }
+};
+
+export const logout = async () => {
+  await logoutClearCreds();
+  return sock.logout();
 };
 
 const handleMessagesUpsert = async ({ messages, ...rest }: any) => {

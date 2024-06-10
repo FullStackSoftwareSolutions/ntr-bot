@@ -5,8 +5,12 @@ export const getWhatsappConnectionStatusHandler = async () => {
   try {
     status = await trpc.connection.getStatus.query();
   } catch (error) {
-    console.error(error);
+    throw new Error("WhatsApp unavailable");
   }
 
   return status;
+};
+
+export const resetWhatsAppConnectionHandler = async () => {
+  return trpc.connection.reset.mutate();
 };

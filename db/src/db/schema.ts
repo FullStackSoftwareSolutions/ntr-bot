@@ -15,10 +15,28 @@ import {
   text,
 } from "drizzle-orm/pg-core";
 
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),
+  username: varchar("username"),
+  githubId: integer("github_id"),
+});
+
+export const sessions = pgTable("sessions", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+});
+
 export const players = pgTable(
   "players",
   {
     id: serial("id").unique().primaryKey(),
+    userId: varchar("user_id").unique(),
     fullName: varchar("full_name", { length: 256 }).notNull(),
     nickname: varchar("nickname", { length: 256 }),
     email: varchar("email").unique(),
@@ -32,20 +50,17 @@ export const players = pgTable(
     admin: boolean("admin").notNull().default(false),
     isPlayer: boolean("is_player").notNull().default(true),
     isGoalie: boolean("is_goalie").notNull().default(false),
-    clerkUserId: varchar("clerk_user_id").unique(),
   },
   (players) => ({
     playersEmailIdx: index("players_email_idx").on(players.email),
     playersPhoneNumberIdx: index("players_phone_number_idx").on(
       players.phoneNumber
     ),
-    playersClerkUserIdIdx: index("players_clerk_user_id_idx").on(
-      players.clerkUserId
-    ),
+    playersUserIdIdx: index("players_user_id_idx").on(players.userId),
   })
 );
 
-export const playersRelations = relations(players, ({ many }) => ({
+export const playersRelations = relations(players, ({ many, one }) => ({
   playersToBookings: many(playersToBookings),
   playersToSkates: many(playersToSkates, {
     relationName: "skatePlayer",
@@ -53,6 +68,7 @@ export const playersRelations = relations(players, ({ many }) => ({
   playersToSkatesSubstitute: many(playersToSkates, {
     relationName: "skateSubstitutePlayer",
   }),
+  playersToUsers: one(users),
 }));
 
 export const skates = pgTable("skates", {

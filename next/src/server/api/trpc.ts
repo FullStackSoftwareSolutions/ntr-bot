@@ -1,13 +1,24 @@
-import { auth } from "@clerk/nextjs/server";
-import { getPlayerByClerkUserId } from "@db/features/players/players.db";
+//import { auth } from "@clerk/nextjs/server";
+import {
+  getPlayerByEmail,
+  getPlayerById,
+} from "@db/features/players/players.db";
+import { env } from "@next/env";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const clerkAuth = auth();
+  if (env.DEV_USER) {
+    return {
+      auth: null,
+      ...opts,
+    };
+  }
+
+  //const clerkAuth = auth();
   return {
-    auth: clerkAuth,
+    auth: null, //clerkAuth,
     ...opts,
   };
 };
@@ -33,11 +44,20 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const isAuthed = t.middleware(async ({ next, ctx }) => {
-  if (!ctx.auth.userId) {
+  if (env.DEV_USER) {
+    const user = await getPlayerByEmail(env.DEV_USER);
+    return next({
+      ctx: {
+        user,
+      },
+    });
+  }
+
+  if (!ctx.auth?.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const user = await getPlayerByClerkUserId(ctx.auth.userId);
+  const user = await getPlayerById(ctx.auth.userId);
   if (!user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }

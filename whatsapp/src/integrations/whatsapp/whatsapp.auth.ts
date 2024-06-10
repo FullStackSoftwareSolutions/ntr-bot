@@ -8,6 +8,7 @@ import {
 } from "@whiskeysockets/baileys";
 
 type useWhatsappAuthProps = {
+  resetData: () => Promise<any>;
   deleteData: (key: string) => Promise<any>;
   writeData: (key: string, data: any) => Promise<any>;
   readData: (key: string) => Promise<any>;
@@ -22,12 +23,14 @@ enum KeyTypes {
 }
 
 export const useWhatsappAuth = async ({
+  resetData: externalResetData,
   deleteData: externalDeleteData,
   writeData: externalWriteData,
   readData: externalReadData,
 }: useWhatsappAuthProps): Promise<{
   state: AuthenticationState;
   saveCreds: () => Promise<void>;
+  reset: () => Promise<AuthenticationCreds>;
 }> => {
   const writeData = (key: string, data: any) => {
     return externalWriteData(key, JSON.stringify(data, BufferJSON.replacer));
@@ -46,7 +49,7 @@ export const useWhatsappAuth = async ({
     } catch (error) {}
   };
 
-  const creds: AuthenticationCreds =
+  let creds: AuthenticationCreds =
     (await readData(Keys.creds)) || initAuthCreds();
 
   return {
@@ -87,6 +90,11 @@ export const useWhatsappAuth = async ({
     },
     saveCreds: () => {
       return writeData(Keys.creds, creds);
+    },
+    reset: async () => {
+      await externalResetData();
+      creds = initAuthCreds();
+      return creds;
     },
   };
 };
