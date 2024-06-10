@@ -18,8 +18,14 @@ import {
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
   username: varchar("username"),
+  email: varchar("email"),
   githubId: integer("github_id"),
+  admin: boolean("admin").default(false).notNull(),
 });
+
+export const usersRelations = relations(users, ({ one }) => ({
+  usersToPlayers: one(players),
+}));
 
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),

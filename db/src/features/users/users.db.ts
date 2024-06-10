@@ -9,6 +9,11 @@ export const getUserById = async (id: string) =>
     where: eq(users.id, id),
   });
 
+export const getUserByUsername = async (username: string) =>
+  await db.query.users.findFirst({
+    where: eq(users.username, username),
+  });
+
 export const getUserByGithubId = async (githubId: number) =>
   await db.query.users.findFirst({
     where: eq(users.githubId, githubId),

@@ -11,7 +11,8 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    DEV_USER: z.string().optional(),
+    DEV_USERNAME: z.string().optional(),
+    ADMIN_USERNAME: z.string().optional(),
     GITHUB_CLIENT_ID: z.string().optional(),
     GITHUB_CLIENT_SECRET: z.string().optional(),
   },
@@ -30,7 +31,8 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    DEV_USER: process.env.DEV_USER,
+    DEV_USERNAME: process.env.DEV_USERNAME,
+    ADMIN_USERNAME: process.env.ADMIN_USERNAME,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,

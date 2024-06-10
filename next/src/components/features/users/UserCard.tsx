@@ -1,6 +1,7 @@
 import { type User } from "@db/features/users/users.type";
 import { Card, CardHeader, CardTitle } from "@next/components/ui/card";
 import UserMoreOptions from "./UserMoreOptions";
+import { Badge } from "@next/components/ui/badge";
 
 type UserCardProps = {
   user: User;
@@ -12,6 +13,7 @@ const UserCard = ({ user }: UserCardProps) => {
       <CardHeader>
         <CardTitle className="flex flex-wrap items-start gap-2 whitespace-pre-wrap">
           {user.username ?? "?"}
+          {user.admin && <Badge variant="secondary">admin</Badge>}
           <UserMoreOptions user={user} />
         </CardTitle>
         <div className="flex flex-col gap-4">

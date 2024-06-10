@@ -1,5 +1,5 @@
-import { getPlayerByEmail } from "@db/features/players/players.db";
-import { getUserById } from "@db/features/users/users.db";
+import { getUserById, getUserByUsername } from "@db/features/users/users.db";
+import { type User } from "@db/features/users/users.type";
 import { validateRequest } from "@next/auth";
 import { env } from "@next/env";
 import { initTRPC, TRPCError } from "@trpc/server";
@@ -7,14 +7,13 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  if (env.DEV_USER) {
+  if (env.DEV_USERNAME) {
     return {
       auth: null,
       ...opts,
     };
   }
 
-  //const clerkAuth = auth();
   const auth = await validateRequest();
   return {
     auth,
@@ -43,21 +42,19 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const isAuthed = t.middleware(async ({ next, ctx }) => {
-  if (env.DEV_USER) {
-    const user = await getPlayerByEmail(env.DEV_USER);
-    return next({
-      ctx: {
-        user,
-      },
-    });
+  let userId = ctx.auth?.user?.id;
+
+  if (env.DEV_USERNAME) {
+    const user = await getUserByUsername(env.DEV_USERNAME);
+    userId = user?.id;
   }
 
-  if (!ctx.auth?.user) {
+  if (userId == null) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const user = await getUserById(ctx.auth.user.id);
-  if (!user) {
+  const user = await getUserById(userId);
+  if (!user?.admin) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
