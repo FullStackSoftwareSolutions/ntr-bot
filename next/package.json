@@ -5,11 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "db:push": "drizzle-kit push:pg",
-    "db:studio": "drizzle-kit studio",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "migrate": "cd ../db && npm run migrate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.4.0",
