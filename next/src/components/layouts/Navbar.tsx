@@ -34,7 +34,7 @@ const Navbar = () => {
           </SignedOut>
           <SignedIn>
             <div className="flex items-center gap-4">
-              {user!.username}
+              {user?.username}
               <SignOutButton />
             </div>
           </SignedIn>

@@ -54,7 +54,11 @@ const isAuthed = t.middleware(async ({ next, ctx }) => {
   }
 
   const user = await getUserById(userId);
-  if (!user?.admin) {
+  if (
+    !user?.admin &&
+    env.ADMIN_USERNAME != null &&
+    env.ADMIN_USERNAME != user?.username
+  ) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
