@@ -1,9 +1,19 @@
-import "dotenv/config";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
+"use server";
+
+import { migrate as pgMigrate } from "drizzle-orm/postgres-js/migrator";
 import { db, connection } from "./index";
+import { fileURLToPath } from "url";
+import path from "node:path";
 
-// This will run migrations on the database, skipping the ones already applied
-await migrate(db, { migrationsFolder: "./drizzle" });
+export async function migrate() {
+  const __filename = fileURLToPath(import.meta.url);
+  const migrationsFolder = path.join(__filename, "../../../drizzle");
 
-// Don't forget to close the connection, otherwise the script will hang
-await connection.end();
+  // This will run migrations on the database, skipping the ones already applied
+  await pgMigrate(db, {
+    migrationsFolder,
+  });
+
+  // Don't forget to close the connection, otherwise the script will hang
+  await connection.end();
+}

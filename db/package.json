@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "migrate:gen": "drizzle-kit generate && npm run migrate",
-    "migrate": "tsx src/db/migrate.ts",
+    "migrate": "tsx scripts/db:migrate.ts",
     "studio": "drizzle-kit studio"
   },
   "author": "",
