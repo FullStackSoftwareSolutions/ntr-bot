@@ -7,7 +7,8 @@
   "scripts": {
     "migrate:gen": "drizzle-kit generate && npm run migrate",
     "migrate": "tsx scripts/db:migrate.ts",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "studio:migrate": "npm run migrate && npm run studio"
   },
   "author": "",
   "license": "ISC",

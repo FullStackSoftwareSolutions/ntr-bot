@@ -29,6 +29,4 @@ COPY --chown=node --from=root . .
 
 WORKDIR /app/db
 
-RUN npm run migrate
-
-CMD npm run studio
+CMD npm run studio:migrate
