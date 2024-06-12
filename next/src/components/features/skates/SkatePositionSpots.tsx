@@ -30,8 +30,6 @@ const SkatePositionSpots = ({ skate, position }: SkatePositionSpotsProps) => {
   const playerSubs = getSkatePlayersForPositionSubsIn(position, skate);
   const numPlayers = getSkateTotalSpotsForPosition(position, skate);
 
-  console.log(playersOutWithoutSubs);
-
   return (
     <div className="m-4 grid grid-cols-2 items-stretch justify-stretch gap-2 md:grid-cols-4 lg:grid-cols-6">
       {Array.from({ length: numPlayers }).map((_, index) => {
@@ -40,11 +38,14 @@ const SkatePositionSpots = ({ skate, position }: SkatePositionSpotsProps) => {
           : playersOutWithoutSubs[index - playersIn.length];
 
         return (
-          <>
+          <div
+            className="flex flex-1"
+            key={playerToSkate?.id ?? `open-${index}`}
+          >
             {!!playerToSkate && (
               <SkateSpotCard
-                key={playerToSkate.id}
                 id={playerToSkate.id}
+                className="flex-1"
                 position={position}
                 player={playerToSkate.player}
                 skate={skate}
@@ -55,13 +56,13 @@ const SkatePositionSpots = ({ skate, position }: SkatePositionSpotsProps) => {
               />
             )}
             {!playerToSkate && (
-              <Card className="flex items-center justify-center p-4 font-semibold tracking-tight">
+              <Card className="flex flex-1 items-center justify-center p-4 font-semibold tracking-tight">
                 <Badge variant="warning" className="flex items-center text-lg">
                   Open
                 </Badge>
               </Card>
             )}
-          </>
+          </div>
         );
       })}
       <SkateAddSubButton skate={skate} position={position} />

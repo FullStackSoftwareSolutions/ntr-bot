@@ -41,19 +41,15 @@ const Player = ({ email }: PlayerProps) => {
         </div>
         <div className="flex gap-1">
           <Badge className="self-center text-2xl" variant="secondary">
-            {getPlayerSkillLevel(player)}
-          </Badge>
-          <Badge className="self-center text-2xl" variant="secondary">
             {getPlayerSkillNumber(player)}
           </Badge>
         </div>
       </div>
       {player.notes && (
-        <div className="mt-4">
+        <div className="m-6">
           <p>{player.notes}</p>
         </div>
       )}
-      <PlayerSkillEditForm player={player} />
     </div>
   );
 };

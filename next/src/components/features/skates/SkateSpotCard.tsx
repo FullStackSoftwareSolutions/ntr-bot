@@ -24,6 +24,7 @@ type SkateSpotCardProps = {
   substitutePlayer?: Player | null;
   waitingForSub?: boolean;
   paid: boolean;
+  className?: string;
 };
 
 const SkateSpotCard = (props: SkateSpotCardProps) => {

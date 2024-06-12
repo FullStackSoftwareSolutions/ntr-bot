@@ -24,7 +24,10 @@ export const users = pgTable("users", {
 });
 
 export const usersRelations = relations(users, ({ one }) => ({
-  usersToPlayers: one(players),
+  player: one(players, {
+    fields: [users.id],
+    references: [players.userId],
+  }),
 }));
 
 export const sessions = pgTable("sessions", {
@@ -74,7 +77,10 @@ export const playersRelations = relations(players, ({ many, one }) => ({
   playersToSkatesSubstitute: many(playersToSkates, {
     relationName: "skateSubstitutePlayer",
   }),
-  playersToUsers: one(users),
+  playersToUsers: one(users, {
+    fields: [players.userId],
+    references: [users.id],
+  }),
 }));
 
 export const skates = pgTable("skates", {

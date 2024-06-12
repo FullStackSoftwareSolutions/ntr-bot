@@ -20,7 +20,6 @@ import SkateSpotMoreOptions from "./SkateSpotMoreOptions";
 
 type SkateSpotDialogProps = {
   id: number;
-  className?: string;
   skate: Skate;
   player: Player;
   addedOn: Date;
@@ -30,6 +29,7 @@ type SkateSpotDialogProps = {
   waitingForSub?: boolean;
   paid: boolean;
   position: Positions;
+  className?: string;
   children: React.ReactNode;
 };
 
@@ -45,6 +45,7 @@ const SkateSpotDialog = ({
   substitutePlayer,
   waitingForSub,
   paid,
+  className,
 }: SkateSpotDialogProps) => {
   const utils = api.useUtils();
   const [open, setOpen] = useState(false);
@@ -86,7 +87,10 @@ const SkateSpotDialog = ({
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="flex h-auto items-stretch justify-stretch p-0"
+          className={cn(
+            "flex h-auto items-stretch justify-stretch p-0",
+            className,
+          )}
         >
           {children}
         </Button>

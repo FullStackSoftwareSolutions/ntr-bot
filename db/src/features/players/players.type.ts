@@ -21,5 +21,6 @@ export type PlayerCreate = {
   skillLevel: number | null;
   isPlayer: boolean;
   isGoalie: boolean;
+  userId?: string | null;
   notes?: string | null;
 };

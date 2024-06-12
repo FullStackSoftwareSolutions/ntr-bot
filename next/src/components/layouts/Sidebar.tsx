@@ -44,10 +44,10 @@ const Sidebar = () => {
           <SidebarLink href="/bookings" IconComponent={CalendarClockIcon}>
             Bookings
           </SidebarLink>
-          <SidebarLink href="/players" IconComponent={UserRoundIcon}>
+          <SidebarLink href="/players" IconComponent={PlayerIcon}>
             Players
           </SidebarLink>
-          <SidebarLink href="/users" IconComponent={PlayerIcon}>
+          <SidebarLink href="/users" IconComponent={UserRoundIcon}>
             Users
           </SidebarLink>
         </div>

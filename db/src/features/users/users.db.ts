@@ -1,11 +1,15 @@
 import { db } from "@db/db";
 import { users } from "@db/db/schema";
 import { eq } from "drizzle-orm";
+import { UserUpdate } from "./users.type";
 
 export const getAllUsers = () => db.query.users.findMany();
 
 export const getUserById = async (id: string) =>
   await db.query.users.findFirst({
+    with: {
+      player: true,
+    },
     where: eq(users.id, id),
   });
 
@@ -37,4 +41,15 @@ export const createUser = async ({
 
 export const deleteUser = async ({ id }: { id: string }) => {
   await db.delete(users).where(eq(users.id, id));
+};
+
+export const updateUser = async (id: string, userData: UserUpdate) => {
+  const [user] = await db
+    .update(users)
+    .set(userData)
+    .where(eq(users.id, id))
+    .returning();
+  if (!user) throw new Error("Failed to update user");
+
+  return user;
 };

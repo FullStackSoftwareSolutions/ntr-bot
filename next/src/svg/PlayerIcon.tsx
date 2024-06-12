@@ -7,9 +7,9 @@ const PlayerIcon = (props: { className?: string }) => {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       {...props}
     >
       <g transform="matrix(.044156 0 0 0.044156 0.69606 0.696064)">

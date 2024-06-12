@@ -5,16 +5,32 @@ import { api } from "@next/trpc/react";
 import { CircleXIcon } from "lucide-react";
 import QRCode from "react-qr-code";
 import WhatsAppMoreOptions from "./WhatsAppMoreOptions";
+import { useEffect, useState } from "react";
 
 const WhatsAppQrCode = () => {
-  const { data, error } = api.whatsapp.getConnection.useQuery(undefined, {
-    refetchInterval: 1000,
-  });
+  const [lastError, setLastError] = useState<string | null>(null);
+  const { data, errorUpdateCount, error, failureReason } =
+    api.whatsapp.getConnection.useQuery(undefined, {
+      retry: 0,
+      refetchInterval: 1000,
+    });
 
-  if (error) {
+  useEffect(() => {
+    if (error != null) {
+      setLastError(error.message);
+    }
+  }, [error]);
+
+  if (errorUpdateCount > 0 && lastError) {
     return (
-      <div className="flex items-center gap-2">
-        <CircleXIcon className="text-destructive" /> {error.message}
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex items-center gap-2">
+          <CircleXIcon className="text-destructive" />
+          <p>{lastError}</p>
+        </div>
+        <p>
+          {errorUpdateCount} attempt{errorUpdateCount > 1 ? "s" : ""}
+        </p>
       </div>
     );
   }
