@@ -25,6 +25,7 @@ const WhatsAppMoreOptions = () => {
   const resetMutation = api.whatsapp.reset.useMutation({
     onSuccess: async () => {
       await utils.whatsapp.getConnection.reset();
+      setShowReset(false);
     },
   });
 

@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import PlayerIcon from "@next/svg/PlayerIcon";
+import WhatsAppIcon from "@next/svg/WhatsAppIcon";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
@@ -49,6 +50,9 @@ const Sidebar = () => {
           </SidebarLink>
           <SidebarLink href="/users" IconComponent={UserRoundIcon}>
             Users
+          </SidebarLink>
+          <SidebarLink href="/whatsapp" IconComponent={WhatsAppIcon}>
+            WhatsApp
           </SidebarLink>
         </div>
       </SheetContent>
