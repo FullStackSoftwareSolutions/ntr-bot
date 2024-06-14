@@ -8,14 +8,14 @@ import {
   deleteWhatsappAuthData,
   getWhatsappAuthData,
   upsertWhatsappAuthData,
-} from "./whatsapp.db";
+} from "@db/features/whatsapp/whatsapp.db";
 import {
   onMessage as onWhatsAppMessage,
   onPollSelection as onWhatsAppPollSelection,
   onReaction as onWhatsAppReaction,
   onConnectionUpdate as onWhatsAppConnectionUpdate,
 } from "../../integrations/whatsapp/whatsapp.service";
-import { getPlayerByPhoneNumber } from "../players/players.db";
+import { getPlayerByPhoneNumber } from "@db/features/players/players.db";
 import {
   getGroupOrSenderFromMessage,
   getSenderFromMessage,
@@ -27,7 +27,7 @@ import {
   WhatsAppMessageOptions,
 } from "./whatsapp.model";
 import EventEmitter from "node:events";
-import { Player } from "../players/players.type";
+import { Player } from "@db/features/players/players.type";
 import chalk from "chalk";
 import { DisconnectReason } from "@whiskeysockets/baileys";
 

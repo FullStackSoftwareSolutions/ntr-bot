@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Skate } from "@db/features/skates/skates.type";
+import { Skate, Teams } from "@db/features/skates/skates.type";
 
 import {
   formatList,
@@ -10,30 +10,30 @@ import {
   getPlayerName,
   getPlayerSkillLevel,
   getPlayerSkillNumber,
-} from "../players/players.model";
+} from "@next/features/players/players.model";
 import { timeToEmoji } from "@formatting/time";
 import { Player } from "@db/features/players/players.type";
-
-export enum Teams {
-  Black = "black",
-  White = "white",
-}
-
-const teamTitles = {
-  [Teams.Black]: "⬛ Black - Home",
-  [Teams.White]: "⬜ White - Away",
-};
-export const getTeamTitle = (team: Teams) => teamTitles[team];
-
-export enum Positions {
-  Player = "Player",
-  Goalie = "Goalie",
-}
-
-export type Team = {
-  [Teams.Black]: Player[];
-  [Teams.White]: Player[];
-};
+import {
+  getSkateGoaliesIn,
+  getSkateGoaliesOutWithoutSub,
+  getSkateGoaliesSubsIn,
+  getSkateNumGoalieSpotsFilled,
+  getSkateNumGoalieSpotsOpen,
+  getSkateNumPlayerSpotsFilled,
+  getSkateNumPlayerSpotsOpen,
+  getSkatePlayersIn,
+  getSkatePlayersOut,
+  getSkatePlayersOutWithoutSub,
+  getSkatePlayersSubsIn,
+  getSkateSubstitubeForPlayer,
+  getSkateTotalGoalieSpots,
+  getSkateTotalPlayerSpots,
+  getTeamTitle,
+} from "@next/features/skates/skates.model";
+import {
+  shufflePlayers,
+  sortPlayers,
+} from "@next/features/skates/teams/skates.teams.controller";
 
 export const getSkateTimeMessage = (skate: Skate) => {
   return `${timeToEmoji(skate.scheduledOn)} ${dayjs(skate.scheduledOn).format(
@@ -52,157 +52,6 @@ export const getSkatesMessage = (skates: Skate[]) => {
       }))
     )
   );
-};
-
-const getSkatePlayersForPosition = (
-  positionChecked: Positions,
-  skate: Skate
-) => {
-  return skate.playersToSkates
-    .filter(({ position }) => position === positionChecked)
-    .sort((a, b) => a.addedOn!.getTime() - b.addedOn!.getTime());
-};
-export const getSkatePlayersForPositionIn = (
-  position: Positions,
-  skate: Skate
-) => {
-  return getSkatePlayersForPosition(position, skate).filter(
-    ({ droppedOutOn }) => !droppedOutOn
-  );
-};
-export const getSkatePlayersForPositionSubsIn = (
-  position: Positions,
-  skate: Skate
-) => {
-  return getSkatePlayersForPositionIn(position, skate).slice(
-    getSkateTotalSpotsForPosition(position, skate)
-  );
-};
-export const getSkatePlayersForPositionOut = (
-  position: Positions,
-  skate: Skate
-) => {
-  return getSkatePlayersForPosition(position, skate).filter(
-    ({ droppedOutOn }) => droppedOutOn
-  );
-};
-const getSkatePlayersForPositionOutWithoutSub = (
-  position: Positions,
-  skate: Skate
-) => {
-  const numSpots = getSkateNumSpotsOpenForPosition(position, skate);
-
-  const playersOut = getSkatePlayersForPositionOut(position, skate).filter(
-    ({ substitutePlayer }) => !substitutePlayer
-  );
-  return playersOut
-    .slice(0, numSpots)
-    .sort((a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime());
-};
-const getSkateNumSpotsOpenForPosition = (position: Positions, skate: Skate) => {
-  if (position === Positions.Goalie) {
-    return getSkateNumGoalieSpotsOpen(skate);
-  }
-  return getSkateNumPlayerSpotsOpen(skate);
-};
-export const getSkateTotalSpotsForPosition = (
-  position: Positions,
-  skate: Skate
-) => {
-  if (position === Positions.Goalie) {
-    return getSkateTotalGoalieSpots(skate);
-  }
-  return getSkateTotalPlayerSpots(skate);
-};
-export const getSkateGoaliesInWithSubs = (skate: Skate) => {
-  return getSkatePlayersForPositionIn(Positions.Goalie, skate);
-};
-export const getSkateGoaliesIn = (skate: Skate) => {
-  return getSkatePlayersForPositionIn(Positions.Goalie, skate).slice(
-    0,
-    skate.booking.numGoalies
-  );
-};
-export const getSkateGoaliesSubsIn = (skate: Skate) => {
-  return getSkatePlayersForPositionIn(Positions.Goalie, skate).slice(
-    skate.booking.numGoalies
-  );
-};
-export const getSkateGoaliesOut = (skate: Skate) => {
-  return getSkatePlayersForPositionOut(Positions.Goalie, skate).sort(
-    (a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime()
-  );
-};
-export const getSkateGoaliesOutWithoutSub = (skate: Skate) => {
-  return getSkatePlayersForPositionOutWithoutSub(Positions.Goalie, skate);
-};
-
-export const getSkatePlayersInWithSubs = (skate: Skate) => {
-  return getSkatePlayersForPositionIn(Positions.Player, skate);
-};
-export const getSkatePlayersIn = (skate: Skate) => {
-  return getSkatePlayersForPositionIn(Positions.Player, skate).slice(
-    0,
-    skate.booking.numPlayers
-  );
-};
-export const getSkatePlayersSubsIn = (skate: Skate) => {
-  return getSkatePlayersForPositionIn(Positions.Player, skate).slice(
-    skate.booking.numPlayers
-  );
-};
-export const getSkatePlayersOut = (skate: Skate) => {
-  return getSkatePlayersForPositionOut(Positions.Player, skate).sort(
-    (a, b) => a.droppedOutOn!.getTime() - b.droppedOutOn!.getTime()
-  );
-};
-export const getSkatePlayersOutWithoutSub = (skate: Skate) => {
-  return getSkatePlayersForPositionOutWithoutSub(Positions.Player, skate);
-};
-export const getSkatePlayersWithSubs = (skate: Skate) => {
-  return skate.playersToSkates.filter(
-    ({ position, droppedOutOn, substitutePlayer }) =>
-      position === Positions.Player && !!droppedOutOn && !!substitutePlayer
-  );
-};
-export const getSkatePlayersWithSubsUnpaid = (skate: Skate) => {
-  return getSkatePlayersWithSubs(skate).filter(({ substitutePlayer }) => {
-    return (
-      getSkatePlayersForPosition(Positions.Player, skate)
-        .reverse()
-        .find(({ player }) => player.id === substitutePlayer?.id)?.paid ===
-      false
-    );
-  });
-};
-
-export const getSkatePlayersAndGoaliesIn = (skate: Skate) => {
-  return skate.playersToSkates.filter(({ droppedOutOn }) => !droppedOutOn);
-};
-export const getSkateTotalGoalieSpots = (skate: Skate) => {
-  return skate.booking?.numGoalies ?? 0;
-};
-export const getSkateNumGoalieSpotsFilled = (skate: Skate) => {
-  return getSkateGoaliesIn(skate).length;
-};
-export const getSkateNumGoalieSpotsOpen = (skate: Skate) => {
-  return getSkateTotalGoalieSpots(skate) - getSkateNumGoalieSpotsFilled(skate);
-};
-export const getSkateTotalPlayerSpots = (skate: Skate) => {
-  return skate.booking?.numPlayers ?? 0;
-};
-export const getSkateNumPlayerSpotsFilled = (skate: Skate) => {
-  return getSkatePlayersIn(skate).length;
-};
-export const getSkateNumPlayerSpotsOpen = (skate: Skate) => {
-  return getSkateTotalPlayerSpots(skate) - getSkateNumPlayerSpotsFilled(skate);
-};
-
-export const getSkateSubstitubeForPlayer = (skate: Skate, player: Player) => {
-  return skate.playersToSkates.find(
-    ({ substitutePlayer, droppedOutOn }) =>
-      substitutePlayer?.id === player.id && !!droppedOutOn
-  )?.player;
 };
 
 const getSkatePlayerSubStrikeoutMessage = (skate: Skate, player: Player) => {
@@ -451,69 +300,4 @@ const getPlayersText = (skate: Skate) => {
     .map(({ player }) => getPlayerName(player))
     .join(", ");
   return `(${skate.playersToSkates.length}) ${playerNames}`;
-};
-
-const shufflePlayers = (players: Player[]): Player[] => {
-  for (let i = players.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-
-    let temp: Player = players[i] as Player;
-    players[i] = players[j] as Player;
-    players[j] = temp;
-  }
-  return players;
-};
-
-export const sortPlayers = (players: Player[]): Player[] => {
-  return players.sort(
-    (a, b) => getPlayerSkillNumber(b) - getPlayerSkillNumber(a)
-  );
-};
-
-export const randomizeTeamsForSkate = (skate: Skate) => {
-  const players = getSkatePlayersIn(skate).map(({ player }) => player);
-  const shuffledAndSortedPlayers = sortPlayers(shufflePlayers(players));
-  const goalies = getSkateGoaliesIn(skate).map(({ player }) => player);
-  const shuffledGoalies = shufflePlayers(goalies);
-
-  const teams: Team = { [Teams.Black]: [], [Teams.White]: [] };
-
-  let firstTeam = Teams.Black;
-  shuffledAndSortedPlayers.forEach((player, index) => {
-    if (index % 2 === 0) {
-      teams[firstTeam].push(player);
-    } else {
-      teams[firstTeam === Teams.Black ? Teams.White : Teams.Black].push(player);
-
-      const blackTotalScore = teams[Teams.Black].reduce(
-        (acc, player) => acc + getPlayerSkillNumber(player),
-        0
-      );
-      const whiteTotalScore = teams[Teams.White].reduce(
-        (acc, player) => acc + getPlayerSkillNumber(player),
-        0
-      );
-      if (blackTotalScore > whiteTotalScore) {
-        firstTeam = Teams.White;
-      } else {
-        firstTeam = Teams.Black;
-      }
-    }
-  });
-  shuffledGoalies.forEach((goalie, index) => {
-    if (index % 2 === 0) {
-      teams[Teams.Black].push(goalie);
-    } else {
-      teams[Teams.White].push(goalie);
-    }
-  });
-
-  return teams;
-};
-
-export const getEarliestDropoutWithoutSub = (
-  skate: Skate,
-  subPosition: Positions
-) => {
-  return getSkatePlayersForPositionOutWithoutSub(subPosition, skate)?.[0];
 };

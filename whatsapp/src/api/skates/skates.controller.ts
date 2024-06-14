@@ -1,11 +1,11 @@
-import { getBookingNotifyJid } from "@whatsapp/features/bookings/bookings.model";
 import { sendMessage } from "@whatsapp/integrations/whatsapp/whatsapp.service";
 import { getSkateById } from "@db/features/skates/skates.db";
 import { TRPCError } from "@trpc/server";
 import {
   getSkateMessage,
   getSkateTeamsMessage,
-} from "@whatsapp/features/skates/skates.model";
+} from "@whatsapp/features/skates/skates.messages";
+import { getBookingNotifyJid } from "@whatsapp/features/bookings/bookings.messages";
 
 export const announceSkateSpotsHandler = async ({
   skateId,

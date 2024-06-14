@@ -14,3 +14,20 @@ export const formatDateRelative = (date: Date) => {
     sameElse: "dddd", // Everything else ( 17/10/2011 )
   });
 };
+
+export const getDatesBetween = (
+  startDate: Date | string,
+  endDate: Date | string,
+  unit: dayjs.ManipulateType = "week"
+) => {
+  const dates = [];
+
+  let date = dayjs(startDate);
+  while (!date.isAfter(endDate)) {
+    dates.push(date.toDate());
+
+    date = date.add(1, unit);
+  }
+
+  return dates;
+};

@@ -1,1 +1,0 @@
-ALTER TABLE "bookings" ADD COLUMN "notify_group" boolean DEFAULT false;

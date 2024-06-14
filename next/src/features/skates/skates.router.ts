@@ -14,7 +14,7 @@ import {
   skateUpdateSpotHandler,
 } from "./skates.controller";
 import { z } from "zod";
-import { Positions } from "./skates.model";
+import { Positions } from "@db/features/skates/skates.type";
 
 export const skatesRouter = createTRPCRouter({
   getAll: protectedProcedure

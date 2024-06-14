@@ -1,5 +1,5 @@
-import { type Skate } from "@db/features/skates/skates.type";
-import { getSkateTeams, Teams } from "@next/features/skates/skates.model";
+import { Teams, type Skate } from "@db/features/skates/skates.type";
+import { getSkateTeams } from "@next/features/skates/skates.model";
 import SkateShuffleTeamsButton from "./SkateShuffleTeamsButton";
 import { Card } from "@next/components/ui/card";
 import SkateSpotCardPlayer from "./SkateSpotCardPlayer";

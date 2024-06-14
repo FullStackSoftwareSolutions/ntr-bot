@@ -1,4 +1,4 @@
-import { getPlayerById, updatePlayer } from "../../features/players/players.db";
+import { getPlayerById, updatePlayer } from "@db/features/players/players.db";
 import {
   deleteMessage,
   sendMessage,
@@ -14,10 +14,10 @@ import {
   WhatsAppMessage,
 } from "@whatsapp/features/whatsapp/whatsapp.model";
 import { useState } from "../state";
-import { Player, PlayerCreate } from "@whatsapp/features/players/players.type";
+import { Player, PlayerCreate } from "@db/features/players/players.type";
 import { Command } from "../commands";
 import { getPrompt } from "./players.add";
-import { playerFieldPrompts } from "@whatsapp/features/players/players.model";
+import { playerFieldPrompts } from "@whatsapp/features/players/players.prompts";
 
 const FieldOptions = Object.keys(playerFieldPrompts);
 

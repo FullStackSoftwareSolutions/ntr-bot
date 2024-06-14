@@ -20,11 +20,10 @@ import {
   getSkatePlayersForPositionIn,
   getSkatePlayersForPositionOutWithoutSub,
   getSkatePlayersForPositionSubsIn,
-  Positions,
-  Teams,
 } from "./skates.model";
 import { getAllGoalies, getAllPlayers } from "@db/features/players/players.db";
 import { randomizeTeamsForSkate } from "./teams/skates.teams.controller";
+import { Positions, Teams } from "@db/features/skates/skates.type";
 
 export const getAllSkatesHandler = async ({
   type,

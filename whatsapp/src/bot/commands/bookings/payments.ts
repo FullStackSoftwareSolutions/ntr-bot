@@ -1,22 +1,15 @@
-import {
-  useBookingState,
-  useState,
-  useUpdateBookingState,
-} from "@whatsapp/bot/state";
+import { useBookingState, useUpdateBookingState } from "@whatsapp/bot/state";
 import {
   getBookingById,
   updateBookingPlayersAmountPaid,
-} from "@whatsapp/features/bookings/bookings.db";
-import {
-  getBookingMessage,
-  getPaymentAmountsForBooking,
-} from "@whatsapp/features/bookings/bookings.model";
+} from "@db/features/bookings/bookings.db";
+import { getPaymentAmountsForBooking } from "@next/features/bookings/bookings.model";
 import {
   getPlayersByNames,
   getPlayersForBooking,
-} from "@whatsapp/features/players/players.db";
-import { getPlayerName } from "@whatsapp/features/players/players.model";
-import { Player } from "@whatsapp/features/players/players.type";
+} from "@db/features/players/players.db";
+import { getPlayerName } from "@next/features/players/players.model";
+import { Player } from "@db/features/players/players.type";
 import {
   doKeysMatch,
   getSenderFromMessage,
@@ -31,6 +24,7 @@ import {
   sendPolls,
 } from "@whatsapp/integrations/whatsapp/whatsapp.service";
 import { bookingCommandPrompt } from "../bookings";
+import { getBookingMessage } from "@whatsapp/features/bookings/bookings.messages";
 
 export const onPollSelection = async (
   message: WhatsAppMessage,

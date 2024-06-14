@@ -1,4 +1,4 @@
-import { type Skate } from "@db/features/skates/skates.type";
+import { type Positions, type Skate } from "@db/features/skates/skates.type";
 import SkateSpotCard from "./SkateSpotCard";
 import SkateAddSubButton from "./SkateAddSubButton";
 import { Card } from "@next/components/ui/card";
@@ -7,7 +7,6 @@ import {
   getSkatePlayersForPositionIn,
   getSkateTotalSpotsForPosition,
   getSkatePlayersForPositionOutWithoutSub,
-  type Positions,
   getSkatePlayersForPositionOutWithSub,
   getSkatePlayersForPositionSubsIn,
 } from "@next/features/skates/skates.model";

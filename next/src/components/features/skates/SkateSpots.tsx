@@ -1,5 +1,4 @@
-import { type Skate } from "@db/features/skates/skates.type";
-import { Positions } from "@next/features/skates/skates.model";
+import { Positions, type Skate } from "@db/features/skates/skates.type";
 import SkatePositionSpots from "./SkatePositionSpots";
 
 type SkateSpotsProps = {

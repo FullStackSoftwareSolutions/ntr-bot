@@ -1,1 +1,0 @@
-ALTER TABLE "bookings" ADD COLUMN "cost_per_player" numeric;

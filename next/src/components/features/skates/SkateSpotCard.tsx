@@ -6,11 +6,8 @@ import { Badge } from "@next/components/ui/badge";
 import { Card } from "@next/components/ui/card";
 import { getPlayerName } from "@next/features/players/players.model";
 import SkateSpotDialog from "./SkateSpotDialog";
-import { type Skate } from "@db/features/skates/skates.type";
-import {
-  getSkateSubstitubeForPlayer,
-  type Positions,
-} from "@next/features/skates/skates.model";
+import { type Positions, type Skate } from "@db/features/skates/skates.type";
+import { getSkateSubstitubeForPlayer } from "@next/features/skates/skates.model";
 import SkateSpotCardPlayer from "./SkateSpotCardPlayer";
 import { DollarSignIcon } from "lucide-react";
 

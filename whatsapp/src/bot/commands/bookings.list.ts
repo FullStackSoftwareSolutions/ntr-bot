@@ -1,11 +1,11 @@
-import { getAllBookings } from "../../features/bookings/bookings.db";
+import { getAllBookings } from "@db/features/bookings/bookings.db";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
 import { formatList } from "../../features/whatsapp/whatsapp.formatting";
 import {
   getSenderFromMessage,
   WhatsAppMessage,
 } from "@whatsapp/features/whatsapp/whatsapp.model";
-import { Player } from "@whatsapp/features/players/players.type";
+import { Player } from "@db/features/players/players.type";
 
 export const onCommand = async (message: WhatsAppMessage, player: Player) => {
   const bookings = await getAllBookings();

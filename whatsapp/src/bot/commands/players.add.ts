@@ -1,4 +1,4 @@
-import { Player, PlayerCreate } from "@whatsapp/features/players/players.type";
+import { Player, PlayerCreate } from "@db/features/players/players.type";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
 import {
   formatList,
@@ -8,10 +8,10 @@ import {
   getSenderFromMessage,
   WhatsAppMessage,
 } from "@whatsapp/features/whatsapp/whatsapp.model";
-import { createPlayerHandler } from "@whatsapp/features/players/players.controller";
+import { createPlayerHandler } from "@next/features/players/players.controller";
 import { useState } from "../state";
 import { Command } from "../commands";
-import { playerFieldPrompts } from "@whatsapp/features/players/players.model";
+import { playerFieldPrompts } from "@whatsapp/features/players/players.prompts";
 
 export const onCommand = async (
   message: WhatsAppMessage,

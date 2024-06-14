@@ -1,4 +1,4 @@
-import { BookingCreate } from "@whatsapp/features/bookings/bookings.type";
+import { BookingCreate } from "@db/features/bookings/bookings.type";
 import { sendMessage } from "../../integrations/whatsapp/whatsapp.service";
 import {
   formatList,
@@ -8,9 +8,9 @@ import {
   getSenderFromMessage,
   WhatsAppMessage,
 } from "@whatsapp/features/whatsapp/whatsapp.model";
-import { Player } from "@whatsapp/features/players/players.type";
-import { createBookingHandler } from "@whatsapp/features/bookings/bookings.controller";
-import { bookingFieldPrompts } from "@whatsapp/features/bookings/bookings.model";
+import { Player } from "@db/features/players/players.type";
+import { createBookingHandler } from "@next/features/bookings/bookings.controller";
+import { bookingFieldPrompts } from "@whatsapp/features/bookings/bookings.prompts";
 import { useState } from "../state";
 import { Command } from "../commands";
 

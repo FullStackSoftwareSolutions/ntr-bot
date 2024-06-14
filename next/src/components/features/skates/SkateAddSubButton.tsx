@@ -1,6 +1,6 @@
 "use client";
 
-import { type Skate } from "@db/features/skates/skates.type";
+import { type Positions, type Skate } from "@db/features/skates/skates.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@next/components/ui/button";
 import { Card, CardTitle } from "@next/components/ui/card";
@@ -20,10 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@next/components/ui/form";
-import {
-  getSkateTimeMessage,
-  type Positions,
-} from "@next/features/skates/skates.model";
+import { getSkateTimeMessage } from "@next/features/skates/skates.model";
 import { api } from "@next/trpc/react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { ArrowRightIcon, PlusIcon } from "lucide-react";

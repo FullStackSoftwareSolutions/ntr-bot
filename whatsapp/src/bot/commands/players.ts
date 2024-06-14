@@ -1,7 +1,7 @@
 import {
   getAllPlayersAndGoalies,
   getAllPlayersSearch,
-} from "../../features/players/players.db";
+} from "@db/features/players/players.db";
 import {
   deleteMessage,
   sendMessage,
@@ -15,7 +15,7 @@ import {
   WhatsAppMessage,
 } from "@whatsapp/features/whatsapp/whatsapp.model";
 import { useState } from "../state";
-import { Player } from "@whatsapp/features/players/players.type";
+import { Player } from "@db/features/players/players.type";
 import { Command } from "../commands";
 import { AnyMessageContent } from "@whiskeysockets/baileys";
 

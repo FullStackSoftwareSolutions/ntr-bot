@@ -1,7 +1,6 @@
 import {
   AnyMessageContent,
   MiscMessageGenerationOptions,
-  WAConnectionState,
   WAProto,
 } from "@whiskeysockets/baileys";
 

@@ -16,7 +16,7 @@ import {
   isGroupMessage,
   WhatsAppMessage,
 } from "@whatsapp/features/whatsapp/whatsapp.model";
-import { Player } from "@whatsapp/features/players/players.type";
+import { Player } from "@db/features/players/players.type";
 import { useState } from "./state";
 import { getOpenAiResponse } from "@whatsapp/integrations/openai/openai.service";
 
@@ -36,15 +36,17 @@ const handlePlayerMessage = async (
   message: WhatsAppMessage,
   player: Player
 ) => {
+  const userJid = getUserJid();
   if (isGroupMessage(message)) {
     if (
-      message.message?.extendedTextMessage?.contextInfo?.mentionedJid?.includes(
-        getUserJid()
-      ) ||
-      message.message?.extendedTextMessage?.contextInfo?.participant ===
-        getUserJid()
-    )
+      (userJid &&
+        message.message?.extendedTextMessage?.contextInfo?.mentionedJid?.includes(
+          userJid
+        )) ||
+      message.message?.extendedTextMessage?.contextInfo?.participant === userJid
+    ) {
       await sendChatGptResponse(message);
+    }
     return;
   }
 

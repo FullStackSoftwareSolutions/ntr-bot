@@ -17,3 +17,18 @@ export type Skate = {
   }[];
   booking: BookingWithoutPlayers;
 };
+
+export enum Teams {
+  Black = "black",
+  White = "white",
+}
+
+export type Team = {
+  [Teams.Black]: Player[];
+  [Teams.White]: Player[];
+};
+
+export enum Positions {
+  Player = "Player",
+  Goalie = "Goalie",
+}

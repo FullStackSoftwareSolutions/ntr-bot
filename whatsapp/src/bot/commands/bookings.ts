@@ -5,16 +5,12 @@ import {
   PollOptions,
   WhatsAppMessage,
 } from "@whatsapp/features/whatsapp/whatsapp.model";
-import { Player } from "@whatsapp/features/players/players.type";
+import { Player } from "@db/features/players/players.type";
 import {
-  getAllBookings,
   getAllFutureBookings,
   getBookingByName,
-} from "@whatsapp/features/bookings/bookings.db";
-import {
-  getFutureSkatesForBooking,
-  getSkatesForBooking,
-} from "@whatsapp/features/skates/skates.db";
+} from "@db/features/bookings/bookings.db";
+import { getFutureSkatesForBooking } from "@db/features/skates/skates.db";
 import { useBookingState, useState, useUpdateBookingState } from "../state";
 import { Command } from "../commands";
 import {
@@ -22,9 +18,9 @@ import {
   sendBookingPlayersPollSelection,
 } from "./bookings/players";
 import { onPollSelection as onPaymentsPollSelection } from "./bookings/payments";
-import { getBookingMessage } from "@whatsapp/features/bookings/bookings.model";
+import { getBookingMessage } from "@whatsapp/features/bookings/bookings.messages";
 import { sendBookingPaymentsPollSelection } from "./bookings/payments";
-import { getSkatesMessage } from "@whatsapp/features/skates/skates.model";
+import { getSkatesMessage } from "@whatsapp/features/skates/skates.messages";
 
 enum BookingActionsPollOptions {
   Players = "Players",

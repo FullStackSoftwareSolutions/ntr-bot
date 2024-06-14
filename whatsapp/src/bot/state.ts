@@ -4,9 +4,9 @@ import { WhatsAppMessageKey } from "@whatsapp/features/whatsapp/whatsapp.model";
 import { produce } from "immer";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { LocalStorage } from "node-localstorage";
-import { PlayerCreate } from "@whatsapp/features/players/players.type";
-import { BookingCreate } from "@whatsapp/features/bookings/bookings.type";
-import { Positions } from "@whatsapp/features/skates/skates.model";
+import { PlayerCreate } from "@db/features/players/players.type";
+import { BookingCreate } from "@db/features/bookings/bookings.type";
+import { Positions } from "@db/features/skates/skates.type";
 
 type Commands = {
   activeCommand: string | null;

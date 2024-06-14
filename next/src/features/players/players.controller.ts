@@ -22,5 +22,11 @@ export const updatePlayerHandler = async (
 };
 
 export const createPlayerHandler = async (input: PlayerCreate) => {
-  return createPlayer(input);
+  const player = await createPlayer(input);
+
+  if (!player) {
+    throw new Error("Failed to create player");
+  }
+
+  return player;
 };

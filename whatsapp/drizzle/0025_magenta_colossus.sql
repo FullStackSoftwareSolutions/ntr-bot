@@ -1,1 +1,0 @@
-ALTER TABLE "bookings" ADD COLUMN "cost_per_goalie" numeric DEFAULT '0' NOT NULL;

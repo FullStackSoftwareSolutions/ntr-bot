@@ -1,5 +1,5 @@
 import { type Player } from "@db/features/players/players.type";
-import { type Skate } from "@db/features/skates/skates.type";
+import { type Positions, type Skate } from "@db/features/skates/skates.type";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,6 @@ import {
 } from "@next/components/ui/dialog";
 import { Button } from "@next/components/ui/button";
 import { getPlayerName } from "@next/features/players/players.model";
-import { type Positions } from "@next/features/skates/skates.model";
 import { api } from "@next/trpc/react";
 import { useState } from "react";
 import { cn } from "@next/lib/utils";

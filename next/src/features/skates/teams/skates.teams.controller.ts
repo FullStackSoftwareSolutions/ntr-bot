@@ -1,13 +1,8 @@
 import { type Player } from "@db/features/players/players.type";
 
 import { getPlayerSkillNumber } from "@next/features/players/players.model";
-import {
-  getSkateGoaliesIn,
-  getSkatePlayersIn,
-  type Team,
-  Teams,
-} from "../skates.model";
-import { type Skate } from "@db/features/skates/skates.type";
+import { getSkateGoaliesIn, getSkatePlayersIn } from "../skates.model";
+import { type Team, type Skate, Teams } from "@db/features/skates/skates.type";
 
 export const randomizeTeamsForSkate = (skate: Skate) => {
   const players = getSkatePlayersIn(skate).map(({ player }) => player);
@@ -52,7 +47,7 @@ export const randomizeTeamsForSkate = (skate: Skate) => {
   return teams;
 };
 
-const shufflePlayers = (players: Player[]): Player[] => {
+export const shufflePlayers = (players: Player[]): Player[] => {
   for (let i = players.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
 

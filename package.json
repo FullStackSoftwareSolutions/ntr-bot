@@ -11,5 +11,8 @@
     "@whatsapp/*": "./whatsapp/src/*",
     "@next/*": "./next/src/*",
     "@formatting/*": "./formatting/src/*"
+  },
+  "dependencies": {
+    "typescript": "^5.4.5"
   }
 }

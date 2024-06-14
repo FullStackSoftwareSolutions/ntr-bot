@@ -15,38 +15,31 @@ import {
   PollOptions,
   WhatsAppMessage,
 } from "@whatsapp/features/whatsapp/whatsapp.model";
-import { Player } from "@whatsapp/features/players/players.type";
-import { getSkateById } from "@whatsapp/features/skates/skates.db";
-import { getPlayerName } from "@whatsapp/features/players/players.model";
+import { Player } from "@db/features/players/players.type";
+import { getSkateById } from "@db/features/skates/skates.db";
+import { getPlayerName } from "@next/features/players/players.model";
 import {
-  getSkateMessage,
-  getSkateNumGoalieSpotsOpen,
-  getSkateNumPlayerSpotsOpen,
-  getSkatePlayersAndGoaliesIn,
-  Positions,
-  getSkatePlayersWithSubs,
-  getSkateTeamsMessage,
-  getSkatePlayersIn,
-  getSkateGoaliesIn,
   getSkateGoaliesInWithSubs,
   getSkatePlayersInWithSubs,
   getSkatePlayersWithSubsUnpaid,
-} from "@whatsapp/features/skates/skates.model";
-import { Skate } from "@whatsapp/features/skates/skates.type";
+} from "@next/features/skates/skates.model";
+import { Positions, Skate } from "@db/features/skates/skates.type";
 import { useSkateState, useState, useUpdateSkateState } from "../state";
 import { Command } from "../commands";
-import { getPlayerByName } from "@whatsapp/features/players/players.db";
+import { getPlayerByName } from "@db/features/players/players.db";
 import {
-  addSkateSubPlayerHandler,
   getSkateAvailableSubsHandler,
-  shuffleSkateTeamsHandler,
-  updateSkatePlayerOutHandler,
-} from "@whatsapp/features/skates/skates.controller";
-import {
-  getBookingNotifyJid,
-  getCostPerSkatePerPlayerForBooking,
-} from "@whatsapp/features/bookings/bookings.model";
+  shuffleTeamsSkateHandler,
+  skateDropOutPlayerHandler,
+  skateSubInPlayerHandler,
+} from "@next/features/skates/skates.controller";
+import { getCostPerSkatePerPlayerForBooking } from "@next/features/bookings/bookings.model";
 import { formatCurrency } from "@formatting/currency";
+import {
+  getSkateMessage,
+  getSkateTeamsMessage,
+} from "@whatsapp/features/skates/skates.messages";
+import { getBookingNotifyJid } from "@whatsapp/features/bookings/bookings.messages";
 
 enum SkateActionsPollOptions {
   PlayerOut = "Player Out",
@@ -191,7 +184,11 @@ const handlePlayerOutPollSelection = async (
     const player = await getPlayerByName(
       getPlayerNameFromPollSelection(message.body!)
     );
-    await updateSkatePlayerOutHandler(skate.id, Positions.Player, player!.id);
+    await skateDropOutPlayerHandler({
+      skateId: skate.id,
+      position: Positions.Player,
+      playerId: player!.id,
+    });
   }
 
   await sendSkateAndActionPollMessages(message, sessionPlayer);
@@ -216,7 +213,11 @@ const handleGoalieOutPollSelection = async (
     const player = await getPlayerByName(
       getPlayerNameFromPollSelection(message.body!)
     );
-    await updateSkatePlayerOutHandler(skate.id, Positions.Goalie, player!.id);
+    await skateDropOutPlayerHandler({
+      skateId: skate.id,
+      position: Positions.Goalie,
+      playerId: player!.id,
+    });
   }
 
   await sendSkateAndActionPollMessages(message, sessionPlayer);
@@ -237,11 +238,11 @@ const handleSubPollSelection = async (
     const player = await getPlayerByName(
       getPlayerNameFromPollSelection(message.body!)
     );
-    await addSkateSubPlayerHandler(
-      skateState?.read.skateId!,
-      player!.id,
-      position!
-    );
+    await skateSubInPlayerHandler({
+      skateId: skateState?.read.skateId!,
+      playerId: player!.id,
+      position: position!,
+    });
   }
 
   await sendSkateAndActionPollMessages(message, sessionPlayer);
@@ -276,14 +277,14 @@ export const sendActionPollMessage = async (
     throw new Error("No skate selected!");
   }
 
-  const availablePlayerSubs = await getSkateAvailableSubsHandler(
-    skate.id,
-    Positions.Player
-  );
-  const availableGoalieSubs = await getSkateAvailableSubsHandler(
-    skate.id,
-    Positions.Goalie
-  );
+  const availablePlayerSubs = await getSkateAvailableSubsHandler({
+    skateId: skate.id,
+    position: Positions.Player,
+  });
+  const availableGoalieSubs = await getSkateAvailableSubsHandler({
+    skateId: skate.id,
+    position: Positions.Goalie,
+  });
 
   const options = [
     ...Object.values(SkateActionsPollOptions),
@@ -367,10 +368,10 @@ export const sendSubPlayerPollMessage = async (
   position: Positions
 ) => {
   const skateState = useSkateState(playerId);
-  const players = await getSkateAvailableSubsHandler(
-    skateState?.read.skateId!,
-    position
-  );
+  const players = await getSkateAvailableSubsHandler({
+    skateId: skateState?.read.skateId!,
+    position,
+  });
   const playerOptions = players.map((player) => `✅ ${getPlayerName(player)}`);
 
   const polls = await sendPolls(senderJid, {
@@ -398,13 +399,13 @@ const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
   const players = getSkatePlayersWithSubsUnpaid(skate);
   const cost = getCostPerSkatePerPlayerForBooking(skate.booking, true);
 
-  const mentions: string[] = players.flatMap(({ player, substitutePlayer }) =>
+  const mentions = players.flatMap(({ player, substitutePlayer }) =>
     [
       player.phoneNumber ? getJidFromNumber(player.phoneNumber) : null,
       substitutePlayer!.phoneNumber
         ? getJidFromNumber(substitutePlayer!.phoneNumber)
         : null,
-    ].filter<string>((val) => val != null)
+    ].filter((val) => val != null)
   );
 
   const payments = players.map(({ player, substitutePlayer }) => {
@@ -446,7 +447,7 @@ const announceTeams = async (skate: Skate, message: WhatsAppMessage) => {
 };
 
 const generateTeams = async (skate: Skate, message: WhatsAppMessage) => {
-  const skateWithTeams = await shuffleSkateTeamsHandler(skate.id);
+  const skateWithTeams = await shuffleTeamsSkateHandler({ skateId: skate.id });
   if (!skateWithTeams) {
     throw new Error("Failed to shuffle teams");
   }
