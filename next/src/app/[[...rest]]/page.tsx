@@ -25,7 +25,7 @@ export default function Home() {
         </div>
       </SignedOut>
       <SignedIn>
-        <div className-="container flex">
+        <div className="container flex">
           <Button asChild variant="ghost" className="h-auto p-0.5 text-start">
             <Link href="whatsapp">
               <Card className="flex items-center gap-4 overflow-hidden p-8 hover:bg-card/90">

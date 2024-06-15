@@ -13,20 +13,20 @@ FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 
-WORKDIR /app/next
+WORKDIR /app/whatsapp
 COPY package.json package-lock.json* ./
 RUN npm ci
 
 WORKDIR /app/formatting
-COPY --from=root /formatting/package.json /formatting/package-lock.json* ./
+COPY --chown=node --from=root /formatting/package.json /formatting/package-lock.json* ./
 RUN npm ci
 
 WORKDIR /app/db
-COPY --from=root /db/package.json /db/package-lock.json* ./
+COPY --chown=node --from=root /db/package.json /db/package-lock.json* ./
 RUN npm ci
 
-WORKDIR /app/whatsapp
-COPY --from=root /whatsapp/package.json /whatsapp/package-lock.json* ./
+WORKDIR /app/next
+COPY --chown=node --from=root /next/package.json /next/package-lock.json* ./
 RUN npm ci
 
 # Rebuild the source code only when needed
