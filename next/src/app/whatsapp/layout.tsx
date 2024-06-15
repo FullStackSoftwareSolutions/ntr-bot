@@ -72,10 +72,11 @@ export default function WhatsAppLayout({ children }: WhatsAppPageProps) {
           >
             <TabsList>
               <TabsTrigger value="groups">Groups</TabsTrigger>
+              <TabsTrigger value="chats">Chats</TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <section className="flex flex-1 flex-col text-center md:container md:mx-auto">
+          <section className="flex flex-1 flex-col md:container md:mx-auto">
             {children}
           </section>
         </>

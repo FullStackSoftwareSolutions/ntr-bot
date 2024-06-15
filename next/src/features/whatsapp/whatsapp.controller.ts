@@ -14,3 +14,11 @@ export const getWhatsappConnectionStatusHandler = async () => {
 export const resetWhatsAppConnectionHandler = async () => {
   return trpc.connection.reset.mutate();
 };
+
+export const getWhatsAppGroupsHandler = async () => {
+  return trpc.connection.getGroups.query();
+};
+
+export const getWhatsAppChatsHandler = async () => {
+  return trpc.connection.getChats.query();
+};

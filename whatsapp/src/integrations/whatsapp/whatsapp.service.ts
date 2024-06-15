@@ -379,3 +379,18 @@ export const getAllGroups = async (): Promise<GroupMetadata[]> => {
     .slice(0)
     .map((entry) => entry[1]);
 };
+
+export const getAllChats = async () => {
+  return store.chats
+    .all()
+    .filter(
+      (chat) =>
+        chat.conversationTimestamp &&
+        !chat.id.endsWith("@g.us") &&
+        chat.id != getUserJid()
+    )
+    .map((chat) => ({
+      ...chat,
+      contact: store.contacts[chat.id],
+    }));
+};

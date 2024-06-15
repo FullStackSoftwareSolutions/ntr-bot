@@ -11,15 +11,21 @@ import {
   getPlayerName,
   getPlayerSkillNumber,
 } from "@next/features/players/players.model";
+import { cn } from "@next/lib/utils";
 import Link from "next/link";
 
 type PlayerCardProps = {
+  className?: string;
   player: Player;
 };
 
-const PlayerCard = ({ player }: PlayerCardProps) => {
+const PlayerCard = ({ className, player }: PlayerCardProps) => {
   return (
-    <Button asChild variant="ghost" className="h-auto p-0.5 text-start">
+    <Button
+      asChild
+      variant="ghost"
+      className={cn("h-auto p-0.5 text-start", className)}
+    >
       <Link href={`/player/${encodeURIComponent(player.email ?? player.id)}`}>
         <Card className="w-full overflow-hidden hover:bg-card/90 sm:w-64">
           <CardHeader>

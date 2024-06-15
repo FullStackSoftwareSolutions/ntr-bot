@@ -3,6 +3,7 @@ import {
   createPlayerHandler,
   getAllPlayersHandler,
   getPlayerByEmailHandler,
+  getPlayerByPhoneNumberHandler,
   updatePlayerHandler,
 } from "./players.controller";
 import { z } from "zod";
@@ -16,6 +17,15 @@ export const playersRouter = createTRPCRouter({
       }),
     )
     .query(({ input: { email } }) => getPlayerByEmailHandler({ email })),
+  getByPhoneNumber: protectedProcedure
+    .input(
+      z.object({
+        phoneNumber: z.string(),
+      }),
+    )
+    .query(({ input: { phoneNumber } }) =>
+      getPlayerByPhoneNumberHandler({ phoneNumber }),
+    ),
   create: protectedProcedure
     .input(
       z.object({

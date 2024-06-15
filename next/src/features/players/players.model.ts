@@ -1,6 +1,6 @@
 import { type Player } from "@db/features/players/players.type";
 
-export const getPlayerWhatsappJid = (player: Player) =>
+export const getPlayerWhatsAppJid = (player: Player) =>
   `${player.phoneNumber}@s.whatsapp.net`;
 
 export const getPlayerName = (player: Player) =>

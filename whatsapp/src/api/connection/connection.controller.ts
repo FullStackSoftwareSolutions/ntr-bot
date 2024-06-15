@@ -3,6 +3,8 @@ import {
   getQrCode,
 } from "@whatsapp/features/whatsapp/whatsapp.controller";
 import {
+  getAllChats,
+  getAllGroups,
   getUserJid,
   logout,
 } from "@whatsapp/integrations/whatsapp/whatsapp.service";
@@ -17,4 +19,12 @@ export const getConnectionStatusHandler = async () => {
 
 export const resetConnectionHandler = async () => {
   return logout();
+};
+
+export const getGroupsHandler = async () => {
+  return getAllGroups();
+};
+
+export const getChatsHandler = async () => {
+  return getAllChats();
 };
