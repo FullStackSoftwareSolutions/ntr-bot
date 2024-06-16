@@ -7,13 +7,11 @@ services:
 
     restart: always
     network_mode: host
-    volumes:
-      - C:\Users\joshm\Development\ntr-bot\state:/usr/src/app/whatsapp/state
     environment:
       NODE_ENV: production
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_HOST: 192.168.10.105
+      DB_USER: josh
+      DB_PASSWORD: 4481
+      DB_HOST: 127.0.01
       DB_NAME: ntrbot
       OPENAI_ORG_ID: org-av7OXkHawvIZhfHuSDOfCaNP
       OPENAI_API_KEY: sk-proj-eR6sCxdx8xi6ZBQyI1xmT3BlbkFJKdSRHE31vVt8d8dRLl15

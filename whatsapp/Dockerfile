@@ -1,9 +1,3 @@
-# syntax=docker/dockerfile:1
-
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/engine/reference/builder/
-
 ARG NODE_VERSION=18.18.2
 
 FROM node:${NODE_VERSION}-alpine AS base
@@ -48,7 +42,6 @@ COPY --from=deps /app/whatsapp/node_modules ./node_modules
 ENV NODE_ENV production
 
 # Copy the rest of the source files into the image.
-FROM base AS runner
 WORKDIR /app/whatsapp
 
 # Run the application.
