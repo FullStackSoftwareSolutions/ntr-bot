@@ -29,7 +29,7 @@ const SkateCard = ({ skate }: SkateCardProps) => {
 
   return (
     <Button asChild variant="ghost" className="h-auto p-0.5 text-start">
-      <Link href={`/booking/${skate.booking.slug}/${skate.slug}`}>
+      <Link href={`/booking/${skate.booking.slug}/skate/${skate.slug}`}>
         <Card>
           <CardHeader>
             <CardTitle>{getSkateTimeMessage(skate)}</CardTitle>

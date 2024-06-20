@@ -18,6 +18,7 @@ import {
 import { getDatesForBooking } from "@next/features/bookings/bookings.model";
 import { type BookingCreate } from "@db/features/bookings/bookings.type";
 import slugify from "slugify";
+import { type User } from "@db/features/users/users.type";
 
 export const getAllBookingsHandler = async ({
   type,
@@ -38,19 +39,26 @@ export const getBookingBySlugHandler = async (slug: string) => {
   return getBookingBySlug(slug);
 };
 
-export const createBookingHandler = async (bookingData: {
-  name: string;
-  numPlayers: number;
-  location: string;
-  cost: string;
-  scheduledTime: string;
-  startDate: string;
-  endDate: string;
-  bookedById: number;
-}) => {
+export const createBookingHandler = async (
+  bookingData: {
+    name: string;
+    announceName: string | null;
+    numPlayers: number;
+    numGoalies: number;
+    location: string;
+    cost: string;
+    scheduledTime: string;
+    startDate: string;
+    endDate: string;
+    whatsAppGroupJid: string | null;
+    notifyGroup: boolean;
+  },
+  user: User,
+) => {
   const slug = slugify(bookingData.name);
   const booking = await createBooking({
     slug,
+    bookedById: user.id,
     ...bookingData,
   });
 

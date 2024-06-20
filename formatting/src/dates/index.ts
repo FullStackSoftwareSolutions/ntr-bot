@@ -5,7 +5,13 @@ export const DATE_FORMAT = `MMM D`;
 export const TIME_FORMAT = `h:mma`;
 export const DATE_TIME_FORMAT = `${DATE_FORMAT} ${TIME_FORMAT}`;
 
-export const formatDate = (date: Date) => {
+export const formatDate = (
+  date: Date,
+  { includeYear }: { includeYear?: boolean } = {}
+) => {
+  if (includeYear) {
+    return dayjs(date).format(`${DATE_FORMAT}, YYYY`);
+  }
   return dayjs(date).format(DATE_FORMAT);
 };
 export const formatDateSlug = (date: Date) => {

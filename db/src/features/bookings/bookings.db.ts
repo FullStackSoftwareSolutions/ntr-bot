@@ -53,16 +53,7 @@ export const getBookingByName = async (name: string) =>
     where: eq(bookings.name, name),
   });
 
-export const createBooking = async (bookingData: {
-  name: string;
-  slug: string;
-  numPlayers: number;
-  location: string;
-  cost: string;
-  scheduledTime: string;
-  startDate: string;
-  endDate: string;
-}) => {
+export const createBooking = async (bookingData: BookingCreate) => {
   const [booking] = await db.insert(bookings).values(bookingData).returning();
   return booking;
 };

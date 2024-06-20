@@ -24,7 +24,10 @@ const PlayerCard = ({ className, player }: PlayerCardProps) => {
     <Button
       asChild
       variant="ghost"
-      className={cn("h-auto p-0.5 text-start", className)}
+      className={cn(
+        "border-1 h-auto rounded-lg bg-secondary/40 p-0.5 text-start hover:bg-secondary",
+        className,
+      )}
     >
       <Link href={`/player/${encodeURIComponent(player.email ?? player.id)}`}>
         <Card className="w-full overflow-hidden hover:bg-card/90 sm:w-64">

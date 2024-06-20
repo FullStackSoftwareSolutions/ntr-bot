@@ -154,7 +154,7 @@ export const bookings = pgTable("bookings", {
   scheduledTime: time("scheduled_time"),
   startDate: date("start_date"),
   endDate: date("end_date"),
-  bookedById: integer("booked_by_id").references(() => players.id),
+  bookedById: varchar("booked_by_id").references(() => users.id),
   whatsAppGroupJid: varchar("whatsapp_group_jid"),
   notifyGroup: boolean("notify_group").notNull().default(false),
 });

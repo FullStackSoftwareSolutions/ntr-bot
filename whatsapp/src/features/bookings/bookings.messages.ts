@@ -75,7 +75,9 @@ export const getBookingMessage = (booking: Booking) => {
       {
         id: booking.id,
         name: booking.name,
-        skates: `(${dates.length}) ${dates.map(formatDate).join(", ")}`,
+        skates: `(${dates.length}) ${dates
+          .map((date) => formatDate(date))
+          .join(", ")}`,
         playersPaid: formatCurrency(getPlayersAmountPaidForBooking(booking)),
         cost: formatCurrency(cost),
         costPerPlayer: formatCurrency(costPerPlayer),

@@ -7,6 +7,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
+    "type": "tsc --noEmit",
     "start": "next start",
     "migrate": "cd ../db && npm run migrate"
   },

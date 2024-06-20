@@ -2,6 +2,7 @@ import { Player } from "@db/features/players/players.type";
 
 export type BookingCreate = {
   name: string;
+  slug: string;
   announceName: string | null;
   numPlayers: number;
   numGoalies: number;
@@ -10,7 +11,7 @@ export type BookingCreate = {
   scheduledTime: string;
   startDate: string;
   endDate: string;
-  bookedById: number;
+  bookedById: string;
   whatsAppGroupJid: string | null;
   notifyGroup: boolean;
 };
@@ -27,7 +28,7 @@ export type Booking = {
   scheduledTime: string | null;
   startDate: string | null;
   endDate: string | null;
-  bookedById: number | null;
+  bookedById: string | null;
   whatsAppGroupJid: string | null;
   notifyGroup: boolean;
   announceName: string | null;

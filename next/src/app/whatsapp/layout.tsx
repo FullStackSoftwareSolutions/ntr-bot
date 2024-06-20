@@ -4,6 +4,7 @@ import WhatsAppJid from "@next/components/features/whatsapp/WhatsAppJid";
 import WhatsAppMoreOptions from "@next/components/features/whatsapp/WhatsAppMoreOptions";
 import WhatsAppQrCode from "@next/components/features/whatsapp/WhatsAppQrCode";
 import WhatsAppStatusBadge from "@next/components/features/whatsapp/WhatsAppStatusBadge";
+import PageHeader from "@next/components/layouts/PageHeader";
 import { Tabs, TabsList, TabsTrigger } from "@next/components/ui/tabs";
 import { useWhatsApp } from "@next/hooks/features/useWhatsApp";
 import WhatsAppIcon from "@next/svg/WhatsAppIcon";
@@ -31,23 +32,21 @@ export default function WhatsAppLayout({ children }: WhatsAppPageProps) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <section className="flex flex-col overflow-hidden md:container md:pt-4">
-        <div className="flex gap-8 p-8">
-          <div className="m-8 flex items-center gap-4">
-            <WhatsAppIcon className="size-[60px] text-green-400" />
-            <div className="flex-col gap-2">
-              <h1 className="flex items-center gap-4 text-4xl font-bold">
-                WhatsApp
-                <WhatsAppMoreOptions />
-              </h1>
-              <div className="flex items-center gap-2">
-                <WhatsAppStatusBadge />
-                <WhatsAppJid />
-              </div>
+      <PageHeader>
+        <div className="flex items-center gap-4">
+          <WhatsAppIcon className="size-[60px] text-green-400" />
+          <div className="flex-col gap-2">
+            <h1 className="flex items-center gap-4 text-4xl font-bold">
+              WhatsApp
+              <WhatsAppMoreOptions />
+            </h1>
+            <div className="flex items-center gap-2">
+              <WhatsAppStatusBadge />
+              <WhatsAppJid />
             </div>
           </div>
         </div>
-      </section>
+      </PageHeader>
 
       {!!whatsApp.error && (
         <div className="container flex items-center gap-2">
