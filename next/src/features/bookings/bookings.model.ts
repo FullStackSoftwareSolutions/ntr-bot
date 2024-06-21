@@ -84,5 +84,5 @@ export const getPlayersForBookingPosition = (
   position: Positions,
 ) =>
   booking.playersToBookings.filter(
-    (playerToBooking) => playerToBooking.position === position,
+    (playerToBooking) => playerToBooking.position === position.toString(),
   );
