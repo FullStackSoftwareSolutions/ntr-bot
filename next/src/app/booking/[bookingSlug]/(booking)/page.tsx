@@ -1,10 +1,19 @@
 "use client";
 
-import BookingPlayers from "@next/components/features/bookings/BookingPlayers";
+import BookingSpots from "@next/components/features/bookings/BookingSpots";
+import { api } from "@next/trpc/react";
 import { useParams } from "next/navigation";
 
 export default function BookingPlayersTab() {
   const { bookingSlug } = useParams<{ bookingSlug: string }>();
 
-  return <BookingPlayers slug={bookingSlug} />;
+  const { data: booking } = api.bookings.getBySlug.useQuery({
+    slug: bookingSlug,
+  });
+
+  if (!booking) {
+    return null;
+  }
+
+  return <BookingSpots booking={booking} />;
 }

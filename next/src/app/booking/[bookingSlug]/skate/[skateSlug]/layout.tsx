@@ -78,10 +78,12 @@ export default function SkatePageLayout({
         value={tab}
         onValueChange={(tab) => {
           if (tab === "spots") {
-            return router.push(`/booking/${params.bookingSlug}/${skate.slug}`);
+            return router.push(
+              `/booking/${params.bookingSlug}/skate/${skate.slug}`,
+            );
           }
           return router.push(
-            `/booking/${params.bookingSlug}/${skate.slug}/${tab}`,
+            `/booking/${params.bookingSlug}/skate/${skate.slug}/${tab}`,
           );
         }}
       >

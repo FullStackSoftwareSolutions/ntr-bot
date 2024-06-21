@@ -3,24 +3,17 @@
 import { Badge } from "@next/components/ui/badge";
 import {
   getPlayerName,
-  getPlayerSkillLevel,
   getPlayerSkillNumber,
 } from "@next/features/players/players.model";
 import { api } from "@next/trpc/react";
 import PlayerAvatar from "./PlayerAvatar";
-import PlayerSkillEditForm from "./edit/PlayerSkillEditForm";
+import { type Player as PlayerType } from "@db/features/players/players.type";
 
 type PlayerProps = {
-  email: string;
+  player: PlayerType;
 };
 
-const Player = ({ email }: PlayerProps) => {
-  const { data: player } = api.players.getByEmail.useQuery({ email });
-
-  if (!player) {
-    return null;
-  }
-
+const Player = ({ player }: PlayerProps) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-16">
@@ -52,6 +45,34 @@ const Player = ({ email }: PlayerProps) => {
       )}
     </div>
   );
+};
+
+type PlayerByEmailProps = {
+  email: string;
+};
+
+export const PlayerByEmail = ({ email }: PlayerByEmailProps) => {
+  const { data: player } = api.players.getByEmail.useQuery({ email });
+
+  if (!player) {
+    return null;
+  }
+
+  return <Player player={player} />;
+};
+
+type PlayerByIdProps = {
+  id: number;
+};
+
+export const PlayerById = ({ id }: PlayerByIdProps) => {
+  const { data: player } = api.players.getById.useQuery({ id });
+
+  if (!player) {
+    return null;
+  }
+
+  return <Player player={player} />;
 };
 
 export default Player;

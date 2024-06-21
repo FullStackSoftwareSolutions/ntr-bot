@@ -14,7 +14,7 @@ export type Player = {
 };
 
 export type PlayerCreate = {
-  email: string;
+  email: string | null;
   fullName: string;
   nickname?: string | null;
   phoneNumber: string;

@@ -8,7 +8,7 @@ import { getPlayerName } from "@next/features/players/players.model";
 import SkateSpotDialog from "./SkateSpotDialog";
 import { type Positions, type Skate } from "@db/features/skates/skates.type";
 import { getSkateSubstitubeForPlayer } from "@next/features/skates/skates.model";
-import SkateSpotCardPlayer from "./SkateSpotCardPlayer";
+import PlayerSpotCard from "../players/PlayerSpotCard";
 import { DollarSignIcon } from "lucide-react";
 
 type SkateSpotCardProps = {
@@ -42,7 +42,7 @@ const SkateSpotCard = (props: SkateSpotCardProps) => {
   return (
     <SkateSpotDialog {...props} subForPlayer={subForPlayer}>
       <Card className="flex flex-1 flex-col">
-        <SkateSpotCardPlayer player={player} />
+        <PlayerSpotCard player={player} />
         <div className="flex flex-wrap items-start gap-1 p-2 pt-0">
           {paid && (
             <Badge variant="secondary" className="flex gap-1 ps-1">

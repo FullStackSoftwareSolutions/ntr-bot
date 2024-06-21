@@ -32,7 +32,10 @@ const FormSchema = z
   .object({
     fullName: z.string().min(2),
     nickName: z.string().optional(),
-    email: z.string().email(),
+    email: z.preprocess(
+      (a) => (a === "" ? null : a),
+      z.string().email().nullable(),
+    ),
     phoneNumber: z.string(),
     skillLevel: z.preprocess(
       (a) => (a === "" ? null : parseInt(z.string().parse(a))),
@@ -133,7 +136,7 @@ const PlayerAddDialog = ({}) => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={field.value ?? ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,10 +1,13 @@
 import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
+  addBookingPlayerHandler,
   createBookingHandler,
+  deleteBookingPlayerHandler,
   getAllBookingsHandler,
   getBookingBySlugHandler,
 } from "./bookings.controller";
 import { z } from "zod";
+import { Positions } from "@db/features/skates/skates.type";
 
 export const bookingsRouter = createTRPCRouter({
   getBySlug: protectedProcedure
@@ -80,5 +83,26 @@ export const bookingsRouter = createTRPCRouter({
           },
           user,
         ),
+    ),
+  deletePlayer: protectedProcedure
+    .input(
+      z.object({
+        bookingId: z.number(),
+        playerId: z.number(),
+      }),
+    )
+    .mutation(({ input: { bookingId, playerId } }) =>
+      deleteBookingPlayerHandler({ bookingId, playerId }),
+    ),
+  addPlayer: protectedProcedure
+    .input(
+      z.object({
+        bookingId: z.number(),
+        playerId: z.number(),
+        position: z.nativeEnum(Positions),
+      }),
+    )
+    .mutation(({ input: { bookingId, playerId, position } }) =>
+      addBookingPlayerHandler({ bookingId, playerId, position }),
     ),
 });

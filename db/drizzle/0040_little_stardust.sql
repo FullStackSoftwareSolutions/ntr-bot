@@ -1,0 +1,1 @@
+ALTER TABLE "players_to_bookings" ADD COLUMN "id" serial NOT NULL;

@@ -4,17 +4,14 @@ import {
   getPlayerName,
   getPlayerSkillNumber,
 } from "@next/features/players/players.model";
-import PlayerAvatar from "../players/PlayerAvatar";
+import PlayerAvatar from "./PlayerAvatar";
 
-type SkateSpotCardPlayerProps = {
+type PlayerSpotCardProps = {
   showSkill?: boolean;
   player: Player;
 };
 
-const SkateSpotCardPlayer = ({
-  player,
-  showSkill,
-}: SkateSpotCardPlayerProps) => {
+const PlayerSpotCard = ({ player, showSkill }: PlayerSpotCardProps) => {
   return (
     <div className="relative flex flex-wrap items-center gap-3 whitespace-pre-wrap p-2 text-xl font-semibold tracking-tight">
       <PlayerAvatar player={player} />
@@ -28,4 +25,4 @@ const SkateSpotCardPlayer = ({
   );
 };
 
-export default SkateSpotCardPlayer;
+export default PlayerSpotCard;

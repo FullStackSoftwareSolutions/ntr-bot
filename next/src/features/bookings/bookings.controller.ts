@@ -1,10 +1,12 @@
 import {
+  addPlayerToBooking,
+  deletePlayerFromBooking,
   getAllBookings,
   getAllFutureBookings,
   getAllPastBookings,
   getBookingBySlug,
+  updatePlayersForBooking,
 } from "@db/features/bookings/bookings.db";
-import { updatePlayersForBooking } from "@db/features/players/players.db";
 import {
   createSkate,
   getSkatesForBooking,
@@ -19,6 +21,8 @@ import { getDatesForBooking } from "@next/features/bookings/bookings.model";
 import { type BookingCreate } from "@db/features/bookings/bookings.type";
 import slugify from "slugify";
 import { type User } from "@db/features/users/users.type";
+import { type Positions } from "@db/features/skates/skates.type";
+import { formatDate, formatDateSlug } from "@formatting/dates";
 
 export const getAllBookingsHandler = async ({
   type,
@@ -58,7 +62,7 @@ export const createBookingHandler = async (
   const slug = slugify(bookingData.name);
   const booking = await createBooking({
     slug,
-    bookedById: user.id,
+    bookedByUserId: user.id,
     ...bookingData,
   });
 
@@ -68,6 +72,7 @@ export const createBookingHandler = async (
 
   for (const date of getDatesForBooking(booking)) {
     await createSkate({
+      slug: formatDateSlug(date),
       bookingId: booking.id,
       scheduledOn: date,
     });
@@ -83,7 +88,6 @@ export const updateBookingDatesHandler = async (bookingId: number) => {
   }
 
   const skates = await getSkatesForBooking(bookingId);
-  console.log(getDatesForBooking(booking));
   for (const [index, date] of getDatesForBooking(booking).entries()) {
     const existingSkate = skates[index];
     if (existingSkate) {
@@ -92,6 +96,7 @@ export const updateBookingDatesHandler = async (bookingId: number) => {
     }
 
     await createSkate({
+      slug: formatDateSlug(date),
       bookingId: booking.id,
       scheduledOn: date,
     });
@@ -123,4 +128,26 @@ export const updateBookingHandler = async (
   }
 
   return booking;
+};
+
+export const deleteBookingPlayerHandler = async ({
+  bookingId,
+  playerId,
+}: {
+  bookingId: number;
+  playerId: number;
+}) => {
+  return deletePlayerFromBooking({ bookingId, playerId });
+};
+
+export const addBookingPlayerHandler = async ({
+  bookingId,
+  playerId,
+  position,
+}: {
+  bookingId: number;
+  playerId: number;
+  position: Positions;
+}) => {
+  return addPlayerToBooking({ bookingId, playerId, position });
 };

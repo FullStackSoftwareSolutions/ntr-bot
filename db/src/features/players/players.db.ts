@@ -1,11 +1,6 @@
-import { and, asc, eq, getTableColumns, ilike, inArray, or } from "drizzle-orm";
+import { asc, eq, ilike, inArray, or } from "drizzle-orm";
 import { db } from "@db/db";
-import {
-  players,
-  playersToBookings,
-  playersToSkates,
-  skates,
-} from "@db/db/schema";
+import { players } from "@db/db/schema";
 import { PlayerCreate } from "./players.type";
 
 export const getAllPlayersAndGoalies = async () =>
@@ -63,70 +58,6 @@ export const getPlayerByEmail = async (email: string) =>
   db.query.players.findFirst({
     where: eq(players.email, email),
   });
-
-export const getPlayersForBooking = async (bookingId: number) =>
-  db
-    .select({
-      ...getTableColumns(players),
-      playersToBookings: {
-        amountPaid: playersToBookings.amountPaid,
-      },
-    })
-    .from(players)
-    .innerJoin(playersToBookings, eq(players.id, playersToBookings.playerId))
-    .where(eq(playersToBookings.bookingId, bookingId));
-
-export const updatePlayersForBooking = async (
-  bookingId: number,
-  removePlayerIds: number[],
-  addPlayerIds: number[],
-  position: string
-) => {
-  await db.transaction(async (tx) => {
-    const bookingSkates = await tx.query.skates.findMany({
-      where: eq(skates.bookingId, bookingId),
-    });
-
-    if (removePlayerIds.length > 0) {
-      await tx
-        .delete(playersToBookings)
-        .where(
-          and(
-            eq(playersToBookings.bookingId, bookingId),
-            inArray(playersToBookings.playerId, removePlayerIds)
-          )
-        );
-
-      await tx.delete(playersToSkates).where(
-        and(
-          inArray(playersToSkates.playerId, removePlayerIds),
-          inArray(
-            playersToSkates.skateId,
-            bookingSkates.map(({ id }) => id)
-          )
-        )
-      );
-    }
-
-    if (addPlayerIds.length > 0) {
-      await tx
-        .insert(playersToBookings)
-        .values(
-          addPlayerIds.map((id) => ({ bookingId, playerId: id, position }))
-        );
-
-      for (const skate of bookingSkates) {
-        await tx.insert(playersToSkates).values(
-          addPlayerIds.map((id) => ({
-            skateId: skate.id,
-            playerId: id,
-            position,
-          }))
-        );
-      }
-    }
-  });
-};
 
 export const createPlayer = async (playerData: PlayerCreate) => {
   const [player] = await db.insert(players).values(playerData).returning();

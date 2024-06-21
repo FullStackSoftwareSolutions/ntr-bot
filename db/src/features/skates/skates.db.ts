@@ -140,6 +140,7 @@ export const getPastSkatesForBooking = async (bookingId: number) =>
   });
 
 export const createSkate = async (skate: {
+  slug: string;
   scheduledOn: Date;
   bookingId: number;
 }) => {

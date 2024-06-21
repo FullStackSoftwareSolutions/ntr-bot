@@ -2,6 +2,7 @@ import {
   createPlayer,
   getAllPlayersAndGoalies,
   getPlayerByEmail,
+  getPlayerById,
   getPlayerByPhoneNumber,
   updatePlayer,
 } from "@db/features/players/players.db";
@@ -11,6 +12,9 @@ export const getAllPlayersHandler = async () => {
   return getAllPlayersAndGoalies();
 };
 
+export const getPlayerByIdHandler = async ({ id }: { id: number }) => {
+  return getPlayerById(id);
+};
 export const getPlayerByEmailHandler = async ({ email }: { email: string }) => {
   return getPlayerByEmail(email);
 };

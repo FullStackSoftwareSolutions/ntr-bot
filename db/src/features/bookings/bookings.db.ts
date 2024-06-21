@@ -1,7 +1,23 @@
-import { bookings, playersToBookings } from "@db/db/schema";
+import {
+  bookings,
+  players,
+  playersToBookings,
+  playersToSkates,
+  skates,
+} from "@db/db/schema";
 import { db } from "@db/db";
-import { and, asc, desc, eq, gte, inArray, lt } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  getTableColumns,
+  gte,
+  inArray,
+  lt,
+} from "drizzle-orm";
 import { BookingCreate } from "./bookings.type";
+import { Positions } from "../skates/skates.type";
 
 export const getAllBookings = async () =>
   db.query.bookings.findMany({
@@ -81,3 +97,130 @@ export const updateBooking = async (
   await db.update(bookings).set(bookingData).where(eq(bookings.id, id));
   return getBookingById(id);
 };
+
+export const updatePlayersForBooking = async (
+  bookingId: number,
+  removePlayerIds: number[],
+  addPlayerIds: number[],
+  position: string
+) => {
+  await db.transaction(async (tx) => {
+    const bookingSkates = await tx.query.skates.findMany({
+      where: eq(skates.bookingId, bookingId),
+    });
+
+    if (removePlayerIds.length > 0) {
+      await tx
+        .delete(playersToBookings)
+        .where(
+          and(
+            eq(playersToBookings.bookingId, bookingId),
+            inArray(playersToBookings.playerId, removePlayerIds)
+          )
+        );
+
+      await tx.delete(playersToSkates).where(
+        and(
+          inArray(playersToSkates.playerId, removePlayerIds),
+          inArray(
+            playersToSkates.skateId,
+            bookingSkates.map(({ id }) => id)
+          )
+        )
+      );
+    }
+
+    if (addPlayerIds.length > 0) {
+      await tx
+        .insert(playersToBookings)
+        .values(
+          addPlayerIds.map((id) => ({ bookingId, playerId: id, position }))
+        );
+
+      for (const skate of bookingSkates) {
+        await tx.insert(playersToSkates).values(
+          addPlayerIds.map((id) => ({
+            skateId: skate.id,
+            playerId: id,
+            position,
+          }))
+        );
+      }
+    }
+  });
+};
+
+export const addPlayerToBooking = async ({
+  bookingId,
+  playerId,
+  position,
+}: {
+  bookingId: number;
+  playerId: number;
+  position: Positions;
+}) => {
+  await db.transaction(async (tx) => {
+    const bookingSkates = await tx.query.skates.findMany({
+      where: eq(skates.bookingId, bookingId),
+    });
+
+    await tx
+      .insert(playersToBookings)
+      .values([{ bookingId, playerId, position }]);
+
+    for (const skate of bookingSkates) {
+      await tx.insert(playersToSkates).values([
+        {
+          skateId: skate.id,
+          playerId,
+          position,
+        },
+      ]);
+    }
+  });
+};
+
+export const deletePlayerFromBooking = async ({
+  bookingId,
+  playerId,
+}: {
+  bookingId: number;
+  playerId: number;
+}) => {
+  await db.transaction(async (tx) => {
+    const bookingSkates = await tx.query.skates.findMany({
+      where: eq(skates.bookingId, bookingId),
+    });
+
+    await tx
+      .delete(playersToBookings)
+      .where(
+        and(
+          eq(playersToBookings.bookingId, bookingId),
+          eq(playersToBookings.playerId, playerId)
+        )
+      );
+
+    await tx.delete(playersToSkates).where(
+      and(
+        eq(playersToSkates.playerId, playerId),
+        inArray(
+          playersToSkates.skateId,
+          bookingSkates.map(({ id }) => id)
+        )
+      )
+    );
+  });
+};
+
+export const getPlayersForBooking = async (bookingId: number) =>
+  db
+    .select({
+      ...getTableColumns(players),
+      playersToBookings: {
+        amountPaid: playersToBookings.amountPaid,
+      },
+    })
+    .from(players)
+    .innerJoin(playersToBookings, eq(players.id, playersToBookings.playerId))
+    .where(eq(playersToBookings.bookingId, bookingId));

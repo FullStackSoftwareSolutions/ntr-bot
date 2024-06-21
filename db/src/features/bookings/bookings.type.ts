@@ -11,7 +11,7 @@ export type BookingCreate = {
   scheduledTime: string;
   startDate: string;
   endDate: string;
-  bookedById: string;
+  bookedByUserId: string;
   whatsAppGroupJid: string | null;
   notifyGroup: boolean;
 };
@@ -28,14 +28,16 @@ export type Booking = {
   scheduledTime: string | null;
   startDate: string | null;
   endDate: string | null;
-  bookedById: string | null;
+  bookedByUserId: string | null;
   whatsAppGroupJid: string | null;
   notifyGroup: boolean;
   announceName: string | null;
   playersToBookings: {
+    id: number;
     amountPaid: string | null;
     player: Player;
     position: string;
+    addedOn: Date;
   }[];
 };
 

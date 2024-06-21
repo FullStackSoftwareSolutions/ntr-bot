@@ -2,6 +2,7 @@ import {
   type Booking,
   type BookingWithoutPlayers,
 } from "@db/features/bookings/bookings.type";
+import { Positions } from "@db/features/skates/skates.type";
 import { getDatesBetween } from "@formatting/dates/calendar";
 
 export const getDatesForBooking = (
@@ -67,3 +68,21 @@ export const getPlayersAmountPaidForBooking = (booking: Booking) => {
     0,
   );
 };
+
+export const getBookingNumPlayersForPosition = (
+  booking: Booking,
+  position: Positions,
+) => {
+  if (position === Positions.Goalie) {
+    return booking.numGoalies;
+  }
+  return booking.numPlayers;
+};
+
+export const getPlayersForBookingPosition = (
+  booking: Booking,
+  position: Positions,
+) =>
+  booking.playersToBookings.filter(
+    (playerToBooking) => playerToBooking.position === position,
+  );

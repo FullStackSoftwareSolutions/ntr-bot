@@ -3,6 +3,7 @@ import {
   createPlayerHandler,
   getAllPlayersHandler,
   getPlayerByEmailHandler,
+  getPlayerByIdHandler,
   getPlayerByPhoneNumberHandler,
   updatePlayerHandler,
 } from "./players.controller";
@@ -10,6 +11,13 @@ import { z } from "zod";
 
 export const playersRouter = createTRPCRouter({
   getAll: protectedProcedure.query(() => getAllPlayersHandler()),
+  getById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(({ input: { id } }) => getPlayerByIdHandler({ id })),
   getByEmail: protectedProcedure
     .input(
       z.object({
@@ -31,7 +39,7 @@ export const playersRouter = createTRPCRouter({
       z.object({
         fullName: z.string(),
         nickName: z.string().optional(),
-        email: z.string().email(),
+        email: z.string().email().nullable(),
         phoneNumber: z.string(),
         skillLevel: z.number().positive(),
         isPlayer: z.boolean(),

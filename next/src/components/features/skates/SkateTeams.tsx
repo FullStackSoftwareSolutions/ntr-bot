@@ -2,7 +2,7 @@ import { Teams, type Skate } from "@db/features/skates/skates.type";
 import { getSkateTeams } from "@next/features/skates/skates.model";
 import SkateShuffleTeamsButton from "./SkateShuffleTeamsButton";
 import { Card } from "@next/components/ui/card";
-import SkateSpotCardPlayer from "./SkateSpotCardPlayer";
+import SkateSpotCardPlayer from "../players/PlayerSpotCard";
 import { type Player } from "@db/features/players/players.type";
 import { getPlayerSkillNumber } from "@next/features/players/players.model";
 import { Badge } from "@next/components/ui/badge";

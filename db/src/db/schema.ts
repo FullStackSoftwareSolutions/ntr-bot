@@ -48,7 +48,7 @@ export const players = pgTable(
     userId: varchar("user_id").unique(),
     fullName: varchar("full_name", { length: 256 }).notNull(),
     nickname: varchar("nickname", { length: 256 }),
-    email: varchar("email").unique(),
+    email: varchar("email"),
     phoneNumber: varchar("phone_number").unique(),
     skillLevelLetter: varchar("skill_level_letter"),
     skillLevel: integer("skill_level"),
@@ -154,15 +154,15 @@ export const bookings = pgTable("bookings", {
   scheduledTime: time("scheduled_time"),
   startDate: date("start_date"),
   endDate: date("end_date"),
-  bookedById: varchar("booked_by_id").references(() => users.id),
+  bookedByUserId: varchar("booked_by_user_id").references(() => users.id),
   whatsAppGroupJid: varchar("whatsapp_group_jid"),
   notifyGroup: boolean("notify_group").notNull().default(false),
 });
 
 export const bookingsRelations = relations(bookings, ({ one, many }) => ({
-  bookedBy: one(players, {
-    fields: [bookings.bookedById],
-    references: [players.id],
+  bookedBy: one(users, {
+    fields: [bookings.bookedByUserId],
+    references: [users.id],
   }),
   skates: many(skates),
   playersToBookings: many(playersToBookings),
@@ -171,6 +171,7 @@ export const bookingsRelations = relations(bookings, ({ one, many }) => ({
 export const playersToBookings = pgTable(
   "players_to_bookings",
   {
+    id: serial("id").unique().primaryKey(),
     playerId: integer("player_id")
       .notNull()
       .references(() => players.id),
@@ -179,6 +180,9 @@ export const playersToBookings = pgTable(
       .references(() => bookings.id),
     amountPaid: numeric("amount_paid"),
     position: varchar("position").notNull().default("Player"),
+    addedOn: timestamp("added_on")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.playerId, t.bookingId] }),
