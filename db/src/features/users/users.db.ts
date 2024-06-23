@@ -1,5 +1,5 @@
 import { db } from "@db/db";
-import { users } from "@db/db/schema";
+import { players, users } from "@db/db/schema";
 import { eq } from "drizzle-orm";
 import { UserUpdate } from "./users.type";
 
@@ -52,4 +52,18 @@ export const updateUser = async (id: string, userData: UserUpdate) => {
   if (!user) throw new Error("Failed to update user");
 
   return user;
+};
+
+export const getUserByPlayerPhoneNumber = async (number: string) => {
+  const [selData] = await db
+    .select()
+    .from(users)
+    .innerJoin(players, eq(players.userId, users.id))
+    .where(eq(players.phoneNumber, number));
+
+  if (!selData) {
+    return null;
+  }
+
+  return selData.users;
 };

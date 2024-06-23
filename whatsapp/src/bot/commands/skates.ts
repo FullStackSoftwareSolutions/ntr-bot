@@ -426,7 +426,7 @@ const announcePayments = async (skate: Skate, message: WhatsAppMessage) => {
   if (bookingNotifyJid) {
     await sendMessage(bookingNotifyJid, {
       text: stringJoin(...payments),
-      mentions,
+      mentions: mentions as string[],
     });
   }
 };

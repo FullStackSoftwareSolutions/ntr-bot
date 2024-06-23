@@ -1,11 +1,13 @@
 import { useBookingState, useUpdateBookingState } from "@whatsapp/bot/state";
 import { updateBookingPlayersHandler } from "@next/features/bookings/bookings.controller";
-import { getBookingById } from "@db/features/bookings/bookings.db";
+import {
+  getBookingById,
+  getPlayersForBooking,
+} from "@db/features/bookings/bookings.db";
 import { getBookingMessage } from "@whatsapp/features/bookings/bookings.messages";
 import {
   getAllPlayersAndGoalies,
   getPlayersByNames,
-  getPlayersForBooking,
 } from "@db/features/players/players.db";
 import { getPlayerName } from "@next/features/players/players.model";
 import { Player } from "@db/features/players/players.type";

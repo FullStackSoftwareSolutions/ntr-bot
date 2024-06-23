@@ -5,6 +5,7 @@ import {
   stringJoin,
 } from "@whatsapp/features/whatsapp/whatsapp.formatting";
 import {
+  getNumberFromJid,
   getSenderFromMessage,
   WhatsAppMessage,
 } from "@whatsapp/features/whatsapp/whatsapp.model";
@@ -13,6 +14,7 @@ import { createBookingHandler } from "@next/features/bookings/bookings.controlle
 import { bookingFieldPrompts } from "@whatsapp/features/bookings/bookings.prompts";
 import { useState } from "../state";
 import { Command } from "../commands";
+import { getUserByPlayerPhoneNumber } from "@db/features/users/users.db";
 
 export const onCommand = async (
   message: WhatsAppMessage,
@@ -130,9 +132,15 @@ const createBooking = async (
   message: WhatsAppMessage,
   booking: BookingCreate
 ) => {
-  const newBooking = await createBookingHandler(booking);
-
   const senderJid = getSenderFromMessage(message);
+  const user = await getUserByPlayerPhoneNumber(getNumberFromJid(senderJid));
+
+  if (!user) {
+    return;
+  }
+
+  const newBooking = await createBookingHandler(booking, user);
+
   await sendMessage(senderJid, {
     text: formatList([newBooking], {
       header: {
