@@ -10,6 +10,8 @@ import { Input } from "@next/components/ui/input";
 import { type Control } from "react-hook-form";
 import { z } from "zod";
 import WhatsAppGroupSelect from "../../whatsapp/selects/WhatsAppGroupSelect";
+import { InputCurrency } from "@next/components/ui/input-currency";
+import InputDate from "@next/components/ui/input-date";
 
 export const BookngFormFieldsSchema = z.object({
   name: z.string().min(4, "Must be at least 4 characters"),
@@ -93,7 +95,7 @@ const BookingFields = ({ control }: BookingFieldsProps) => {
           <FormItem className="col-span-2">
             <FormLabel>Cost</FormLabel>
             <FormControl>
-              <Input {...field} type="number" />
+              <InputCurrency {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -132,7 +134,7 @@ const BookingFields = ({ control }: BookingFieldsProps) => {
           <FormItem>
             <FormLabel>Start date</FormLabel>
             <FormControl>
-              <Input {...field} />
+              <InputDate {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -145,7 +147,7 @@ const BookingFields = ({ control }: BookingFieldsProps) => {
           <FormItem>
             <FormLabel>End date</FormLabel>
             <FormControl>
-              <Input {...field} />
+              <InputDate {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
