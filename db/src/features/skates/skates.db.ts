@@ -255,3 +255,6 @@ export const updateSkateTeams = async (
 
 export const deleteSkatePlayer = async (playerToSkateId: number) =>
   db.delete(playersToSkates).where(eq(playersToSkates.id, playerToSkateId));
+
+export const deleteSkate = async (skateId: number) =>
+  db.delete(skates).where(eq(skates.id, skateId));

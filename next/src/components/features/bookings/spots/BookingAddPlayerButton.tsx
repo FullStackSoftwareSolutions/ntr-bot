@@ -26,7 +26,7 @@ import { ArrowRightIcon, PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import BookingAddPlayerSelect from "./selects/BookingAddPlayerSelect";
+import BookingAddPlayerSelect from "../selects/BookingAddPlayerSelect";
 import { type Positions } from "@db/features/skates/skates.type";
 
 type BookingAddPlayerButtonProps = {

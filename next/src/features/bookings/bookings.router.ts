@@ -2,9 +2,11 @@ import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
   addBookingPlayerHandler,
   createBookingHandler,
+  deleteBookingHandler,
   deleteBookingPlayerHandler,
   getAllBookingsHandler,
   getBookingBySlugHandler,
+  updateBookingHandler,
 } from "./bookings.controller";
 import { z } from "zod";
 import { Positions } from "@db/features/skates/skates.type";
@@ -104,5 +106,62 @@ export const bookingsRouter = createTRPCRouter({
     )
     .mutation(({ input: { bookingId, playerId, position } }) =>
       addBookingPlayerHandler({ bookingId, playerId, position }),
+    ),
+  deleteOne: protectedProcedure
+    .input(
+      z.object({
+        bookingId: z.number(),
+      }),
+    )
+    .mutation(({ input: { bookingId } }) =>
+      deleteBookingHandler({ bookingId }),
+    ),
+  updateOne: protectedProcedure
+    .input(
+      z.object({
+        bookingId: z.number(),
+        name: z.string(),
+        announceName: z.string(),
+        numPlayers: z.number(),
+        numGoalies: z.number(),
+        location: z.string(),
+        cost: z.string(),
+        scheduledTime: z.string(),
+        startDate: z.string(),
+        endDate: z.string(),
+        whatsAppGroupJid: z.string().nullable(),
+        notifyGroup: z.boolean(),
+      }),
+    )
+    .mutation(
+      ({
+        input: {
+          bookingId,
+          name,
+          announceName,
+          numPlayers,
+          numGoalies,
+          location,
+          cost,
+          scheduledTime,
+          startDate,
+          endDate,
+          whatsAppGroupJid,
+          notifyGroup,
+        },
+      }) =>
+        updateBookingHandler(bookingId, {
+          name,
+          announceName,
+          numPlayers,
+          numGoalies,
+          location,
+          cost,
+          scheduledTime,
+          startDate,
+          endDate,
+          whatsAppGroupJid,
+          notifyGroup,
+        }),
     ),
 });

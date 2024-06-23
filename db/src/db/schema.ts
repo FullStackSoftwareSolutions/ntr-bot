@@ -89,7 +89,7 @@ export const skates = pgTable("skates", {
   scheduledOn: timestamp("scheduled_on").notNull(),
   bookingId: integer("booking_id")
     .notNull()
-    .references(() => bookings.id),
+    .references(() => bookings.id, { onDelete: "cascade" }),
 });
 
 export const skatesRelations = relations(skates, ({ one, many }) => ({
@@ -149,6 +149,7 @@ export const bookings = pgTable("bookings", {
   numGoalies: integer("num_goalies").default(2).notNull(),
   location: varchar("location"),
   cost: numeric("cost"),
+  booked: boolean("booked").notNull().default(false),
   costPerPlayer: numeric("cost_per_player"),
   costPerGoalie: numeric("cost_per_goalie").default("0").notNull(),
   scheduledTime: time("scheduled_time"),
@@ -177,7 +178,7 @@ export const playersToBookings = pgTable(
       .references(() => players.id),
     bookingId: integer("booking_id")
       .notNull()
-      .references(() => bookings.id),
+      .references(() => bookings.id, { onDelete: "cascade" }),
     amountPaid: numeric("amount_paid"),
     position: varchar("position").notNull().default("Player"),
     addedOn: timestamp("added_on")

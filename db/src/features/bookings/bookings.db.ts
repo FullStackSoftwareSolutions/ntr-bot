@@ -224,3 +224,6 @@ export const getPlayersForBooking = async (bookingId: number) =>
     .from(players)
     .innerJoin(playersToBookings, eq(players.id, playersToBookings.playerId))
     .where(eq(playersToBookings.bookingId, bookingId));
+
+export const deleteBooking = (bookingId: number) =>
+  db.delete(bookings).where(eq(bookings.id, bookingId));

@@ -1,6 +1,6 @@
 "use client";
 
-import BookingSpots from "@next/components/features/bookings/BookingSpots";
+import BookingSpots from "@next/components/features/bookings/spots/BookingSpots";
 import { api } from "@next/trpc/react";
 import { useParams } from "next/navigation";
 

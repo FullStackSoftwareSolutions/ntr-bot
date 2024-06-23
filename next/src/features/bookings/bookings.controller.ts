@@ -1,5 +1,6 @@
 import {
   addPlayerToBooking,
+  deleteBooking,
   deletePlayerFromBooking,
   getAllBookings,
   getAllFutureBookings,
@@ -9,6 +10,7 @@ import {
 } from "@db/features/bookings/bookings.db";
 import {
   createSkate,
+  deleteSkate,
   getSkatesForBooking,
   updateSkate,
 } from "@db/features/skates/skates.db";
@@ -88,10 +90,14 @@ export const updateBookingDatesHandler = async (bookingId: number) => {
   }
 
   const skates = await getSkatesForBooking(bookingId);
-  for (const [index, date] of getDatesForBooking(booking).entries()) {
-    const existingSkate = skates[index];
+  const newSkateDates = getDatesForBooking(booking);
+
+  let existingSkateIndex = 0;
+  for (const date of newSkateDates) {
+    const existingSkate = skates[existingSkateIndex];
     if (existingSkate) {
       await updateSkate(existingSkate.id, { scheduledOn: date });
+      existingSkateIndex++;
       continue;
     }
 
@@ -100,6 +106,13 @@ export const updateBookingDatesHandler = async (bookingId: number) => {
       bookingId: booking.id,
       scheduledOn: date,
     });
+  }
+
+  for (let i = existingSkateIndex; i < skates.length; i++) {
+    const skate = skates[i];
+    if (skate) {
+      await deleteSkate(skate.id);
+    }
   }
 };
 
@@ -150,4 +163,12 @@ export const addBookingPlayerHandler = async ({
   position: Positions;
 }) => {
   return addPlayerToBooking({ bookingId, playerId, position });
+};
+
+export const deleteBookingHandler = async ({
+  bookingId,
+}: {
+  bookingId: number;
+}) => {
+  return deleteBooking(bookingId);
 };

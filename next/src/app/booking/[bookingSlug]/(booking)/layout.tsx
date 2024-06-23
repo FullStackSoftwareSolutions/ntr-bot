@@ -4,6 +4,14 @@ import BookingHeader from "@next/components/features/bookings/BookingHeader";
 import { Tabs, TabsList, TabsTrigger } from "@next/components/ui/tabs";
 import { api } from "@next/trpc/react";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@next/components/ui/breadcrumb";
 
 const getTab = (pathname: string | null, slug: string) => {
   const tab = pathname?.split(slug).pop()?.replace("/", "");
@@ -33,7 +41,17 @@ export default function BookingLayout({ children }: BookingLayoutProps) {
 
   return (
     <div className="flex flex-1 flex-col items-start">
-      <BookingHeader slug={params.bookingSlug} />
+      <Breadcrumb className="hidden md:container md:flex md:pt-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/bookings">Bookings</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbPage>{booking.announceName}</BreadcrumbPage>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      <BookingHeader booking={booking} />
 
       <Tabs
         className="hide-scrollbar sm:show-scrollbar container mb-4 flex overflow-y-auto"
@@ -48,6 +66,7 @@ export default function BookingLayout({ children }: BookingLayoutProps) {
         <TabsList>
           <TabsTrigger value="spots">Spots</TabsTrigger>
           <TabsTrigger value="skates">Skates</TabsTrigger>
+          <TabsTrigger value="bot">Bot</TabsTrigger>
         </TabsList>
       </Tabs>
 

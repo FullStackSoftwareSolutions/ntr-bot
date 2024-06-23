@@ -1,15 +1,14 @@
 "use client";
 
 import { type Player } from "@db/features/players/players.type";
-import { formatDateTime } from "@formatting/dates";
 import { Badge } from "@next/components/ui/badge";
 import { Card } from "@next/components/ui/card";
-import { getPlayerName } from "@next/features/players/players.model";
 import BookingSpotDialog from "./BookingSpotDialog";
 import { type Booking } from "@db/features/bookings/bookings.type";
 import { DollarSignIcon } from "lucide-react";
 import { type Positions } from "@db/features/skates/skates.type";
-import PlayerSpotCard from "../players/PlayerSpotCard";
+import PlayerSpotCard from "../../players/PlayerSpotCard";
+import { formatCurrency } from "@formatting/currency";
 
 type BookingSpotCardProps = {
   id: number;
@@ -33,7 +32,7 @@ const BookingSpotCard = (props: BookingSpotCardProps) => {
             <Badge variant="secondary" className="flex gap-1 ps-1">
               Paid
               <DollarSignIcon size={18} />
-              {amountPaid}
+              {formatCurrency(Number(amountPaid))}
             </Badge>
           )}
         </div>

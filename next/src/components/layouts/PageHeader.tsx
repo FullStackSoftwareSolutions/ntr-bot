@@ -9,7 +9,7 @@ const PageHeader = ({ className, children }: PageHeaderProps) => {
   return (
     <section
       className={cn(
-        "m-16 mb-8 flex flex-col overflow-hidden md:container",
+        "m-8 mb-8 flex flex-col overflow-hidden md:container",
         className,
       )}
     >
