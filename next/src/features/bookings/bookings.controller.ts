@@ -6,6 +6,7 @@ import {
   getAllFutureBookings,
   getAllPastBookings,
   getBookingBySlug,
+  updatePlayerBooking,
   updatePlayersForBooking,
 } from "@db/features/bookings/bookings.db";
 import {
@@ -13,18 +14,23 @@ import {
   deleteSkate,
   getSkatesForBooking,
   updateSkate,
+  updateSkatePlayer,
 } from "@db/features/skates/skates.db";
 import {
   createBooking,
   getBookingById,
   updateBooking,
 } from "@db/features/bookings/bookings.db";
-import { getDatesForBooking } from "@next/features/bookings/bookings.model";
+import {
+  getCostPerPlayerForBooking,
+  getDatesForBooking,
+} from "@next/features/bookings/bookings.model";
 import { type BookingCreate } from "@db/features/bookings/bookings.type";
 import slugify from "slugify";
 import { type User } from "@db/features/users/users.type";
 import { type Positions } from "@db/features/skates/skates.type";
-import { formatDate, formatDateSlug } from "@formatting/dates";
+import { formatDateSlug } from "@formatting/dates";
+import { getCostPerSkatePerPlayerForBooking } from "@next/features/bookings/bookings.model";
 
 export const getAllBookingsHandler = async ({
   type,
@@ -151,6 +157,50 @@ export const deleteBookingPlayerHandler = async ({
   playerId: number;
 }) => {
   return deletePlayerFromBooking({ bookingId, playerId });
+};
+
+export const updateBookingPlayerHandler = async (
+  playerBookingId: number,
+  {
+    amountPaid,
+  }: {
+    amountPaid: string | null;
+  },
+) => {
+  if (amountPaid === "") {
+    amountPaid = null;
+  }
+
+  const [updatedSpot] = await updatePlayerBooking(playerBookingId, {
+    amountPaid,
+  });
+
+  if (updatedSpot) {
+    const skates = await getSkatesForBooking(updatedSpot.bookingId);
+    const booking = skates[0]?.booking;
+    if (booking) {
+      let remainingPaidAmount = Number(updatedSpot.amountPaid ?? 0);
+      const costPerSkate = getCostPerSkatePerPlayerForBooking(booking);
+
+      console.log({
+        remainingPaidAmount,
+        costPerSkate,
+      });
+
+      for (const skate of skates) {
+        const playerToSkate = skate.playersToSkates.find(
+          (p) => p.playerId === updatedSpot.playerId,
+        );
+
+        await updateSkatePlayer(skate.id, {
+          paid: remainingPaidAmount >= costPerSkate,
+        });
+
+        remainingPaidAmount -= costPerSkate;
+      }
+    }
+  }
+  return updatedSpot;
 };
 
 export const addBookingPlayerHandler = async ({

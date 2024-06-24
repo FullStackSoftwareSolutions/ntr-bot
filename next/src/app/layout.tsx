@@ -4,7 +4,7 @@ import { Jost } from "next/font/google";
 
 import Navbar from "@next/components/layouts/Navbar";
 import ClientProviders from "@next/providers/ClientProviders";
-import { validateRequest } from "@next/auth";
+import { getUserSession } from "@next/auth";
 import { SessionProvider } from "@next/providers/SessionProvier";
 
 export const metadata = {
@@ -24,7 +24,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await validateRequest();
+  const session = await getUserSession();
 
   return (
     <SessionProvider value={session}>

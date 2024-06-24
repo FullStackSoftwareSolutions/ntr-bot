@@ -21,7 +21,12 @@ const SignOutButton = ({}: SignOutButtonProps) => {
   };
 
   return (
-    <ButtonLoading onClick={handleClick} loading={loading} size="sm">
+    <ButtonLoading
+      onClick={handleClick}
+      loading={loading}
+      size="sm"
+      variant="outline"
+    >
       Logout
     </ButtonLoading>
   );

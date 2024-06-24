@@ -69,6 +69,10 @@ export const getPlayersAmountPaidForBooking = (booking: Booking) => {
   );
 };
 
+export const getRemainingCostForBooking = (booking: Booking) => {
+  return Number(booking.cost) - getPlayersAmountPaidForBooking(booking);
+};
+
 export const getBookingNumPlayersForPosition = (
   booking: Booking,
   position: Positions,

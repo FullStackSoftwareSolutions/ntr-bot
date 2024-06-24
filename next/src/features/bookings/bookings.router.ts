@@ -7,6 +7,7 @@ import {
   getAllBookingsHandler,
   getBookingBySlugHandler,
   updateBookingHandler,
+  updateBookingPlayerHandler,
 } from "./bookings.controller";
 import { z } from "zod";
 import { Positions } from "@db/features/skates/skates.type";
@@ -106,6 +107,16 @@ export const bookingsRouter = createTRPCRouter({
     )
     .mutation(({ input: { bookingId, playerId, position } }) =>
       addBookingPlayerHandler({ bookingId, playerId, position }),
+    ),
+  updatePlayer: protectedProcedure
+    .input(
+      z.object({
+        playerBookingId: z.number(),
+        amountPaid: z.string().nullable(),
+      }),
+    )
+    .mutation(({ input: { playerBookingId, amountPaid } }) =>
+      updateBookingPlayerHandler(playerBookingId, { amountPaid }),
     ),
   deleteOne: protectedProcedure
     .input(

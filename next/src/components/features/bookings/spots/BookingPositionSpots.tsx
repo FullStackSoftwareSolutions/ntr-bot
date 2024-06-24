@@ -44,7 +44,10 @@ const BookingPositionSpots = ({
             )}
             {!playerToBooking && (
               <Card className="flex flex-1 items-center justify-center p-4 font-semibold tracking-tight">
-                <Badge variant="warning" className="flex items-center text-lg">
+                <Badge
+                  variant="warning"
+                  className="flex items-center text-lg opacity-50"
+                >
                   Open
                 </Badge>
               </Card>

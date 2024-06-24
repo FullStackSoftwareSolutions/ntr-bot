@@ -8,6 +8,7 @@ import { useSession } from "@next/providers/SessionProvier";
 import SignOutButton from "@next/components/features/auth/SignOutButton";
 import SignedIn from "../features/auth/SignedIn";
 import SignedOut from "../features/auth/SignedOut";
+import SignedInUserButton from "../features/users/SignedInUserPopover";
 
 export const NAVBAR_HEIGHT = 48;
 export const REMAINING_SCREEN = `calc(100vh - ${NAVBAR_HEIGHT}px)`;
@@ -33,10 +34,7 @@ const Navbar = () => {
             <SignInButton />
           </SignedOut>
           <SignedIn>
-            <div className="flex items-center gap-4">
-              {user?.username}
-              <SignOutButton />
-            </div>
+            <SignedInUserButton />
           </SignedIn>
         </div>
       </div>

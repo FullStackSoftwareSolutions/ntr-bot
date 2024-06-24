@@ -14,12 +14,14 @@ import { useState } from "react";
 import { cn } from "@next/lib/utils";
 import BookingSpotMoreOptions from "./BookingSpotMoreOptions";
 import { type Positions } from "@db/features/skates/skates.type";
+import BookingSpotEditForm from "./BookingSpotEditForm";
 
 type BookingSpotDialogProps = {
   id: number;
   booking: Booking;
   player: Player;
   addedOn: Date;
+  amountPaid: string | null;
   position: Positions;
   className?: string;
   children: React.ReactNode;
@@ -30,9 +32,9 @@ const BookingSpotDialog = ({
   player,
   booking,
   children,
+  amountPaid,
   className,
 }: BookingSpotDialogProps) => {
-  const utils = api.useUtils();
   const [open, setOpen] = useState(false);
 
   return (
@@ -55,6 +57,12 @@ const BookingSpotDialog = ({
             <BookingSpotMoreOptions id={id} booking={booking} player={player} />
           </DialogTitle>
         </DialogHeader>
+        <BookingSpotEditForm
+          id={id}
+          className="mt-2"
+          booking={booking}
+          amountPaid={amountPaid}
+        />
       </DialogContent>
     </Dialog>
   );

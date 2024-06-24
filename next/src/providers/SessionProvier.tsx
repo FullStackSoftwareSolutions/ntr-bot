@@ -1,9 +1,9 @@
 "use client";
 
-import { type validateRequest } from "@next/auth";
+import { type getUserSession } from "@next/auth";
 import { createContext, useContext } from "react";
 
-type ContextType = Awaited<ReturnType<typeof validateRequest>>;
+type ContextType = Awaited<ReturnType<typeof getUserSession>>;
 
 const SessionContext = createContext<ContextType>({
   session: null,

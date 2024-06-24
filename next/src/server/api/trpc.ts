@@ -1,6 +1,6 @@
 import { getUserById, getUserByUsername } from "@db/features/users/users.db";
 import { type User } from "@db/features/users/users.type";
-import { validateRequest } from "@next/auth";
+import { getUserFromLuciaUserId, validateRequest } from "@next/auth";
 import { env } from "@next/env";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
@@ -42,18 +42,8 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const isAuthed = t.middleware(async ({ next, ctx }) => {
-  let userId = ctx.auth?.user?.id;
-
-  if (env.DEV_USERNAME) {
-    const user = await getUserByUsername(env.DEV_USERNAME);
-    userId = user?.id;
-  }
-
-  if (userId == null) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  const user = await getUserById(userId);
+  const userId = ctx.auth?.user?.id;
+  const user = await getUserFromLuciaUserId(userId);
   if (
     user == null ||
     (!user.admin &&

@@ -31,8 +31,7 @@ const BookingSpotCard = (props: BookingSpotCardProps) => {
           {amountPaid && (
             <Badge variant="secondary" className="flex gap-1 ps-1">
               Paid
-              <DollarSignIcon size={18} />
-              {formatCurrency(Number(amountPaid))}
+              <p>{formatCurrency(Number(amountPaid))}</p>
             </Badge>
           )}
         </div>

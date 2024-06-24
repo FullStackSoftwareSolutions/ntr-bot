@@ -180,6 +180,20 @@ export const addPlayerToBooking = async ({
   });
 };
 
+export const updatePlayerBooking = async (
+  playerBookingId: number,
+  {
+    amountPaid,
+  }: {
+    amountPaid: string | null;
+  }
+) =>
+  db
+    .update(playersToBookings)
+    .set({ amountPaid })
+    .where(eq(playersToBookings.id, playerBookingId))
+    .returning();
+
 export const deletePlayerFromBooking = async ({
   bookingId,
   playerId,

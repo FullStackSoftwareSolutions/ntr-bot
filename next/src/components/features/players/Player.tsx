@@ -6,8 +6,8 @@ import {
   getPlayerSkillNumber,
 } from "@next/features/players/players.model";
 import { api } from "@next/trpc/react";
-import PlayerAvatar from "./PlayerAvatar";
 import { type Player as PlayerType } from "@db/features/players/players.type";
+import PlayerAvatar from "./PlayerAvatar";
 
 type PlayerProps = {
   player: PlayerType;

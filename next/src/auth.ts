@@ -1,9 +1,12 @@
-import { Lucia, type User, type Session } from "lucia";
+import { Lucia, type User as LuciaUser, type Session } from "lucia";
 import { GitHub } from "arctic";
 import { env } from "./env";
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { adapter } from "@db/db/auth";
+import { type User } from "@db/features/users/users.type";
+import { getUserById, getUserByUsername } from "@db/features/users/users.db";
+import { TRPCError } from "@trpc/server";
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
@@ -25,7 +28,7 @@ export const lucia = new Lucia(adapter, {
 
 export const validateRequest = cache(
   async (): Promise<
-    { user: User; session: Session } | { user: null; session: null }
+    { user: LuciaUser; session: Session } | { user: null; session: null }
   > => {
     const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
     if (!sessionId) {
@@ -77,3 +80,33 @@ export const github = new GitHub(
   env.GITHUB_CLIENT_ID!,
   env.GITHUB_CLIENT_SECRET!,
 );
+
+export const getUserFromLuciaUserId = async (
+  userId: string | null | undefined,
+): Promise<User | null> => {
+  if (env.DEV_USERNAME) {
+    const user = await getUserByUsername(env.DEV_USERNAME);
+    userId = user?.id ?? null;
+  }
+
+  if (userId == null) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const user = await getUserById(userId);
+  return user ?? null;
+};
+
+export const getUserSession = async (): Promise<{
+  user: User | null;
+  session: Session | null;
+}> => {
+  const { session, user: luciaUser } = await validateRequest();
+  if (!luciaUser) {
+    return { session, user: null };
+  }
+
+  const user = await getUserFromLuciaUserId(luciaUser.id);
+
+  return { session, user };
+};

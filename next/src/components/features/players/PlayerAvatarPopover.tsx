@@ -4,7 +4,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@next/components/ui/popover";
-import PlayerAvatar from "./PlayerAvatar";
 import { SquareArrowOutUpRightIcon } from "lucide-react";
 import { Button } from "@next/components/ui/button";
 import Link from "next/link";
@@ -14,6 +13,7 @@ import {
   getPlayerSkillNumber,
 } from "@next/features/players/players.model";
 import { Badge } from "@next/components/ui/badge";
+import PlayerAvatar from "./PlayerAvatar";
 
 type PlayerAvatarPopoverProps = {
   player: Player;

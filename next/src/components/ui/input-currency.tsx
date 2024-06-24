@@ -5,7 +5,7 @@ import { cn } from "@next/lib/utils";
 export type InputCurrencyProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const InputCurrency = React.forwardRef<HTMLInputElement, InputCurrencyProps>(
-  ({ className, onChange, value, ...props }, ref) => {
+  ({ className, ...props }, ref) => {
     return (
       <div className="flex items-center">
         <p className="absolute ms-3 opacity-50">$</p>
