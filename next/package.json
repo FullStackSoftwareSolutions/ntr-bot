@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev -p 3333",
     "lint": "next lint",
     "type": "tsc --noEmit",
     "start": "next start",

@@ -69,6 +69,9 @@ export async function GET(request: Request): Promise<Response> {
     });
   } catch (e) {
     // the specific error message depends on the provider
+    if (e && typeof e === "object" && "message" in e) {
+      console.error(e.message);
+    }
     if (e instanceof OAuth2RequestError) {
       // invalid code
       return new Response(null, {

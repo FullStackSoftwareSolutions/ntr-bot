@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "migrate:gen": "drizzle-kit generate && npm run migrate",
-    "migrate": "tsx scripts/db:migrate.ts",
+    "migrate": "tsx scripts/migrate.ts",
     "studio": "drizzle-kit studio",
     "studio:migrate": "npm run migrate && npm run studio"
   },
@@ -18,11 +18,11 @@
     "drizzle-orm": "^0.30.10",
     "node-localstorage": "^3.0.5",
     "postgres": "3.3",
-    "tsx": "^4.10.1"
-  },
-  "devDependencies": {
-    "@types/node": "^20.12.12",
+    "tsx": "^4.10.1",
     "drizzle-kit": "^0.21.1",
     "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12"
   }
 }
