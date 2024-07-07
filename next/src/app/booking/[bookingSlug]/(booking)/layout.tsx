@@ -41,7 +41,7 @@ export default function BookingLayout({ children }: BookingLayoutProps) {
 
   return (
     <div className="flex flex-1 flex-col items-start">
-      <Breadcrumb className="hidden md:container md:flex md:pt-4">
+      <Breadcrumb className="container flex pt-4">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/bookings">Bookings</BreadcrumbLink>
@@ -70,7 +70,7 @@ export default function BookingLayout({ children }: BookingLayoutProps) {
         </TabsList>
       </Tabs>
 
-      <section className="flex flex-1 flex-col md:container md:mx-auto">
+      <section className="container mx-auto flex flex-1 flex-col">
         {children}
       </section>
     </div>

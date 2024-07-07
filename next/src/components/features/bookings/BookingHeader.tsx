@@ -15,8 +15,8 @@ type BookingHeaderProps = {
 const BookingHeader = ({ booking }: BookingHeaderProps) => {
   return (
     <PageHeader>
-      <div className="ms-8 flex items-center gap-4">
-        <CalendarClockIcon className="text-4xl font-bold" />
+      <div className="flex flex-wrap items-center gap-8">
+        <CalendarClockIcon size={32} />
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl">{booking.name}</h1>

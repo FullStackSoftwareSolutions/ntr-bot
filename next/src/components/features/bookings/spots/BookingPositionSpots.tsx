@@ -22,7 +22,7 @@ const BookingPositionSpots = ({
   const players = getPlayersForBookingPosition(booking, position);
 
   return (
-    <div className="m-4 grid grid-cols-2 items-stretch justify-stretch gap-2 md:grid-cols-4 lg:grid-cols-6">
+    <div className="my-4 grid grid-cols-2 items-stretch justify-stretch gap-2 md:grid-cols-4 lg:grid-cols-6">
       {Array.from({ length: numPlayers }).map((_, index) => {
         const playerToBooking = players[index] ?? null;
 

@@ -14,6 +14,7 @@ import {
 import { formatDate } from "@formatting/dates";
 import { Tabs, TabsList, TabsTrigger } from "@next/components/ui/tabs";
 import { usePathname, useRouter } from "next/navigation";
+import SkateHeader from "@next/components/features/skates/SkateHeader";
 
 const getTab = (pathname: string | null, slug: string) => {
   const tab = pathname?.split(slug).pop()?.replace("/", "");
@@ -46,32 +47,23 @@ export default function SkatePageLayout({
 
   return (
     <div className="flex flex-1 flex-col">
-      <section className="flex flex-col overflow-hidden md:container md:pt-4">
-        <Breadcrumb className="hidden md:flex">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/bookings">Bookings</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/booking/${skate.booking.slug}`}>
-                {skate.booking.announceName}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbPage>{formatDate(skate.scheduledOn)}</BreadcrumbPage>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <Breadcrumb className="container flex pt-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/bookings">Bookings</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/booking/${skate.booking.slug}`}>
+              {skate.booking.announceName}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbPage>{formatDate(skate.scheduledOn)}</BreadcrumbPage>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-        <div className="flex gap-8 p-8">
-          <div>
-            <h1 className="text-3xl">{getSkateTimeMessage(skate)}</h1>
-            <p className="text-lg text-foreground/40">{skate.booking.name}</p>
-          </div>
-
-          <SkateOpenSpots skate={skate} />
-        </div>
-      </section>
+      <SkateHeader skate={skate} />
 
       <Tabs
         className="hide-scrollbar sm:show-scrollbar container mb-4 flex overflow-y-auto"
@@ -96,7 +88,7 @@ export default function SkatePageLayout({
         </TabsList>
       </Tabs>
 
-      <section className="flex flex-1 flex-col text-center md:container md:mx-auto">
+      <section className="container mx-auto flex flex-1 flex-col text-center">
         {children}
       </section>
     </div>
