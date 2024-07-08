@@ -19,6 +19,11 @@ export const getPlayerByEmailHandler = async ({ email }: { email: string }) => {
   return getPlayerByEmail(email);
 };
 
+export const canUseEmailHandler = async ({ email }: { email: string }) => {
+  const player = await getPlayerByEmail(email);
+  return !player;
+};
+
 export const getPlayerByPhoneNumberHandler = async ({
   phoneNumber,
 }: {

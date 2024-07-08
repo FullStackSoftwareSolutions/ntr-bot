@@ -1,10 +1,17 @@
 "use client";
 
 import { QueryClient } from "@tanstack/react-query";
-import { createTRPCReact } from "@trpc/react-query";
+import { createTRPCClient, createTRPCReact, httpLink } from "@trpc/react-query";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 
 import { type AppRouter } from "@next/server/api/root";
+import SuperJSON from "superjson";
+
+export const getBaseUrl = () => {
+  if (typeof window !== "undefined") return window.location.origin;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return `http://localhost:${process.env.PORT ?? 3000}`;
+};
 
 const createQueryClient = () => new QueryClient();
 
@@ -19,6 +26,14 @@ export const getQueryClient = () => {
 };
 
 export const api = createTRPCReact<AppRouter>();
+export const apiClient = createTRPCClient<AppRouter>({
+  links: [
+    httpLink({
+      transformer: SuperJSON,
+      url: `${getBaseUrl()}/api/trpc`,
+    }),
+  ],
+});
 
 /**
  * Inference helper for inputs.
@@ -33,9 +48,3 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
  * @example type HelloOutput = RouterOutputs['example']['hello']
  */
 export type RouterOutputs = inferRouterOutputs<AppRouter>;
-
-export const getBaseUrl = () => {
-  if (typeof window !== "undefined") return window.location.origin;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return `http://localhost:${process.env.PORT ?? 3000}`;
-};

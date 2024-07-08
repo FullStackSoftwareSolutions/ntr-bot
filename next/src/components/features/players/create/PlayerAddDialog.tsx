@@ -22,7 +22,7 @@ import {
 } from "@next/components/ui/form";
 import { Input } from "@next/components/ui/input";
 import { Textarea } from "@next/components/ui/textarea";
-import { api } from "@next/trpc/react";
+import { api, apiClient } from "@next/trpc/react";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -32,10 +32,19 @@ const FormSchema = z
   .object({
     fullName: z.string().min(2),
     nickName: z.string().optional(),
-    email: z.preprocess(
-      (a) => (a === "" ? null : a),
-      z.string().email().nullable(),
-    ),
+    email: z
+      .preprocess((a) => (a === "" ? null : a), z.string().email().nullable())
+      .refine(
+        async (email) => {
+          if (!email) return true;
+
+          const isValidEmail = await apiClient.players.canUseEmail.query({
+            email,
+          });
+          return isValidEmail;
+        },
+        { message: "Email already in use" },
+      ),
     phoneNumber: z.string(),
     skillLevel: z.preprocess(
       (a) => (a === "" ? null : parseInt(z.string().parse(a))),
@@ -67,7 +76,7 @@ const PlayerAddDialog = ({}) => {
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(FormSchema, undefined, { mode: "async" }),
     defaultValues: {
       fullName: "",
       nickName: "",
@@ -136,7 +145,14 @@ const PlayerAddDialog = ({}) => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ""} />
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(...props) => {
+                        field.onChange(...props);
+                        return form.trigger("email");
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

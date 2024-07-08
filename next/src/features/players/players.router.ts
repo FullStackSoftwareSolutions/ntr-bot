@@ -1,5 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
+  canUseEmailHandler,
   createPlayerHandler,
   getAllPlayersHandler,
   getPlayerByEmailHandler,
@@ -34,6 +35,13 @@ export const playersRouter = createTRPCRouter({
     .query(({ input: { phoneNumber } }) =>
       getPlayerByPhoneNumberHandler({ phoneNumber }),
     ),
+  canUseEmail: protectedProcedure
+    .input(
+      z.object({
+        email: z.string(),
+      }),
+    )
+    .query(({ input: { email } }) => canUseEmailHandler({ email })),
   create: protectedProcedure
     .input(
       z.object({
