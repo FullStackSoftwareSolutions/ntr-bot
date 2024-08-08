@@ -2,6 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
   canUseEmailHandler,
   createPlayerHandler,
+  deletePlayerHandler,
   getAllPlayersHandler,
   getPlayerByEmailHandler,
   getPlayerByIdHandler,
@@ -39,9 +40,12 @@ export const playersRouter = createTRPCRouter({
     .input(
       z.object({
         email: z.string(),
+        playerId: z.number().optional(),
       }),
     )
-    .query(({ input: { email } }) => canUseEmailHandler({ email })),
+    .query(({ input: { email, playerId } }) =>
+      canUseEmailHandler({ email, playerId }),
+    ),
   create: protectedProcedure
     .input(
       z.object({
@@ -56,23 +60,50 @@ export const playersRouter = createTRPCRouter({
       }),
     )
     .mutation(({ input }) => createPlayerHandler(input)),
-  update: protectedProcedure
+  updateOne: protectedProcedure
     .input(
       z.object({
         playerId: z.number(),
-        updates: z.object({
-          email: z.string().optional(),
-          fullName: z.string().optional(),
-          nickname: z.string().optional(),
-          phoneNumber: z.string().optional(),
-          skillLevel: z.number().nullable().optional(),
-          isPlayer: z.boolean().optional(),
-          isGoalie: z.boolean().optional(),
-          notes: z.string().optional(),
-        }),
+        email: z.string().optional().nullable(),
+        fullName: z.string().optional(),
+        nickname: z.string().optional(),
+        phoneNumber: z.string().optional(),
+        skillLevel: z.number().nullable().optional(),
+        isPlayer: z.boolean().optional(),
+        isGoalie: z.boolean().optional(),
+        notes: z.string().optional(),
       }),
     )
-    .mutation(({ input: { playerId, updates } }) =>
-      updatePlayerHandler(playerId, updates),
+    .mutation(
+      ({
+        input: {
+          playerId,
+          email,
+          fullName,
+          nickname,
+          phoneNumber,
+          skillLevel,
+          isPlayer,
+          isGoalie,
+          notes,
+        },
+      }) =>
+        updatePlayerHandler(playerId, {
+          email,
+          fullName,
+          nickname,
+          phoneNumber,
+          skillLevel,
+          isPlayer,
+          isGoalie,
+          notes,
+        }),
     ),
+  deleteOne: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(({ input: { id } }) => deletePlayerHandler(id)),
 });

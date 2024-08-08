@@ -1,5 +1,6 @@
 import {
   createPlayer,
+  deletePlayer,
   getAllPlayersAndGoalies,
   getPlayerByEmail,
   getPlayerById,
@@ -19,7 +20,20 @@ export const getPlayerByEmailHandler = async ({ email }: { email: string }) => {
   return getPlayerByEmail(email);
 };
 
-export const canUseEmailHandler = async ({ email }: { email: string }) => {
+export const canUseEmailHandler = async ({
+  email,
+  playerId,
+}: {
+  email: string;
+  playerId?: number;
+}) => {
+  if (playerId) {
+    const existingPlayer = await getPlayerById(playerId);
+    if (existingPlayer?.email === email) {
+      return true;
+    }
+  }
+
   const player = await getPlayerByEmail(email);
   return !player;
 };
@@ -47,4 +61,8 @@ export const createPlayerHandler = async (input: PlayerCreate) => {
   }
 
   return player;
+};
+
+export const deletePlayerHandler = async (id: number) => {
+  return deletePlayer(id);
 };

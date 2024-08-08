@@ -68,7 +68,7 @@ const UserEditDialog = ({ user, open, setOpen }: UserEditDialogProps) => {
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
+          <DialogTitle>Edit User</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form

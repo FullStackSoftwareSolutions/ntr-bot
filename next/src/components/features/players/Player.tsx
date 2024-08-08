@@ -8,6 +8,7 @@ import {
 import { api } from "@next/trpc/react";
 import { type Player as PlayerType } from "@db/features/players/players.type";
 import PlayerAvatar from "./PlayerAvatar";
+import PlayerMoreOptions from "./PlayerMoreOptions";
 
 type PlayerProps = {
   player: PlayerType;
@@ -20,7 +21,11 @@ const Player = ({ player }: PlayerProps) => {
         <div className="flex items-center gap-4">
           <PlayerAvatar player={player} />
           <div className="flex flex-col gap-1">
-            <h1 className="text-4xl">{getPlayerName(player)}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-4xl">{getPlayerName(player)}</h1>
+              <PlayerMoreOptions player={player} />
+            </div>
+
             <div className="flex gap-1">
               {player.isGoalie && <Badge variant="outline">Goalie</Badge>}
               {player.isPlayer && <Badge variant="outline">Player</Badge>}
