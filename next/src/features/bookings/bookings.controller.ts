@@ -10,6 +10,7 @@ import {
   updatePlayersForBooking,
 } from "@db/features/bookings/bookings.db";
 import {
+  addPlayerToSkate,
   createSkate,
   deleteSkate,
   getSkatesForBooking,
@@ -107,11 +108,18 @@ export const updateBookingDatesHandler = async (bookingId: number) => {
       continue;
     }
 
-    await createSkate({
+    const skate = await createSkate({
       slug: formatDateSlug(date),
       bookingId: booking.id,
       scheduledOn: date,
     });
+    if (skate) {
+      for (const player of booking.playersToBookings) {
+        await addPlayerToSkate(skate.id, player.playerId, {
+          position: player.position,
+        });
+      }
+    }
   }
 
   for (let i = existingSkateIndex; i < skates.length; i++) {
