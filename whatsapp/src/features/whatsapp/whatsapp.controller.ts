@@ -54,7 +54,6 @@ const getPlayerFromMessage = async (message: WhatsAppMessage) => {
   const player = await getPlayerByPhoneNumber(
     getSenderNumberFromMessage(message)
   );
-  //console.log(getSenderNumberFromMessage(message), player);
 
   // if (!player) {
   //   await sendMessage(getGroupOrSenderFromMessage(message), {

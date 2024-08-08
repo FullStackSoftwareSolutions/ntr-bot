@@ -17,7 +17,8 @@ export const getPlayerByIdHandler = async ({ id }: { id: number }) => {
   return getPlayerById(id);
 };
 export const getPlayerByEmailHandler = async ({ email }: { email: string }) => {
-  return getPlayerByEmail(email);
+  const player = await getPlayerByEmail(email);
+  return player ?? null;
 };
 
 export const canUseEmailHandler = async ({

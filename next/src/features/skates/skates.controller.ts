@@ -1,6 +1,7 @@
 import { getBookingBySlug } from "@db/features/bookings/bookings.db";
 import {
   addPlayerToSkate,
+  deleteSkate,
   deleteSkatePlayer,
   getAllSkates,
   getFutureSkates,
@@ -258,4 +259,8 @@ export const skateUpdateSpotHandler = ({
   paid: boolean;
 }) => {
   return updateSkatePlayer(id, { paid });
+};
+
+export const skateDeleteOneHandler = async ({ skateId }: { skateId: number }) => {
+  return deleteSkate(skateId);
 };

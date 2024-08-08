@@ -182,11 +182,6 @@ export const updateBookingPlayerHandler = async (
       let remainingPaidAmount = Number(updatedSpot.amountPaid ?? 0);
       const costPerSkate = getCostPerSkatePerPlayerForBooking(booking);
 
-      console.log({
-        remainingPaidAmount,
-        costPerSkate,
-      });
-
       for (const skate of skates) {
         const playerToSkate = skate.playersToSkates.find(
           (p) => p.playerId === updatedSpot.playerId,
