@@ -1,10 +1,9 @@
 "use client";
 
-import { type Booking } from "@db/features/bookings/bookings.type";
+import { type BookingWithSkates } from "@db/features/bookings/bookings.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@next/components/ui/button";
 import ButtonLoading from "@next/components/ui/button-loading";
-import { Checkbox } from "@next/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -12,27 +11,19 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@next/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@next/components/ui/form";
-import { Input } from "@next/components/ui/input";
+import { Form } from "@next/components/ui/form";
 import { api } from "@next/trpc/react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import BookingFields, {
   BookngFormFieldsSchema,
   type BookingFormFields,
 } from "../create/BookingFields";
+import { formatDateDb } from "@formatting/dates";
 
 type BookingEditDialogProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  booking: Booking;
+  booking: BookingWithSkates;
 };
 
 const BookingEditDialog = ({
@@ -66,6 +57,7 @@ const BookingEditDialog = ({
       scheduledTime: booking.scheduledTime ?? "",
       startDate: booking.startDate ?? "",
       endDate: booking.endDate ?? "",
+      dates: booking.skates.map((skate) => formatDateDb(skate.scheduledOn)),
       whatsAppGroupJid: booking.whatsAppGroupJid ?? "",
       notifyGroup: booking.notifyGroup,
     },
@@ -88,7 +80,11 @@ const BookingEditDialog = ({
         </DialogHeader>
         <Form {...form}>
           <form className="mt-2" onSubmit={form.handleSubmit(onSubmit)}>
-            <BookingFields control={form.control} />
+            <BookingFields
+              control={form.control}
+              watch={form.watch}
+              setValue={form.setValue}
+            />
             <DialogFooter className="mt-4">
               <Button
                 size="sm"

@@ -1,4 +1,5 @@
 import {
+  BookingWithSkates,
   type Booking,
   type BookingWithoutPlayers,
 } from "@db/features/bookings/bookings.type";
@@ -90,3 +91,8 @@ export const getPlayersForBookingPosition = (
   booking.playersToBookings.filter(
     (playerToBooking) => playerToBooking.position === position.toString(),
   );
+
+export const doesBookingHavePastSkates = (booking: BookingWithSkates) => {
+  const now = new Date();
+  return booking.skates.some((skate) => skate.scheduledOn < now);
+};

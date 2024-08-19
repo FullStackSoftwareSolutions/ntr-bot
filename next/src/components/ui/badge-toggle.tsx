@@ -20,8 +20,13 @@ function BadgeToggle({
       onClick={onClick}
       variant="outline"
       className={cn("h-auto rounded-xl p-0", className)}
+      type="button"
     >
-      <Badge variant={checked ? "default" : "outline"} {...props}>
+      <Badge
+        variant={checked ? "default" : "outline"}
+        {...props}
+        className="w-full"
+      >
         <div
           className={cn(
             "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-input",

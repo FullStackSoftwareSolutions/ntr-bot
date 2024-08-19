@@ -10,6 +10,7 @@ import {
   updatePlayersForBooking,
 } from "@db/features/bookings/bookings.db";
 import {
+  addPlayersToSkate,
   createSkate,
   deleteSkate,
   getSkatesForBooking,
@@ -21,10 +22,7 @@ import {
   getBookingById,
   updateBooking,
 } from "@db/features/bookings/bookings.db";
-import {
-  getCostPerPlayerForBooking,
-  getDatesForBooking,
-} from "@next/features/bookings/bookings.model";
+import { getDatesForBooking } from "@next/features/bookings/bookings.model";
 import { type BookingCreate } from "@db/features/bookings/bookings.type";
 import slugify from "slugify";
 import { type User } from "@db/features/users/users.type";
@@ -52,66 +50,75 @@ export const getBookingBySlugHandler = async (slug: string) => {
 };
 
 export const createBookingHandler = async (
-  bookingData: {
-    name: string;
-    announceName: string | null;
-    numPlayers: number;
-    numGoalies: number;
-    location: string;
-    cost: string;
-    scheduledTime: string;
-    startDate: string;
-    endDate: string;
-    whatsAppGroupJid: string | null;
-    notifyGroup: boolean;
-  },
+  bookingData: Omit<BookingCreate, "slug" | "bookedByUserId">,
   user: User,
 ) => {
   const slug = slugify(bookingData.name);
   const booking = await createBooking({
+    ...bookingData,
     slug,
     bookedByUserId: user.id,
-    ...bookingData,
   });
 
   if (!booking) {
     throw new Error("Failed to create booking");
   }
 
-  for (const date of getDatesForBooking(booking)) {
+  for (const date of bookingData.dates) {
     await createSkate({
-      slug: formatDateSlug(date),
+      slug: formatDateSlug(new Date(date)),
       bookingId: booking.id,
-      scheduledOn: date,
+      scheduledOn: new Date(`${date}T${booking.scheduledTime}`),
     });
   }
 
   return booking;
 };
 
-export const updateBookingDatesHandler = async (bookingId: number) => {
+export const updateBookingDatesHandler = async (
+  bookingId: number,
+  dates: string[],
+) => {
   const booking = await getBookingById(bookingId);
   if (!booking) {
     throw new Error("Booking not found");
   }
 
+  let start = booking.startDate;
+  let end = booking.endDate;
+  if (!start || !end) {
+    throw new Error("Booking is missing start or end date");
+  }
+
   const skates = await getSkatesForBooking(bookingId);
-  const newSkateDates = getDatesForBooking(booking);
+  //const newSkateDates = getDatesForBooking(booking);
+
+  const validDates = dates.filter((date) => {
+    return new Date(date) >= new Date(start) && new Date(date) <= new Date(end);
+  });
 
   let existingSkateIndex = 0;
-  for (const date of newSkateDates) {
+  for (const date of validDates) {
+    const scheduledOn = new Date(`${date}T${booking.scheduledTime}`);
+
     const existingSkate = skates[existingSkateIndex];
     if (existingSkate) {
-      await updateSkate(existingSkate.id, { scheduledOn: date });
+      await updateSkate(existingSkate.id, { scheduledOn });
       existingSkateIndex++;
       continue;
     }
 
-    await createSkate({
-      slug: formatDateSlug(date),
+    const skate = await createSkate({
+      slug: formatDateSlug(scheduledOn),
       bookingId: booking.id,
-      scheduledOn: date,
+      scheduledOn,
     });
+
+    if (!skate) {
+      throw new Error("Failed to create skate");
+    }
+
+    await addPlayersToSkate(skate.id, booking.playersToBookings);
   }
 
   for (let i = existingSkateIndex; i < skates.length; i++) {
@@ -142,8 +149,8 @@ export const updateBookingHandler = async (
 ) => {
   const booking = await updateBooking(bookingId, bookingData);
 
-  if (bookingData.scheduledTime) {
-    await updateBookingDatesHandler(bookingId);
+  if (bookingData.scheduledTime && bookingData.dates) {
+    await updateBookingDatesHandler(bookingId, bookingData.dates);
   }
 
   return booking;
@@ -181,11 +188,6 @@ export const updateBookingPlayerHandler = async (
     if (booking) {
       let remainingPaidAmount = Number(updatedSpot.amountPaid ?? 0);
       const costPerSkate = getCostPerSkatePerPlayerForBooking(booking);
-
-      console.log({
-        remainingPaidAmount,
-        costPerSkate,
-      });
 
       for (const skate of skates) {
         const playerToSkate = skate.playersToSkates.find(

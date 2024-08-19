@@ -42,6 +42,7 @@ export const getBookingBySlug = async (slug: string) =>
           player: true,
         },
       },
+      skates: true,
     },
     where: eq(bookings.slug, slug),
   });
@@ -53,6 +54,7 @@ export const getBookingById = async (id: number) =>
           player: true,
         },
       },
+      skates: true,
     },
     where: eq(bookings.id, id),
   });

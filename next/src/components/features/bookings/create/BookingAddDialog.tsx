@@ -47,6 +47,7 @@ const BookingAddDialog = ({}) => {
       scheduledTime: "",
       startDate: "",
       endDate: "",
+      dates: [],
       whatsAppGroupJid: "",
       notifyGroup: true,
     },
@@ -72,7 +73,11 @@ const BookingAddDialog = ({}) => {
         </DialogHeader>
         <Form {...form}>
           <form className="mt-2" onSubmit={form.handleSubmit(onSubmit)}>
-            <BookingFields control={form.control} />
+            <BookingFields
+              control={form.control}
+              watch={form.watch}
+              setValue={form.setValue}
+            />
             <DialogFooter className="mt-4">
               <Button
                 size="sm"

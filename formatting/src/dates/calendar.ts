@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import dayjsCalendarPlugin from "dayjs/plugin/calendar";
-import { DATE_FORMAT } from ".";
 
 dayjs.extend(dayjsCalendarPlugin);
 
@@ -22,11 +21,16 @@ export const getDatesBetween = (
 ) => {
   const dates = [];
 
-  let date = dayjs(startDate);
-  while (!date.isAfter(endDate)) {
-    dates.push(date.toDate());
+  let from = dayjs(startDate);
+  let to = dayjs(endDate);
+  if (!from.isValid() || !to.isValid()) {
+    return [];
+  }
 
-    date = date.add(1, unit);
+  while (!from.isAfter(to)) {
+    dates.push(from.toDate());
+
+    from = from.add(1, unit);
   }
 
   return dates;

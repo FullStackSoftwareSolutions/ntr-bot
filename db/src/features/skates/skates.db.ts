@@ -1,6 +1,7 @@
 import { playersToSkates, skates } from "@db/db/schema";
 import { db } from "@db/db";
 import { and, asc, desc, eq, gt, gte, inArray, lt } from "drizzle-orm";
+import { Positions } from "./skates.type";
 
 export const getSkateById = async (id: number) => {
   const [skate] = await db.query.skates.findMany({
@@ -165,12 +166,16 @@ export const deleteSkatesForBooking = async (bookingId: number) =>
 
 export const addPlayersToSkate = async (
   skateId: number,
-  playerIds: number[]
+  players: {
+    playerId: number;
+    position: string;
+  }[]
 ) => {
   await db.insert(playersToSkates).values(
-    playerIds.map((playerId) => ({
+    players.map(({ playerId, position }) => ({
       skateId,
       playerId,
+      position,
     }))
   );
 };

@@ -10,12 +10,12 @@ import {
 } from "@next/components/ui/dropdown-menu";
 import { EditIcon, MoreVerticalIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
-import { type Booking } from "@db/features/bookings/bookings.type";
+import { type BookingWithSkates } from "@db/features/bookings/bookings.type";
 import BookingDeleteDialog from "./edit/BookingDeleteDialog";
 import BookingEditDialog from "./edit/BookingEditDialog";
 
 type BookingMoreOptionsProps = {
-  booking: Booking;
+  booking: BookingWithSkates;
 };
 
 const BookingMoreOptions = ({ booking }: BookingMoreOptionsProps) => {

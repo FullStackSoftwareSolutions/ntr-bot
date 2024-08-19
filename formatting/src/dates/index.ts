@@ -14,6 +14,10 @@ export const formatDate = (
   }
   return dayjs(date).format(DATE_FORMAT);
 };
+export const formatDateDb = (date: Date) => {
+  return dayjs(date).format(`YYYY-MM-DD`);
+};
+
 export const formatDateSlug = (date: Date) => {
   return dayjs(date).format(`MMMD-hmm`).toLowerCase();
 };

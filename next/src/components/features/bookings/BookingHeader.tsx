@@ -5,11 +5,11 @@ import PageHeader from "@next/components/layouts/PageHeader";
 import BookingDates from "./BookingDates";
 import BookingSkateCount from "./BookingSkateCount";
 import BookingCost from "./BookingCost";
-import { type Booking } from "@db/features/bookings/bookings.type";
+import { type BookingWithSkates } from "@db/features/bookings/bookings.type";
 import BookingMoreOptions from "./BookingMoreOptions";
 
 type BookingHeaderProps = {
-  booking: Booking;
+  booking: BookingWithSkates;
 };
 
 const BookingHeader = ({ booking }: BookingHeaderProps) => {
