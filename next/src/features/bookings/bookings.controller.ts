@@ -84,8 +84,8 @@ export const updateBookingDatesHandler = async (
     throw new Error("Booking not found");
   }
 
-  let start = booking.startDate;
-  let end = booking.endDate;
+  const start = booking.startDate;
+  const end = booking.endDate;
   if (!start || !end) {
     throw new Error("Booking is missing start or end date");
   }

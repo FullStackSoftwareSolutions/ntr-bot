@@ -1,5 +1,5 @@
 import {
-  BookingWithSkates,
+  type BookingWithSkates,
   type Booking,
   type BookingWithoutPlayers,
 } from "@db/features/bookings/bookings.type";
