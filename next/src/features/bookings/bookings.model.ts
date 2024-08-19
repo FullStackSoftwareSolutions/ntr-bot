@@ -33,10 +33,6 @@ export const getCostPerSkatePerPlayerForBooking = (
   booking: BookingWithoutPlayers,
   roundUp = false,
 ) => {
-  if (booking.costPerPlayerPerSkate) {
-    return Number(booking.costPerPlayerPerSkate);
-  }
-
   const cost = Number(booking.cost ?? 0);
   const costPerPlayer = cost / (booking.numPlayers ?? 0);
   const costPerPlayerPerSkate = costPerPlayer / getNumSkatesForBooking(booking);
@@ -47,11 +43,8 @@ export const getCostPerSkatePerPlayerForBooking = (
   return costPerPlayerPerSkate;
 };
 
-export const getCostPerPlayerForBooking = (
-  booking: Booking,
-  roundUp = false,
-) => {
-  const costPerSkate = getCostPerSkatePerPlayerForBooking(booking, roundUp);
+export const getCostPerPlayerForBooking = (booking: Booking) => {
+  const costPerSkate = getCostPerSkatePerPlayerForBooking(booking);
   return costPerSkate * getDatesForBooking(booking).length;
 };
 

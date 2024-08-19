@@ -8,6 +8,7 @@ export type BookingCreate = {
   numGoalies: number;
   location: string;
   cost: string;
+  costPerPlayer: string;
   costPerPlayerPerSkate: string;
   scheduledTime: string;
   startDate: string;
