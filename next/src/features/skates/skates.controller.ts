@@ -231,6 +231,28 @@ export const getSkateAvailableSubsHandler = async ({
   return availableSubs;
 };
 
+export const skateDeleteSpotHandler = ({ id }: { id: number }) => {
+  return deleteSkatePlayer(id);
+};
+
+export const skateUpdateSpotHandler = ({
+  id,
+  paid,
+}: {
+  id: number;
+  paid: boolean;
+}) => {
+  return updateSkatePlayer(id, { paid });
+};
+
+export const skateDeleteOneHandler = async ({
+  skateId,
+}: {
+  skateId: number;
+}) => {
+  return deleteSkate(skateId);
+};
+
 export const announceSpotsSkateHandler = async ({
   skateId,
 }: {
@@ -247,20 +269,10 @@ export const announceTeamsSkateHandler = async ({
   await trpc.skates.announceTeams.mutate({ skateId });
 };
 
-export const skateDeleteSpotHandler = ({ id }: { id: number }) => {
-  return deleteSkatePlayer(id);
-};
-
-export const skateUpdateSpotHandler = ({
-  id,
-  paid,
+export const announcePaymentsSkateHandler = async ({
+  skateId,
 }: {
-  id: number;
-  paid: boolean;
+  skateId: number;
 }) => {
-  return updateSkatePlayer(id, { paid });
-};
-
-export const skateDeleteOneHandler = async ({ skateId }: { skateId: number }) => {
-  return deleteSkate(skateId);
+  await trpc.skates.announcePayments.mutate({ skateId });
 };

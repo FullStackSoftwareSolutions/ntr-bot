@@ -25,6 +25,7 @@ import {
   getSkatePlayersOut,
   getSkatePlayersOutWithoutSub,
   getSkatePlayersSubsIn,
+  getSkatePlayersWithSubsUnpaid,
   getSkateSubstitubeForPlayer,
   getSkateTotalGoalieSpots,
   getSkateTotalPlayerSpots,
@@ -34,6 +35,12 @@ import {
   shufflePlayers,
   sortPlayers,
 } from "@next/features/skates/teams/skates.teams.controller";
+import { getCostPerSkatePerPlayerForBooking } from "@next/features/bookings/bookings.model";
+import {
+  getJidFromNumber,
+  getMentionFromNumber,
+} from "../whatsapp/whatsapp.model";
+import { formatCurrency } from "@formatting/currency";
 
 export const getSkateTimeMessage = (skate: Skate) => {
   return `${timeToEmoji(skate.scheduledOn)} ${dayjs(skate.scheduledOn).format(
@@ -300,4 +307,37 @@ const getPlayersText = (skate: Skate) => {
     .map(({ player }) => getPlayerName(player))
     .join(", ");
   return `(${skate.playersToSkates.length}) ${playerNames}`;
+};
+
+export const getSkatePaymentsMessage = (skate: Skate) => {
+  const players = getSkatePlayersWithSubsUnpaid(skate);
+  const cost = getCostPerSkatePerPlayerForBooking(skate.booking, true);
+
+  const mentions = players.flatMap(({ player, substitutePlayer }) =>
+    [
+      player.phoneNumber ? getJidFromNumber(player.phoneNumber) : null,
+      substitutePlayer!.phoneNumber
+        ? getJidFromNumber(substitutePlayer!.phoneNumber)
+        : null,
+    ].filter((val) => val != null)
+  );
+
+  const payments = players.map(({ player, substitutePlayer }) => {
+    const subMentionOrName = substitutePlayer!.phoneNumber
+      ? getMentionFromNumber(substitutePlayer!.phoneNumber)
+      : getPlayerName(substitutePlayer!);
+
+    const playerMentionOrName = player!.phoneNumber
+      ? getMentionFromNumber(player!.phoneNumber)
+      : getPlayerName(player!);
+
+    return `${subMentionOrName} send ${formatCurrency(
+      cost
+    )} to ${playerMentionOrName} 💰 ${player.email}`;
+  });
+
+  return {
+    text: stringJoin(...payments),
+    mentions: mentions as string[],
+  };
 };

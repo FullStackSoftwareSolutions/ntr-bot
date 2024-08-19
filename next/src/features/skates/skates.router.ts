@@ -1,5 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
+  announcePaymentsSkateHandler,
   announceSpotsSkateHandler,
   announceTeamsSkateHandler,
   getAllSkatesForBookingHandler,
@@ -145,5 +146,14 @@ export const skatesRouter = createTRPCRouter({
     )
     .mutation(({ input: { skateId } }) =>
       announceTeamsSkateHandler({ skateId }),
+    ),
+  announcePayments: protectedProcedure
+    .input(
+      z.object({
+        skateId: z.number(),
+      }),
+    )
+    .mutation(({ input: { skateId } }) =>
+      announcePaymentsSkateHandler({ skateId }),
     ),
 });

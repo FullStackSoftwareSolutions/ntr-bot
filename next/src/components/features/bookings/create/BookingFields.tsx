@@ -15,8 +15,6 @@ import InputDate from "@next/components/ui/input-date";
 import { getDatesBetween } from "@formatting/dates/calendar";
 import { formatDate, formatDateDb } from "@formatting/dates";
 import { BadgeToggle } from "@next/components/ui/badge-toggle";
-import { useEffect } from "react";
-import { usePrevious } from "@next/hooks/usePrevious";
 
 export const BookngFormFieldsSchema = z.object({
   name: z.string().min(4, "Must be at least 4 characters"),
