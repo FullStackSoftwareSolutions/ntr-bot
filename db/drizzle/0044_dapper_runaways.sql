@@ -1,0 +1,1 @@
+ALTER TABLE "bookings" ADD COLUMN "cost_per_player_per_skate" numeric;

@@ -27,6 +27,7 @@ export const BookngFormFieldsSchema = z.object({
   numGoalies: z.coerce.number().gt(0, "Must be greater than 0"),
   location: z.string(),
   cost: z.string(),
+  costPerPlayerPerSkate: z.string(),
   scheduledTime: z.string(),
   startDate: z.string(),
   endDate: z.string(),
@@ -132,8 +133,21 @@ const BookingFields = ({ control, watch, setValue }: BookingFieldsProps) => {
         control={control}
         name="cost"
         render={({ field }) => (
-          <FormItem className="col-span-2">
+          <FormItem>
             <FormLabel>Cost</FormLabel>
+            <FormControl>
+              <InputCurrency {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="costPerPlayerPerSkate"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Player Cost Per Skate</FormLabel>
             <FormControl>
               <InputCurrency {...field} />
             </FormControl>

@@ -33,6 +33,10 @@ export const getCostPerSkatePerPlayerForBooking = (
   booking: BookingWithoutPlayers,
   roundUp = false,
 ) => {
+  if (booking.costPerPlayerPerSkate) {
+    return Number(booking.costPerPlayerPerSkate);
+  }
+
   const cost = Number(booking.cost ?? 0);
   const costPerPlayer = cost / (booking.numPlayers ?? 0);
   const costPerPlayerPerSkate = costPerPlayer / getNumSkatesForBooking(booking);

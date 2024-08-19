@@ -54,6 +54,7 @@ const BookingEditDialog = ({
       numGoalies: booking.numGoalies ?? "",
       location: booking.location ?? "",
       cost: booking.cost ?? "",
+      costPerPlayerPerSkate: booking.costPerPlayerPerSkate ?? "",
       scheduledTime: booking.scheduledTime ?? "",
       startDate: booking.startDate ?? "",
       endDate: booking.endDate ?? "",

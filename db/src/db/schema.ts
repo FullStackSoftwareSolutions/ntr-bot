@@ -151,6 +151,7 @@ export const bookings = pgTable("bookings", {
   cost: numeric("cost"),
   booked: boolean("booked").notNull().default(false),
   costPerPlayer: numeric("cost_per_player"),
+  costPerPlayerPerSkate: numeric("cost_per_player_per_skate"),
   costPerGoalie: numeric("cost_per_goalie").default("0").notNull(),
   scheduledTime: time("scheduled_time"),
   startDate: date("start_date"),
