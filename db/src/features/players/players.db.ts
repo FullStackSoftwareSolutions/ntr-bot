@@ -79,3 +79,7 @@ export const updatePlayer = async (
 
   return player;
 };
+
+export const deletePlayer = async (id: number) => {
+  await db.delete(players).where(eq(players.id, id));
+};

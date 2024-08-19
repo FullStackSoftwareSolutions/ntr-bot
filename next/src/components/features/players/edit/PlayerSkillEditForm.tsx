@@ -29,7 +29,7 @@ const FormSchema = z.object({
 });
 
 const PlayerSkillEditForm = ({ player }: PlayerSkillEditFormProps) => {
-  const mutation = api.players.update.useMutation();
+  const mutation = api.players.updateOne.useMutation();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -41,7 +41,7 @@ const PlayerSkillEditForm = ({ player }: PlayerSkillEditFormProps) => {
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     mutation.mutate({
       playerId: player.id,
-      updates: data,
+      ...data,
     });
   };
 

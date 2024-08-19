@@ -8,6 +8,7 @@ import {
   getSkateAvailableSubsHandler,
   getSkateBySlugsHandler,
   shuffleTeamsSkateHandler,
+  skateDeleteOneHandler,
   skateDeleteSpotHandler,
   skateDropOutPlayerHandler,
   skateSubInPlayerHandler,
@@ -69,6 +70,9 @@ export const skatesRouter = createTRPCRouter({
         position,
       }),
     ),
+  deleteOne: protectedProcedure
+    .input(z.object({ skateId: z.number() }))
+    .mutation(({ input: { skateId } }) => skateDeleteOneHandler({ skateId })),
   subInPlayer: protectedProcedure
     .input(
       z.object({
