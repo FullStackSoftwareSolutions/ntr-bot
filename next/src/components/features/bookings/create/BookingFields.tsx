@@ -242,7 +242,7 @@ const BookingFields = ({ control, watch, setValue }: BookingFieldsProps) => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <div className="grid grid-cols-5 gap-1 ">
+                  <div className="grid grid-cols-3 gap-1 md:grid-cols-5 ">
                     {availableDates.map((date) => {
                       const dateString = formatDateDb(date);
                       const checked = field.value.includes(dateString);
