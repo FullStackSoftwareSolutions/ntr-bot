@@ -4,6 +4,7 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetTitle,
   SheetTrigger,
 } from "@next/components/ui/sheet";
 
@@ -19,12 +20,16 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import PlayerIcon from "@next/svg/PlayerIcon";
 import WhatsAppIcon from "@next/svg/WhatsAppIcon";
+import { VisuallyHidden } from "react-aria";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
+      <VisuallyHidden>
+        <SheetTitle>Sidebar</SheetTitle>
+      </VisuallyHidden>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon">
           <MenuIcon />
@@ -35,7 +40,7 @@ const Sidebar = () => {
           🤖 ntr bot
         </Link>
 
-        <h2 className="mb-2 mt-8 px-4 text-lg font-semibold tracking-tight">
+        <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">
           Pages
         </h2>
         <div className="flex flex-col gap-1">
@@ -74,7 +79,7 @@ const SidebarLink = ({ IconComponent, href, children }: SidebarLinkProps) => {
     <SheetClose asChild>
       <Button
         variant="ghost"
-        className="group w-full justify-start hover:bg-primary hover:text-primary-foreground aria-selected:bg-primary/30 aria-selected:hover:bg-primary"
+        className="group hover:bg-primary hover:text-primary-foreground aria-selected:bg-primary/30 aria-selected:hover:bg-primary w-full justify-start"
         aria-selected={isActive}
         asChild
       >
@@ -82,7 +87,7 @@ const SidebarLink = ({ IconComponent, href, children }: SidebarLinkProps) => {
           {IconComponent && (
             <IconComponent
               aria-selected={isActive}
-              className="mr-2 group-hover:text-primary-foreground aria-selected:text-primary"
+              className="group-hover:text-primary-foreground aria-selected:text-primary mr-2"
             />
           )}
           {children}
