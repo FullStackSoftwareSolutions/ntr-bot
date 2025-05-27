@@ -18,12 +18,12 @@ const Navbar = () => {
 
   return (
     <nav
-      className="z-20 overflow-hidden shadow-md dark:shadow-dark sm:px-4"
+      className="dark:shadow-dark z-20 overflow-hidden shadow-md sm:px-4"
       style={{
         height: NAVBAR_HEIGHT,
       }}
     >
-      <div className="container mx-auto flex h-full items-center gap-2 px-2 py-1">
+      <div className="mx-auto flex h-full items-center gap-2 px-2 py-1">
         <SignedIn>
           <Sidebar />
         </SignedIn>

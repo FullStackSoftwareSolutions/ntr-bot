@@ -29,7 +29,7 @@ import {
 import EventEmitter from "node:events";
 import { Player } from "@db/features/players/players.type";
 import chalk from "chalk";
-import { DisconnectReason } from "@whiskeysockets/baileys";
+import { DisconnectReason } from "baileys";
 
 let qr: string | null = null;
 let connectionStatus: WhatsAppConnection | null = null;

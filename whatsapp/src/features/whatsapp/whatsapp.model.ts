@@ -2,7 +2,7 @@ import {
   AnyMessageContent,
   MiscMessageGenerationOptions,
   WAProto,
-} from "@whiskeysockets/baileys";
+} from "baileys";
 
 export type WhatsAppMessageKey = WAProto.IMessageKey;
 

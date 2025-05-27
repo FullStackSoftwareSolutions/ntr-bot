@@ -40,7 +40,7 @@ export default function BookingLayout({ children }: BookingLayoutProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-start">
+  <div className="flex flex-1 flex-col items-start">
       <Breadcrumb className="container flex pt-4">
         <BreadcrumbList>
           <BreadcrumbItem>

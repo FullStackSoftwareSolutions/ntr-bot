@@ -2,15 +2,17 @@
 
 import SkateTeams from "@next/components/features/skates/SkateTeams";
 import { api } from "@next/trpc/react";
+import { use } from "react";
 
 export default function SkateTeamsPageTab({
   params,
 }: {
-  params: { bookingSlug: string; skateSlug: string };
+  params: Promise<{ bookingSlug: string; skateSlug: string }>;
 }) {
+  const { bookingSlug, skateSlug } = use(params);
   const { data: skate } = api.skates.getBySlugs.useQuery({
-    bookingSlug: params.bookingSlug,
-    skateSlug: params.skateSlug,
+    bookingSlug,
+    skateSlug,
   });
 
   if (!skate) {

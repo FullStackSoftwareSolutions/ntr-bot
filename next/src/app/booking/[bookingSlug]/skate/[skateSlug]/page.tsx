@@ -2,15 +2,17 @@
 
 import SkateSpots from "@next/components/features/skates/SkateSpots";
 import { api } from "@next/trpc/react";
+import { use } from "react";
 
 export default function BookingSkatePage({
   params,
 }: {
-  params: { bookingSlug: string; skateSlug: string };
+  params: Promise<{ bookingSlug: string; skateSlug: string }>;
 }) {
+  const { bookingSlug, skateSlug } = use(params);
   const { data: skate } = api.skates.getBySlugs.useQuery({
-    bookingSlug: params.bookingSlug,
-    skateSlug: params.skateSlug,
+    bookingSlug: bookingSlug,
+    skateSlug: skateSlug,
   });
 
   if (!skate) {

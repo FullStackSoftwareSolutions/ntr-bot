@@ -5,7 +5,7 @@ import {
   SignalDataTypeMap,
   WAProto,
   type AuthenticationState,
-} from "@whiskeysockets/baileys";
+} from "baileys";
 
 type useWhatsappAuthProps = {
   resetData: () => Promise<any>;

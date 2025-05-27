@@ -17,7 +17,7 @@ import {
 import { useState } from "../state";
 import { Player } from "@db/features/players/players.type";
 import { Command } from "../commands";
-import { AnyMessageContent } from "@whiskeysockets/baileys";
+import { AnyMessageContent } from "baileys";
 
 const MAX_DISPLAYED = 150;
 

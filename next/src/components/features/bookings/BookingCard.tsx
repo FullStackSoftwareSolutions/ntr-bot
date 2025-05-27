@@ -19,7 +19,7 @@ const BookingCard = ({ className, booking }: BookingCardProps) => {
       asChild
       variant="ghost"
       className={cn(
-        "border-1 h-auto rounded-lg bg-secondary/40 p-0.5 text-start hover:bg-secondary",
+        "border h-auto rounded-lg bg-secondary/40 p-0.5 text-start hover:bg-secondary",
         className,
       )}
     >

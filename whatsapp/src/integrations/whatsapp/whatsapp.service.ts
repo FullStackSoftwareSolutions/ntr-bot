@@ -8,7 +8,6 @@ import {
   WAProto,
   getAggregateVotesInPollMessage,
   makeCacheableSignalKeyStore,
-  makeInMemoryStore,
   WAMessageKey,
   WAMessageContent,
   GroupMetadata,
@@ -16,7 +15,8 @@ import {
   fetchLatestBaileysVersion,
   WAPresence,
   AuthenticationCreds,
-} from "@whiskeysockets/baileys";
+} from "baileys";
+import { makeInMemoryStore } from "@rodrigogs/baileys-store";
 import { Boom } from "@hapi/boom";
 import pino from "pino";
 import {
@@ -335,12 +335,17 @@ export const onConnectionUpdate = (
   eventEmitter.on("connectionUpdate", cb);
 };
 
-export const sendMessage = (
+export const sendMessage = async (
   toJid: string,
   message: AnyMessageContent,
   options?: MiscMessageGenerationOptions
 ) => {
-  return sock.sendMessage(toJid, message, options);
+  try {
+    return await sock.sendMessage(toJid, message, options);
+  } catch (error) {
+    console.error("Error sending message:", error);
+    throw error;
+  }
 };
 
 export const updatePresence = (toJid: string, presence: WAPresence) => {

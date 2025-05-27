@@ -7,9 +7,7 @@ interface PageHeaderProps {
 
 const PageHeader = ({ className, children }: PageHeaderProps) => {
   return (
-    <section
-      className={cn("container mb-4 flex flex-col overflow-hidden", className)}
-    >
+    <section className={cn("mb-4 flex flex-col overflow-hidden", className)}>
       <div className="p-8">{children}</div>
     </section>
   );

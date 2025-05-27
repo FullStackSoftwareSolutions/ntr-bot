@@ -244,7 +244,7 @@ export function CommandPopoverVirtualized<T>({
           onOpenAutoFocus={(e) => e.preventDefault()}
           align="start"
           sideOffset={2}
-          className="w-[var(--radix-popper-anchor-width)] p-0"
+          className="w-(--radix-popper-anchor-width) p-0"
         >
           <div
             className="max-h-64 overflow-y-auto overflow-x-hidden px-1 py-1"

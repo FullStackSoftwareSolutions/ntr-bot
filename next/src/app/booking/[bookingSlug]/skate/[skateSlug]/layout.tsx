@@ -15,6 +15,7 @@ import { formatDate } from "@formatting/dates";
 import { Tabs, TabsList, TabsTrigger } from "@next/components/ui/tabs";
 import { usePathname, useRouter } from "next/navigation";
 import SkateHeader from "@next/components/features/skates/SkateHeader";
+import { use } from "react";
 
 const getTab = (pathname: string | null, slug: string) => {
   const tab = pathname?.split(slug).pop()?.replace("/", "");
@@ -28,17 +29,19 @@ export default function SkatePageLayout({
   params,
   children,
 }: {
-  params: { bookingSlug: string; skateSlug: string };
+  params: Promise<{ bookingSlug: string; skateSlug: string }>;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const tab = getTab(pathname, params.skateSlug);
+  const { skateSlug, bookingSlug } = use(params);
+
+  const tab = getTab(pathname, skateSlug);
 
   const { data: skate } = api.skates.getBySlugs.useQuery({
-    bookingSlug: params.bookingSlug,
-    skateSlug: params.skateSlug,
+    bookingSlug,
+    skateSlug,
   });
 
   if (!skate) {
@@ -47,7 +50,7 @@ export default function SkatePageLayout({
 
   return (
     <div className="flex flex-1 flex-col">
-      <Breadcrumb className="container flex pt-4">
+      <Breadcrumb className="flex pt-4">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/bookings">Bookings</BreadcrumbLink>
@@ -66,16 +69,14 @@ export default function SkatePageLayout({
       <SkateHeader skate={skate} />
 
       <Tabs
-        className="hide-scrollbar sm:show-scrollbar container mb-4 flex overflow-y-auto"
+        className="hide-scrollbar sm:show-scrollbar mb-4 flex overflow-y-auto"
         value={tab}
         onValueChange={(tab) => {
           if (tab === "spots") {
-            return router.push(
-              `/booking/${params.bookingSlug}/skate/${skate.slug}`,
-            );
+            return router.push(`/booking/${bookingSlug}/skate/${skate.slug}`);
           }
           return router.push(
-            `/booking/${params.bookingSlug}/skate/${skate.slug}/${tab}`,
+            `/booking/${bookingSlug}/skate/${skate.slug}/${tab}`,
           );
         }}
       >
@@ -88,7 +89,7 @@ export default function SkatePageLayout({
         </TabsList>
       </Tabs>
 
-      <section className="container mx-auto flex flex-1 flex-col text-center">
+      <section className="mx-auto flex flex-1 flex-col text-center">
         {children}
       </section>
     </div>
