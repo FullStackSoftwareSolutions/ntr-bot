@@ -24,7 +24,7 @@ const CopyAnnounceSkatePaymentsTextButton = ({
     <Button
       variant="ghost"
       onClick={() => {
-        navigator.clipboard.writeText(data);
+        void navigator.clipboard.writeText(data);
       }}
     >
       <Copy />

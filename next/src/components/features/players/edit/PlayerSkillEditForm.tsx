@@ -25,7 +25,7 @@ const FormSchema = z.object({
   skillLevel: z.preprocess(
     (a) => (a === "" ? null : parseInt(z.string().parse(a))),
     z.number().nullable(),
-  ),
+  ) as unknown as z.ZodNullable<z.ZodNumber>,
 });
 
 const PlayerSkillEditForm = ({ player }: PlayerSkillEditFormProps) => {
@@ -52,7 +52,7 @@ const PlayerSkillEditForm = ({ player }: PlayerSkillEditFormProps) => {
           control={form.control}
           name="skillLevel"
           render={({ field }) => (
-            <FormItem className=" w-24 p-4">
+            <FormItem className="w-24 p-4">
               <FormLabel>Skill Level</FormLabel>
               <FormControl
                 onChange={debounce(() => form.handleSubmit(onSubmit)(), 500)}
@@ -70,7 +70,7 @@ const PlayerSkillEditForm = ({ player }: PlayerSkillEditFormProps) => {
         />
 
         {mutation.isPending && (
-          <LoadingIndicator className="absolute left-1 top-1 size-4" />
+          <LoadingIndicator className="absolute top-1 left-1 size-4" />
         )}
       </form>
     </Form>

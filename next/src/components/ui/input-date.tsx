@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@next/components/ui/popover";
-import { Input, type InputProps } from "@next/components/ui/input";
+import { Input } from "@next/components/ui/input";
 import { cn } from "@next/lib/utils";
 import { useEffect, useState } from "react";
 
@@ -63,7 +63,7 @@ export default function InputDate({ onChange, value }: InputDateProps) {
             aria-label="Pick a date"
             variant="outline"
             className={cn(
-              "absolute right-1.5 top-1/2 h-7 -translate-y-1/2 rounded-sm border px-2 font-normal",
+              "absolute top-1/2 right-1.5 h-7 -translate-y-1/2 rounded-sm border px-2 font-normal",
               !date && "text-muted-foreground",
             )}
           >

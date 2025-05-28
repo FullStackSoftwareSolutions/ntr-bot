@@ -32,12 +32,12 @@ export const usePlayerFormSchema = (player?: Player) => {
             return isValidEmail;
           },
           { message: "Email already in use" },
-        ),
+        ) as unknown as z.ZodNullable<z.ZodString>,
       phoneNumber: z.string(),
       skillLevel: z.preprocess(
         (a) => (a === "" ? null : parseInt(z.string().parse(a))),
         z.number(),
-      ),
+      ) as unknown as z.ZodNumber,
       isPlayer: z.boolean(),
       isGoalie: z.boolean(),
       notes: z.string().optional(),

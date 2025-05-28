@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@next/components/ui/button";
 import ButtonLoading from "@next/components/ui/button-loading";
-import { Checkbox } from "@next/components/ui/checkbox";
 import {
   Dialog,
   DialogTrigger,
@@ -13,7 +12,7 @@ import {
   DialogFooter,
 } from "@next/components/ui/dialog";
 import { Form } from "@next/components/ui/form";
-import { api, apiClient } from "@next/trpc/react";
+import { api } from "@next/trpc/react";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";

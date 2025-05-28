@@ -2,9 +2,9 @@ import React from "react";
 import { Button, type ButtonProps } from "@next/components/ui/button";
 import { RefreshCwIcon } from "lucide-react";
 
-export type ButtonLoadingProps = {
+export type ButtonLoadingProps = ButtonProps & {
   loading: boolean;
-} & ButtonProps;
+};
 
 const ButtonLoading = React.forwardRef<HTMLButtonElement, ButtonLoadingProps>(
   ({ loading, children, ...props }, ref) => {

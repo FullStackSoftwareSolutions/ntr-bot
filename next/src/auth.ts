@@ -1,4 +1,9 @@
-import { Lucia, type User as LuciaUser, type Session } from "lucia";
+import {
+  type Adapter,
+  Lucia,
+  type User as LuciaUser,
+  type Session,
+} from "lucia";
 import { GitHub } from "arctic";
 import { env } from "./env";
 import { cache } from "react";
@@ -8,7 +13,7 @@ import { type User } from "@db/features/users/users.type";
 import { getUserById, getUserByUsername } from "@db/features/users/users.db";
 import { TRPCError } from "@trpc/server";
 
-export const lucia = new Lucia(adapter, {
+export const lucia = new Lucia(adapter as Adapter, {
   sessionCookie: {
     // this sets cookies with super long expiration
     // since Next.js doesn't allow Lucia to extend cookie expiration when rendering pages
