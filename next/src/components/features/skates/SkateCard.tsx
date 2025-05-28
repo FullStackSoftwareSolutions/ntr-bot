@@ -18,21 +18,32 @@ import Link from "next/link";
 import { formatDateRelative } from "@formatting/dates/calendar";
 import SkateOpenSpots from "./SkateOpenSpots";
 import { getPlayerName } from "@next/features/players/players.model";
+import { cn } from "@next/lib/utils";
 
 type SkateCardProps = {
+  className?: string;
   skate: Skate;
 };
 
-const SkateCard = ({ skate }: SkateCardProps) => {
+const SkateCard = ({ skate, className }: SkateCardProps) => {
   const players = getSkatePlayersIn(skate);
   const goalies = getSkateGoaliesIn(skate);
 
   return (
-    <Button asChild variant="ghost" className="h-auto p-0.5 text-start">
+    <Button
+      asChild
+      variant="ghost"
+      className={cn(
+        "bg-secondary/40 hover:bg-secondary dark:hover:bg-secondary h-auto w-full rounded-lg border p-0.5 text-start sm:w-64",
+        className,
+      )}
+    >
       <Link href={`/booking/${skate.booking.slug}/skate/${skate.slug}`}>
-        <Card>
+        <Card className="h-full w-full">
           <CardHeader>
-            <CardTitle>{getSkateTimeMessage(skate)}</CardTitle>
+            <CardTitle className="text-xl">
+              {getSkateTimeMessage(skate)}
+            </CardTitle>
             <CardDescription>
               {formatDateRelative(skate.scheduledOn)}
             </CardDescription>

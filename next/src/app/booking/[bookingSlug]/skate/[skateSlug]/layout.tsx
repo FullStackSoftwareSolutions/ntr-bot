@@ -49,8 +49,8 @@ export default function SkatePageLayout({
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <Breadcrumb className="flex pt-4">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col">
+      <Breadcrumb className="flex p-4 pt-2 md:pt-4">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/bookings">Bookings</BreadcrumbLink>
@@ -69,7 +69,7 @@ export default function SkatePageLayout({
       <SkateHeader skate={skate} />
 
       <Tabs
-        className="hide-scrollbar sm:show-scrollbar mb-4 flex overflow-y-auto"
+        className="hide-scrollbar sm:show-scrollbar mb-2 flex overflow-y-auto px-4"
         value={tab}
         onValueChange={(tab) => {
           if (tab === "spots") {
@@ -89,7 +89,7 @@ export default function SkatePageLayout({
         </TabsList>
       </Tabs>
 
-      <section className="mx-auto flex flex-1 flex-col text-center">
+      <section className="mt-4 flex w-full flex-1 flex-col p-4 pt-0">
         {children}
       </section>
     </div>

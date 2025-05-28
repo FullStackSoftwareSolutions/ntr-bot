@@ -25,14 +25,14 @@ const PlayerCard = ({ className, player }: PlayerCardProps) => {
       asChild
       variant="ghost"
       className={cn(
-        "border h-auto rounded-lg bg-secondary/40 p-0.5 text-start hover:bg-secondary",
+        "bg-secondary/40 hover:bg-secondary dark:hover:bg-secondary h-auto w-full rounded-lg border p-0.5 text-start sm:w-64",
         className,
       )}
     >
       <Link href={`/player/${encodeURIComponent(player.email ?? player.id)}`}>
-        <Card className="w-full overflow-hidden hover:bg-card/90 sm:w-64">
+        <Card className="hover:bg-card/90 h-full w-full overflow-hidden">
           <CardHeader>
-            <CardTitle className="flex flex-wrap items-start gap-2 whitespace-pre-wrap">
+            <CardTitle className="flex flex-wrap items-start gap-2 text-xl whitespace-pre-wrap">
               {getPlayerName(player)}
               <Badge variant="secondary" className="ml-auto">
                 {getPlayerSkillNumber(player)}

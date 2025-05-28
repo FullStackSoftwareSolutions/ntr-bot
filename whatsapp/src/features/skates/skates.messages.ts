@@ -267,14 +267,18 @@ export const getSkateTeamsMessage = (skate: Skate, showSkillLevel = false) => {
     teamWhitePlayers.length
   } skaters)`;
 
-  const formatPlayer = (player: Player) => {
+  const formatPlayer = (player: Player | undefined) => {
+    if (!player) {
+      return "NONE";
+    }
+
     return `${
       showSkillLevel
         ? `[${getPlayerSkillLevel(player)}-${getPlayerSkillNumber(player)}] `
         : ""
     }\`${getPlayerName(player)}\``;
   };
-  const formatTeamList = (players: Player[], goalie: Player) =>
+  const formatTeamList = (players: Player[], goalie: Player | undefined) =>
     stringJoin(
       formatStringList(players.map(formatPlayer)),
       `*Goalie* ${formatPlayer(goalie)}`
@@ -282,10 +286,10 @@ export const getSkateTeamsMessage = (skate: Skate, showSkillLevel = false) => {
 
   const teamBlackGoalie = goalies.find(
     ({ team }) => team === Teams.Black
-  )!.player;
+  )?.player;
   const teamWhiteGoalie = goalies.find(
     ({ team }) => team === Teams.White
-  )!.player;
+  )?.player;
 
   return stringJoin(
     getSkateTitle(skate),

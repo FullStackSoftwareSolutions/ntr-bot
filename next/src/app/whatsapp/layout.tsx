@@ -31,7 +31,7 @@ export default function WhatsAppLayout({ children }: WhatsAppPageProps) {
   const whatsApp = useWhatsApp();
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
       <PageHeader>
         <div className="flex items-center gap-4">
           <WhatsAppIcon className="size-[60px] text-green-400" />
@@ -60,7 +60,7 @@ export default function WhatsAppLayout({ children }: WhatsAppPageProps) {
       {!!whatsApp.jid && (
         <>
           <Tabs
-            className="hide-scrollbar sm:show-scrollbar container mb-4 flex overflow-y-auto"
+            className="hide-scrollbar sm:show-scrollbar container mb-2 flex overflow-y-auto"
             value={tab}
             onValueChange={(tab) => {
               if (tab === "groups") {

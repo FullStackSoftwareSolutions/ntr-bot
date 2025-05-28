@@ -4,14 +4,20 @@ import { cn } from "@next/lib/utils";
 import { api } from "@next/trpc/react";
 import SkateCard from "./SkateCard";
 import { BadgeToggle } from "@next/components/ui/badge-toggle";
-import { useState } from "react";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 type SkatesListProps = {
   className?: string;
 };
 
+const listTypes = ["future", "past", "all"] as const;
+type ListTypes = (typeof listTypes)[number];
+
 const SkatesList = ({ className }: SkatesListProps) => {
-  const [type, setType] = useState<"future" | "past" | "all">("future");
+  const [type, setType] = useQueryState(
+    "skateListType",
+    parseAsStringLiteral<ListTypes>(listTypes).withDefault("future"),
+  );
   const { data: skates } = api.skates.getAll.useQuery({ type });
 
   return (
@@ -24,7 +30,7 @@ const SkatesList = ({ className }: SkatesListProps) => {
           Past skates
         </BadgeToggle>
       </div>
-      <div className="flex flex-wrap items-start gap-4">
+      <div className="flex flex-wrap items-stretch gap-4">
         {skates?.map((skate) => <SkateCard key={skate.id} skate={skate} />)}
       </div>
     </div>

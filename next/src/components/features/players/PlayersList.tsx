@@ -55,7 +55,7 @@ const PlayersList = ({ className }: PlayersListProps) => {
           placeholder="Search players..."
         />
       </div>
-      <div className={cn("flex flex-wrap items-start gap-4", className)}>
+      <div className={cn("flex flex-wrap items-stretch gap-4", className)}>
         {filteredPlayers?.map((player) => (
           <PlayerCard key={player.id} player={player} />
         ))}

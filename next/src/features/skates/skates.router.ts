@@ -1,10 +1,13 @@
 import { createTRPCRouter, protectedProcedure } from "@next/server/api/trpc";
 import {
-  announcePaymentsSkateHandler,
-  announceSpotsSkateHandler,
-  announceTeamsSkateHandler,
+  announceSkatePaymentsHandler,
+  announceSkateSpotsHandler,
+  announceSkateTeamsHandler,
   getAllSkatesForBookingHandler,
   getAllSkatesHandler,
+  getAnnounceSkatePaymentsTextHandler,
+  getAnnounceSkateSpotsTextHandler,
+  getAnnounceSkateTeamsTextHandler,
   getFutureSkatesHandler,
   getSkateAvailableSubsHandler,
   getSkateBySlugsHandler,
@@ -136,7 +139,16 @@ export const skatesRouter = createTRPCRouter({
       }),
     )
     .mutation(({ input: { skateId } }) =>
-      announceSpotsSkateHandler({ skateId }),
+      announceSkateSpotsHandler({ skateId }),
+    ),
+  getAnnounceSpotsText: protectedProcedure
+    .input(
+      z.object({
+        skateId: z.number(),
+      }),
+    )
+    .query(({ input: { skateId } }) =>
+      getAnnounceSkateSpotsTextHandler({ skateId }),
     ),
   announceTeams: protectedProcedure
     .input(
@@ -145,7 +157,16 @@ export const skatesRouter = createTRPCRouter({
       }),
     )
     .mutation(({ input: { skateId } }) =>
-      announceTeamsSkateHandler({ skateId }),
+      announceSkateTeamsHandler({ skateId }),
+    ),
+  getAnnounceTeamsText: protectedProcedure
+    .input(
+      z.object({
+        skateId: z.number(),
+      }),
+    )
+    .query(({ input: { skateId } }) =>
+      getAnnounceSkateTeamsTextHandler({ skateId }),
     ),
   announcePayments: protectedProcedure
     .input(
@@ -154,6 +175,15 @@ export const skatesRouter = createTRPCRouter({
       }),
     )
     .mutation(({ input: { skateId } }) =>
-      announcePaymentsSkateHandler({ skateId }),
+      announceSkatePaymentsHandler({ skateId }),
+    ),
+  getAnnouncePaymentsText: protectedProcedure
+    .input(
+      z.object({
+        skateId: z.number(),
+      }),
+    )
+    .query(({ input: { skateId } }) =>
+      getAnnounceSkatePaymentsTextHandler({ skateId }),
     ),
 });

@@ -44,7 +44,8 @@ export const getPlayerByPhoneNumberHandler = async ({
 }: {
   phoneNumber: string;
 }) => {
-  return getPlayerByPhoneNumber(phoneNumber);
+  const player = await getPlayerByPhoneNumber(phoneNumber);
+  return player ?? null;
 };
 
 export const updatePlayerHandler = async (

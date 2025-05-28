@@ -25,6 +25,12 @@ import {
 import { getAllGoalies, getAllPlayers } from "@db/features/players/players.db";
 import { randomizeTeamsForSkate } from "./teams/skates.teams.controller";
 import { Positions, Teams } from "@db/features/skates/skates.type";
+import { TRPCError } from "@trpc/server";
+import {
+  getSkateMessage,
+  getSkatePaymentsMessage,
+  getSkateTeamsMessage,
+} from "@whatsapp/features/skates/skates.messages";
 
 export const getAllSkatesHandler = async ({
   type,
@@ -253,26 +259,79 @@ export const skateDeleteOneHandler = async ({
   return deleteSkate(skateId);
 };
 
-export const announceSpotsSkateHandler = async ({
+export const announceSkateSpotsHandler = async ({
   skateId,
 }: {
   skateId: number;
 }) => {
   await trpc.skates.announceSpots.mutate({ skateId });
 };
+export const getAnnounceSkateSpotsTextHandler = async ({
+  skateId,
+}: {
+  skateId: number;
+}) => {
+  const skate = await getSkateById(skateId);
+  if (!skate) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Skate not found",
+    });
+  }
 
-export const announceTeamsSkateHandler = async ({
+  return getSkateMessage(skate);
+};
+
+export const announceSkateTeamsHandler = async ({
   skateId,
 }: {
   skateId: number;
 }) => {
   await trpc.skates.announceTeams.mutate({ skateId });
 };
+export const getAnnounceSkateTeamsTextHandler = async ({
+  skateId,
+}: {
+  skateId: number;
+}) => {
+  const skate = await getSkateById(skateId);
+  if (!skate) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Skate not found",
+    });
+  }
 
-export const announcePaymentsSkateHandler = async ({
+  try {
+    return getSkateTeamsMessage(skate);
+  } catch (error) {
+    console.error(error);
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to generate teams message",
+    });
+  }
+};
+
+export const announceSkatePaymentsHandler = async ({
   skateId,
 }: {
   skateId: number;
 }) => {
   await trpc.skates.announcePayments.mutate({ skateId });
+};
+export const getAnnounceSkatePaymentsTextHandler = async ({
+  skateId,
+}: {
+  skateId: number;
+}) => {
+  const skate = await getSkateById(skateId);
+  if (!skate) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Skate not found",
+    });
+  }
+
+  return getSkatePaymentsMessage(skate).text;
 };

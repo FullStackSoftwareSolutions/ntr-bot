@@ -25,7 +25,7 @@ const BookingSpotCard = (props: BookingSpotCardProps) => {
 
   return (
     <BookingSpotDialog {...props}>
-      <Card className="flex flex-1 flex-col">
+      <Card className="flex flex-1 flex-col gap-2 py-0">
         <PlayerSpotCard player={player} />
         <div className="flex flex-wrap items-start gap-1 p-2 pt-0">
           {amountPaid && (

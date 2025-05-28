@@ -2,6 +2,7 @@
 
 import { TRPCProvider } from "./TRPCProvider";
 import { ThemeProvider } from "./ThemeProvider";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export default function ClientProviders({
   children,
@@ -16,7 +17,7 @@ export default function ClientProviders({
         enableSystem
         disableTransitionOnChange
       >
-        {children}
+        <NuqsAdapter>{children}</NuqsAdapter>
       </ThemeProvider>
     </TRPCProvider>
   );

@@ -29,13 +29,13 @@ function BadgeToggle({
       >
         <div
           className={cn(
-            "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-input",
+            "border-input mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
             checked &&
-              "text-background-foreground border-background bg-background ",
+              "text-background-foreground border-background bg-background",
           )}
         >
           {checked && (
-            <CheckIcon className="size-5 text-primary" strokeWidth={4} />
+            <CheckIcon className="text-primary size-3" strokeWidth={4} />
           )}
         </div>
         {children}

@@ -35,7 +35,7 @@ const Sidebar = () => {
           <MenuIcon />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left">
+      <SheetContent side="left" className="p-6">
         <Link href="/" onClick={() => setOpen(false)}>
           🤖 ntr bot
         </Link>
@@ -79,7 +79,7 @@ const SidebarLink = ({ IconComponent, href, children }: SidebarLinkProps) => {
     <SheetClose asChild>
       <Button
         variant="ghost"
-        className="group hover:bg-primary hover:text-primary-foreground aria-selected:bg-primary/30 aria-selected:hover:bg-primary w-full justify-start"
+        className="group dark:hover:bg-primary hover:bg-primary hover:text-primary-foreground aria-selected:bg-primary/30 aria-selected:hover:bg-primary w-full justify-start"
         aria-selected={isActive}
         asChild
       >

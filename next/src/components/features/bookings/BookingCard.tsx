@@ -1,9 +1,7 @@
 import { type BookingWithoutPlayers } from "@db/features/bookings/bookings.type";
-import { formatDate } from "@formatting/dates";
 import { Button } from "@next/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@next/components/ui/card";
 import { cn } from "@next/lib/utils";
-import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import BookingSkateCount from "./BookingSkateCount";
 import BookingDates from "./BookingDates";
@@ -19,14 +17,14 @@ const BookingCard = ({ className, booking }: BookingCardProps) => {
       asChild
       variant="ghost"
       className={cn(
-        "border h-auto rounded-lg bg-secondary/40 p-0.5 text-start hover:bg-secondary",
+        "bg-secondary/40 hover:bg-secondary dark:hover:bg-secondary h-auto w-full rounded-lg border p-0.5 text-start sm:w-64",
         className,
       )}
     >
       <Link href={`/booking/${encodeURIComponent(booking.slug!)}`}>
-        <Card className="w-full overflow-hidden hover:bg-card/90 sm:w-64">
+        <Card className="hover:bg-card/90 dark:hover:bg-card/90 h-full w-full overflow-hidden">
           <CardHeader className="items-start">
-            <CardTitle className="flex flex-wrap items-start gap-2 whitespace-pre-wrap">
+            <CardTitle className="flex flex-wrap items-start gap-2 text-xl whitespace-pre-wrap">
               {booking.name}
             </CardTitle>
             <BookingDates booking={booking} />
