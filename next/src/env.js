@@ -15,6 +15,7 @@ export const env = createEnv({
     ADMIN_USERNAME: z.string().optional(),
     GITHUB_CLIENT_ID: z.string().optional(),
     GITHUB_CLIENT_SECRET: z.string().optional(),
+    GITHUB_REDIRECT_URI: z.string().optional(),
   },
 
   /**
@@ -35,6 +36,7 @@ export const env = createEnv({
     ADMIN_USERNAME: process.env.ADMIN_USERNAME,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+    GITHUB_REDIRECT_URI: process.env.GITHUB_REDIRECT_URI,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
