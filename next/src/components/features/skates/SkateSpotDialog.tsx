@@ -27,6 +27,7 @@ type SkateSpotDialogProps = {
   subForPlayer?: Player | null;
   waitingForSub?: boolean;
   paid: boolean;
+  refunded: boolean;
   position: Positions;
   className?: string;
   children: React.ReactNode;
@@ -44,6 +45,7 @@ const SkateSpotDialog = ({
   substitutePlayer,
   waitingForSub,
   paid,
+  refunded,
   className,
 }: SkateSpotDialogProps) => {
   const utils = api.useUtils();
@@ -80,6 +82,12 @@ const SkateSpotDialog = ({
       paid: checked,
     });
   };
+  const handleRefundedChecked = async (checked: boolean) => {
+    await updateMutation.mutateAsync({
+      id,
+      refunded: checked,
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -103,6 +111,9 @@ const SkateSpotDialog = ({
         </DialogHeader>
         <div className="flex flex-wrap items-start gap-4">
           <Badge>{paid ? "Paid" : "Not Paid"}</Badge>
+          {paid && substitutePlayer && (
+            <Badge>{refunded ? "Refunded" : "Not Refunded"}</Badge>
+          )}
           {subForPlayer && (
             <Badge>{`Sub for ${getPlayerName(subForPlayer)}`}</Badge>
           )}
@@ -125,11 +136,27 @@ const SkateSpotDialog = ({
             />
             <label
               htmlFor="paid"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               Paid
             </label>
           </div>
+          {paid && substitutePlayer && (
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="refunded"
+                checked={refunded}
+                onCheckedChange={handleRefundedChecked}
+              />
+              <label
+                htmlFor="refunded"
+                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Refunded
+              </label>
+            </div>
+          )}
+
           <Button
             size="sm"
             className={cn("ml-auto", droppedOutOn && "hidden")}

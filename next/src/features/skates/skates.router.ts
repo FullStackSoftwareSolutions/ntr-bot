@@ -111,13 +111,15 @@ export const skatesRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.number(),
-        paid: z.boolean(),
+        paid: z.boolean().optional(),
+        refunded: z.boolean().optional(),
       }),
     )
-    .mutation(({ input: { id, paid } }) =>
+    .mutation(({ input: { id, paid, refunded } }) =>
       skateUpdateSpotHandler({
         id,
         paid,
+        refunded,
       }),
     ),
   deleteSpot: protectedProcedure

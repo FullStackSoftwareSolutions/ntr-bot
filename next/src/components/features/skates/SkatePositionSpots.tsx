@@ -51,6 +51,7 @@ const SkatePositionSpots = ({ skate, position }: SkatePositionSpotsProps) => {
                 droppedOutOn={playerToSkate.droppedOutOn}
                 substitutePlayer={playerToSkate.substitutePlayer}
                 paid={playerToSkate.paid}
+                refunded={playerToSkate.refunded}
               />
             )}
             {!playerToSkate && (
@@ -75,6 +76,8 @@ const SkatePositionSpots = ({ skate, position }: SkatePositionSpotsProps) => {
           addedOn={playerToSkate.addedOn}
           droppedOutOn={playerToSkate.droppedOutOn}
           paid={playerToSkate.paid}
+          substitutePlayer={playerToSkate.substitutePlayer}
+          refunded={playerToSkate.refunded}
           waitingForSub
         />
       ))}
@@ -90,6 +93,7 @@ const SkatePositionSpots = ({ skate, position }: SkatePositionSpotsProps) => {
           droppedOutOn={playerToSkate.droppedOutOn}
           paid={playerToSkate.paid}
           substitutePlayer={playerToSkate.substitutePlayer}
+          refunded={playerToSkate.refunded}
         />
       ))}
     </div>

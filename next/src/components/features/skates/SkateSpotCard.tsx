@@ -21,6 +21,7 @@ type SkateSpotCardProps = {
   substitutePlayer?: Player | null;
   waitingForSub?: boolean;
   paid: boolean;
+  refunded: boolean;
   className?: string;
 };
 
@@ -33,6 +34,7 @@ const SkateSpotCard = (props: SkateSpotCardProps) => {
     substitutePlayer,
     waitingForSub,
     paid,
+    refunded,
   } = props;
 
   const subForPlayer = !droppedOutOn
@@ -48,6 +50,15 @@ const SkateSpotCard = (props: SkateSpotCardProps) => {
             <Badge variant="secondary" className="flex gap-1 ps-1">
               <DollarSignIcon size={18} />
               Paid
+            </Badge>
+          )}
+          {paid && substitutePlayer && (
+            <Badge
+              variant={refunded ? "secondary" : "destructive"}
+              className="flex gap-1 ps-1"
+            >
+              <DollarSignIcon size={18} />
+              {refunded ? "Refunded" : "Not Refunded"}
             </Badge>
           )}
           {!!droppedOutOn && (

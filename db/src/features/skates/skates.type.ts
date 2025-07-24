@@ -14,6 +14,7 @@ export type Skate = {
     substitutePlayer: Player | null;
     position: string;
     paid: boolean;
+    refunded: boolean;
   }[];
   booking: BookingWithoutPlayers;
 };

@@ -112,6 +112,7 @@ export const playersToSkates = pgTable("players_to_skates", {
     () => players.id
   ),
   paid: boolean("paid").notNull().default(false),
+  refunded: boolean("refunded").notNull().default(false),
   position: varchar("position").notNull().default("Player"),
   addedOn: timestamp("added_on")
     .notNull()

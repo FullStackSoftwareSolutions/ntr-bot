@@ -193,8 +193,11 @@ export const updateBookingPlayerHandler = async (
         const playerToSkate = skate.playersToSkates.find(
           (p) => p.playerId === updatedSpot.playerId,
         );
+        if (!playerToSkate) {
+          continue;
+        }
 
-        await updateSkatePlayer(skate.id, {
+        await updateSkatePlayer(playerToSkate.id, {
           paid: remainingPaidAmount >= costPerSkate,
         });
 

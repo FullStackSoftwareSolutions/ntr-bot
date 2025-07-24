@@ -1,0 +1,1 @@
+ALTER TABLE "players_to_skates" ADD COLUMN "refunded" boolean DEFAULT false NOT NULL;

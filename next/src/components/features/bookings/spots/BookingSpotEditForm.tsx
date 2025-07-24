@@ -38,7 +38,7 @@ const BookingSpotEditForm = ({
   const form = useForm<BookingSpotFormFields>({
     resolver: zodResolver(BookingSpotFormSchema),
     defaultValues: {
-      amountPaid: amountPaid ?? "",
+      amountPaid: amountPaid?.toString() ?? "",
     },
   });
 

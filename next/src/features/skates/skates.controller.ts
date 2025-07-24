@@ -244,11 +244,13 @@ export const skateDeleteSpotHandler = ({ id }: { id: number }) => {
 export const skateUpdateSpotHandler = ({
   id,
   paid,
+  refunded,
 }: {
   id: number;
-  paid: boolean;
+  paid?: boolean;
+  refunded?: boolean;
 }) => {
-  return updateSkatePlayer(id, { paid });
+  return updateSkatePlayer(id, { paid, refunded });
 };
 
 export const skateDeleteOneHandler = async ({

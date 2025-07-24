@@ -71,6 +71,7 @@ export async function GET(request: Request): Promise<Response> {
       },
     });
   } catch (e) {
+    console.log(e);
     // the specific error message depends on the provider
     if (e && typeof e === "object" && "message" in e) {
       console.error(e.message);

@@ -201,16 +201,18 @@ export const updateSkatePlayer = async (
     substitutePlayerId,
     droppedOutOn,
     paid,
+    refunded,
   }: {
     team?: string | null;
     substitutePlayerId?: number | null;
     droppedOutOn?: Date | null;
     paid?: boolean;
+    refunded?: boolean;
   }
 ) => {
   await db
     .update(playersToSkates)
-    .set({ team, substitutePlayerId, droppedOutOn, paid })
+    .set({ team, substitutePlayerId, droppedOutOn, paid, refunded })
     .where(eq(playersToSkates.id, playerToSkateId));
 };
 
