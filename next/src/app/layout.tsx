@@ -6,6 +6,7 @@ import Navbar from "@next/components/layouts/Navbar";
 import ClientProviders from "@next/providers/ClientProviders";
 import { getUserSession } from "@next/auth";
 import { SessionProvider } from "@next/providers/SessionProvier";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: "ntr bot",
@@ -28,6 +29,7 @@ export default async function RootLayout({
 
   return (
     <SessionProvider value={session}>
+      <Toaster />
       <html lang="en" suppressHydrationWarning className={font.className}>
         <head />
         <body className="flex flex-col">

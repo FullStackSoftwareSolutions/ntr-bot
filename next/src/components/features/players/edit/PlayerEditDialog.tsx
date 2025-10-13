@@ -69,7 +69,14 @@ const PlayerEditDialog = ({ player, open, setOpen }: PlayerEditDialogProps) => {
   const onSubmit = async (data: PlayerFormFields) => {
     mutate({
       playerId: player.id,
-      ...data,
+      fullName: data.fullName,
+      nickname: data.nickname || null,
+      email: data.email?.toLowerCase() || null,
+      phoneNumber: data.phoneNumber || null,
+      skillLevel: Number(data.skillLevel) || null,
+      isPlayer: data.isPlayer,
+      isGoalie: data.isGoalie,
+      notes: data.notes || null,
     });
     setOpen(false);
   };

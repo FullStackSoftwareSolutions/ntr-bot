@@ -6,6 +6,8 @@ import {
   getAllFutureBookings,
   getAllPastBookings,
   getBookingBySlug,
+  getSpotsNeedRefundForBooking,
+  refundSpotsForBookingPlayer,
   updatePlayerBooking,
   updatePlayersForBooking,
 } from "@db/features/bookings/bookings.db";
@@ -226,4 +228,20 @@ export const deleteBookingHandler = async ({
   bookingId: number;
 }) => {
   return deleteBooking(bookingId);
+};
+
+export const getSpotsNeedRefundForBookingHandler = async (
+  bookingId: number,
+) => {
+  return getSpotsNeedRefundForBooking(bookingId);
+};
+
+export const refundSpotsForPlayerHandler = async ({
+  bookingId,
+  playerId,
+}: {
+  bookingId: number;
+  playerId: number;
+}) => {
+  return refundSpotsForBookingPlayer({ bookingId, playerId });
 };

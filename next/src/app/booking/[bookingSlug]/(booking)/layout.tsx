@@ -67,6 +67,7 @@ export default function BookingLayout({ children }: BookingLayoutProps) {
           <TabsTrigger value="spots">Spots</TabsTrigger>
           <TabsTrigger value="skates">Skates</TabsTrigger>
           <TabsTrigger value="bot">Bot</TabsTrigger>
+          <TabsTrigger value="payments">Payments</TabsTrigger>
         </TabsList>
       </Tabs>
 

@@ -1,7 +1,6 @@
 import { playersToSkates, skates } from "@db/db/schema";
 import { db } from "@db/db";
-import { and, asc, desc, eq, gt, gte, inArray, lt } from "drizzle-orm";
-import { Positions } from "./skates.type";
+import { and, asc, desc, eq, gte, inArray, lt } from "drizzle-orm";
 
 export const getSkateById = async (id: number) => {
   const [skate] = await db.query.skates.findMany({

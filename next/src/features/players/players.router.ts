@@ -66,12 +66,12 @@ export const playersRouter = createTRPCRouter({
         playerId: z.number(),
         email: z.string().optional().nullable(),
         fullName: z.string().optional(),
-        nickname: z.string().optional(),
-        phoneNumber: z.string().optional(),
+        nickname: z.string().optional().nullable(),
+        phoneNumber: z.string().optional().nullable(),
         skillLevel: z.number().nullable().optional(),
         isPlayer: z.boolean().optional(),
         isGoalie: z.boolean().optional(),
-        notes: z.string().optional(),
+        notes: z.string().optional().nullable(),
       }),
     )
     .mutation(

@@ -5,7 +5,7 @@ import {
   playersToSkates,
   skates,
 } from "@db/db/schema";
-import { db } from "@db/db";
+import { db, jsonbAgg, jsonbBuildObject } from "@db/db";
 import {
   and,
   asc,
@@ -14,10 +14,14 @@ import {
   getTableColumns,
   gte,
   inArray,
+  isNotNull,
   lt,
+  SQL,
+  sql,
 } from "drizzle-orm";
 import { BookingCreate } from "./bookings.type";
-import { Positions } from "../skates/skates.type";
+import { Positions, Skate } from "../skates/skates.type";
+import { PgColumn } from "drizzle-orm/pg-core";
 
 export const getAllBookings = async () =>
   db.query.bookings.findMany({
@@ -243,3 +247,44 @@ export const getPlayersForBooking = async (bookingId: number) =>
 
 export const deleteBooking = (bookingId: number) =>
   db.delete(bookings).where(eq(bookings.id, bookingId));
+
+export const getSpotsNeedRefundForBooking = async (bookingId: number) =>
+  db
+    .select({
+      ...getTableColumns(players),
+      skates: jsonbAgg<Skate[]>(jsonbBuildObject(getTableColumns(skates))),
+    })
+    .from(playersToSkates)
+    .innerJoin(skates, eq(playersToSkates.skateId, skates.id))
+    .innerJoin(players, eq(playersToSkates.playerId, players.id))
+    .where(
+      and(
+        eq(skates.bookingId, bookingId),
+        isNotNull(playersToSkates.substitutePlayerId),
+        eq(playersToSkates.paid, true),
+        eq(playersToSkates.refunded, false)
+      )
+    )
+    .groupBy(players.id);
+
+export const refundSpotsForBookingPlayer = async ({
+  bookingId,
+  playerId,
+}: {
+  bookingId: number;
+  playerId: number;
+}) =>
+  db
+    .update(playersToSkates)
+    .set({ refunded: true })
+    .from(skates)
+    .where(
+      and(
+        eq(playersToSkates.skateId, skates.id),
+        eq(skates.bookingId, bookingId),
+        isNotNull(playersToSkates.substitutePlayerId),
+        eq(playersToSkates.paid, true),
+        eq(playersToSkates.refunded, false),
+        eq(playersToSkates.playerId, playerId)
+      )
+    );

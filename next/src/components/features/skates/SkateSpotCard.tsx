@@ -51,15 +51,15 @@ const SkateSpotCard = (props: SkateSpotCardProps) => {
   return (
     <SkateSpotDialog {...props} subForPlayer={subForPlayer}>
       <Card className="flex flex-1 flex-col gap-2 py-0">
-        <PlayerSpotCard 
-          player={player} 
+        <PlayerSpotCard
+          player={player}
           layout="horizontal"
           padding="default"
           rightContent={paidBadge}
         />
-        
+
         {/* Bottom section - Other badges */}
-        {/* <div className="flex flex-wrap items-start gap-1 px-2 pb-2">
+        <div className="flex flex-wrap items-start gap-1 px-2 pb-2">
           {paid && substitutePlayer && (
             <Badge
               variant={refunded ? "secondary" : "destructive"}
@@ -83,7 +83,7 @@ const SkateSpotCard = (props: SkateSpotCardProps) => {
           {waitingForSub && (
             <Badge variant="warning">{`Sub @ ${formatDateTime(addedOn)}`}</Badge>
           )}
-        </div> */}
+        </div>
       </Card>
     </SkateSpotDialog>
   );

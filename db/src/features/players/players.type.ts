@@ -17,7 +17,7 @@ export type PlayerCreate = {
   email: string | null;
   fullName: string;
   nickname?: string | null;
-  phoneNumber: string;
+  phoneNumber: string | null;
   skillLevel: number | null;
   isPlayer: boolean;
   isGoalie: boolean;

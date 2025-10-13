@@ -6,6 +6,8 @@ import {
   deleteBookingPlayerHandler,
   getAllBookingsHandler,
   getBookingBySlugHandler,
+  getSpotsNeedRefundForBookingHandler,
+  refundSpotsForPlayerHandler,
   updateBookingHandler,
   updateBookingPlayerHandler,
 } from "./bookings.controller";
@@ -192,5 +194,24 @@ export const bookingsRouter = createTRPCRouter({
           whatsAppGroupJid,
           notifyGroup,
         }),
+    ),
+  getSpotsNeedRefund: protectedProcedure
+    .input(
+      z.object({
+        bookingId: z.number(),
+      }),
+    )
+    .query(({ input: { bookingId } }) =>
+      getSpotsNeedRefundForBookingHandler(bookingId),
+    ),
+  refundSpotsForPlayer: protectedProcedure
+    .input(
+      z.object({
+        bookingId: z.number(),
+        playerId: z.number(),
+      }),
+    )
+    .mutation(({ input: { bookingId, playerId } }) =>
+      refundSpotsForPlayerHandler({ bookingId, playerId }),
     ),
 });
