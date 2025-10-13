@@ -1,6 +1,6 @@
 import React from "react";
 import { CheckIcon } from "lucide-react";
-import ButtonLoading, { ButtonLoadingProps } from "./button-loading";
+import ButtonLoading, { type ButtonLoadingProps } from "./button-loading";
 
 export type ButtonConfirmProps = ButtonLoadingProps;
 

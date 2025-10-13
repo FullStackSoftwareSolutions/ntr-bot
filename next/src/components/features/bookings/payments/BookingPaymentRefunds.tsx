@@ -1,8 +1,7 @@
-import { Booking } from "@db/features/bookings/bookings.type";
-import { Player } from "@db/features/players/players.type";
-import { Skate } from "@db/features/skates/skates.type";
+import type { Booking } from "@db/features/bookings/bookings.type";
+import type { Player } from "@db/features/players/players.type";
+import type { Skate } from "@db/features/skates/skates.type";
 import { formatDate } from "@formatting/dates";
-import { Button } from "@next/components/ui/button";
 import ButtonConfirm from "@next/components/ui/button-confirm";
 import {
   Card,
@@ -55,13 +54,13 @@ const PlayerRefundItem = ({
   const utils = api.useUtils();
   const { mutate, isPending } = api.bookings.refundSpotsForPlayer.useMutation({
     onSuccess: () => {
-      utils.bookings.getSpotsNeedRefund.invalidate({
+      void utils.bookings.getSpotsNeedRefund.invalidate({
         bookingId: booking.id,
       });
       toast.success("Refund processed successfully");
     },
     onError: () => {
-      utils.bookings.getSpotsNeedRefund.invalidate({
+      void utils.bookings.getSpotsNeedRefund.invalidate({
         bookingId: booking.id,
       });
       toast.error("Failed to process refund");
