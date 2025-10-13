@@ -55,8 +55,11 @@ const SkatePositionSpots = ({ skate, position }: SkatePositionSpotsProps) => {
               />
             )}
             {!playerToSkate && (
-              <Card className="flex flex-1 items-center justify-center p-4 font-semibold tracking-tight">
-                <Badge variant="warning" className="flex items-center text-lg">
+              <Card className="flex flex-1 items-center justify-center p-2 font-semibold tracking-tight">
+                <Badge
+                  variant="warning"
+                  className="flex items-center p-0.5 text-lg"
+                >
                   Open
                 </Badge>
               </Card>

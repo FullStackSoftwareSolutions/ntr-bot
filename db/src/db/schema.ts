@@ -49,7 +49,7 @@ export const players = pgTable(
     fullName: varchar("full_name", { length: 256 }).notNull(),
     nickname: varchar("nickname", { length: 256 }),
     email: varchar("email"),
-    phoneNumber: varchar("phone_number").unique(),
+    phoneNumber: varchar("phone_number"),
     skillLevelLetter: varchar("skill_level_letter"),
     skillLevel: integer("skill_level"),
     notes: text("notes"),
@@ -61,10 +61,6 @@ export const players = pgTable(
     isGoalie: boolean("is_goalie").notNull().default(false),
   },
   (players) => ({
-    playersEmailIdx: index("players_email_idx").on(players.email),
-    playersPhoneNumberIdx: index("players_phone_number_idx").on(
-      players.phoneNumber
-    ),
     playersUserIdIdx: index("players_user_id_idx").on(players.userId),
   })
 );

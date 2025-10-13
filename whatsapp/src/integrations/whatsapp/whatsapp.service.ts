@@ -69,7 +69,6 @@ const logger = pino({ level: "info" }) as any;
 export const connect = async () => {
   sock = makeWASocket({
     //version: [2, 2413, 1],
-    printQRInTerminal: true,
     auth: {
       creds: authState.creds,
       keys: makeCacheableSignalKeyStore(authState.keys, logger),

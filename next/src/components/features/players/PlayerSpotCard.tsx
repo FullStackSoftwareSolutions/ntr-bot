@@ -9,18 +9,50 @@ import PlayerAvatar from "./PlayerAvatar";
 type PlayerSpotCardProps = {
   showSkill?: boolean;
   player: Player;
+  className?: string;
+  padding?: "none" | "small" | "default";
+  layout?: "default" | "compact" | "horizontal";
+  showName?: boolean;
+  rightContent?: React.ReactNode;
 };
 
-const PlayerSpotCard = ({ player, showSkill }: PlayerSpotCardProps) => {
+const PlayerSpotCard = ({ 
+  player, 
+  showSkill, 
+  className = "",
+  padding = "default",
+  layout = "default",
+  showName = true,
+  rightContent
+}: PlayerSpotCardProps) => {
+  const paddingClasses = {
+    none: "",
+    small: "p-1",
+    default: "p-2"
+  };
+
+  const layoutClasses = {
+    default: "relative flex flex-wrap items-center gap-3 whitespace-pre-wrap text-xl font-semibold tracking-tight",
+    compact: "flex items-center gap-2 text-base font-medium",
+    horizontal: "flex items-center justify-between gap-3 text-xl font-semibold tracking-tight"
+  };
+
   return (
-    <div className="relative flex flex-wrap items-center gap-3 whitespace-pre-wrap p-2 text-xl font-semibold tracking-tight">
-      <PlayerAvatar player={player} />
-      {getPlayerName(player)}
-      {showSkill && (
-        <Badge variant="secondary" className="absolute right-0 top-0">
-          {getPlayerSkillNumber(player)}
-        </Badge>
-      )}
+    <div className={`${layoutClasses[layout]} ${paddingClasses[padding]} ${className}`}>
+      <div className="flex items-center gap-3">
+        <PlayerAvatar player={player} />
+        {showName && getPlayerName(player)}
+      </div>
+      
+      {/* Right side content */}
+      <div className="flex items-center gap-2">
+        {rightContent}
+        {showSkill && (
+          <Badge variant="secondary">
+            {getPlayerSkillNumber(player)}
+          </Badge>
+        )}
+      </div>
     </div>
   );
 };

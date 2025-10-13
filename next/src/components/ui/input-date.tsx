@@ -74,10 +74,10 @@ export default function InputDate({ onChange, value }: InputDateProps) {
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
+          captionLayout="dropdown"
           defaultMonth={date}
           selected={date}
           onSelect={handleSelectDate}
-          initialFocus
         />
       </PopoverContent>
     </Popover>

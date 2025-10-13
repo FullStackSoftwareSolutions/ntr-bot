@@ -41,21 +41,29 @@ const SkateSpotCard = (props: SkateSpotCardProps) => {
     ? getSkateSubstitubeForPlayer(skate, player)
     : null;
 
+  const paidBadge = paid && (
+    <Badge variant="secondary" className="flex gap-1">
+      <DollarSignIcon size={18} />
+      Paid
+    </Badge>
+  );
+
   return (
     <SkateSpotDialog {...props} subForPlayer={subForPlayer}>
       <Card className="flex flex-1 flex-col gap-2 py-0">
-        <PlayerSpotCard player={player} />
-        <div className="flex flex-wrap items-start gap-1 p-2 pt-0">
-          {paid && (
-            <Badge variant="secondary" className="flex gap-1 ps-1">
-              <DollarSignIcon size={18} />
-              Paid
-            </Badge>
-          )}
+        <PlayerSpotCard 
+          player={player} 
+          layout="horizontal"
+          padding="default"
+          rightContent={paidBadge}
+        />
+        
+        {/* Bottom section - Other badges */}
+        {/* <div className="flex flex-wrap items-start gap-1 px-2 pb-2">
           {paid && substitutePlayer && (
             <Badge
               variant={refunded ? "secondary" : "destructive"}
-              className="flex gap-1 ps-1"
+              className="flex gap-1"
             >
               <DollarSignIcon size={18} />
               {refunded ? "Refunded" : "Not Refunded"}
@@ -75,7 +83,7 @@ const SkateSpotCard = (props: SkateSpotCardProps) => {
           {waitingForSub && (
             <Badge variant="warning">{`Sub @ ${formatDateTime(addedOn)}`}</Badge>
           )}
-        </div>
+        </div> */}
       </Card>
     </SkateSpotDialog>
   );

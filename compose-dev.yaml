@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=ntrbot
+      - POSTGRES_PASSWORD=test123
+      - POSTGRES_USER=josh
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ntr-bot
+
+networks:
+  ntr-bot:
+
+volumes:
+  dbdata:
