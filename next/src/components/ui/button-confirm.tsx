@@ -24,7 +24,7 @@ const ButtonConfirm = React.forwardRef<HTMLButtonElement, ButtonConfirmProps>(
 
     return (
       <ButtonLoading ref={ref} {...props} onClick={handleClick}>
-        {children}
+        {confirm ? "Confirm" : children}
         {confirm && <CheckIcon className="ml-2 h-4 w-4 rounded border-1" />}
       </ButtonLoading>
     );

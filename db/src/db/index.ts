@@ -4,10 +4,6 @@ import * as schema from "./schema";
 import { SQL, sql } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
 
-console.log(
-  `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}`
-);
-
 export const connection = postgres(
   `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}`
 );

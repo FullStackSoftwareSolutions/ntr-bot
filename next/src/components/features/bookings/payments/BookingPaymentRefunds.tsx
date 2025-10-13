@@ -28,16 +28,18 @@ const BookingPaymentRefunds = ({ booking }: BookingPaymentRefundsProps) => {
     return <p>No refunds needed.</p>;
   }
 
-  console.log(data);
-
-  return data.map((player) => (
-    <PlayerRefundItem
-      key={player.id}
-      booking={booking}
-      player={player}
-      skates={player.skates}
-    />
-  ));
+  return (
+    <div className="my-4 grid grid-cols-1 items-stretch justify-stretch gap-2 md:grid-cols-2 lg:grid-cols-3">
+      {data.map((player) => (
+        <PlayerRefundItem
+          key={player.id}
+          booking={booking}
+          player={player}
+          skates={player.skates}
+        />
+      ))}
+    </div>
+  );
 };
 
 type PlayerRefundItemProps = {
@@ -84,7 +86,7 @@ const PlayerRefundItem = ({
   return (
     <Card key={player.id}>
       <CardHeader>
-        <CardTitle className="flex items-baseline gap-4 text-xl">
+        <CardTitle className="flex flex-wrap items-baseline gap-4 text-xl">
           {player.fullName}
           {player.email && (
             <CardDescription className="flex items-center gap-2">
