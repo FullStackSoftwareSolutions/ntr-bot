@@ -79,7 +79,11 @@ const PlayerRefundItem = ({
 
   const numSkates = skates.length;
   const totalRefund = Number(booking.costPerPlayerPerSkate) * numSkates;
-  const message = `${booking.name} - ${skates
+  const message = `${booking.announceName ?? booking.name} - ${skates
+    .sort(
+      (a, b) =>
+        new Date(a.scheduledOn).getTime() - new Date(b.scheduledOn).getTime(),
+    )
     .map((skate) => formatDate(skate.scheduledOn))
     .join(", ")}`;
 
