@@ -15,7 +15,7 @@ import { Form } from "@next/components/ui/form";
 import { api } from "@next/trpc/react";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 import BookingFields, {
   type BookingFormFields,
   BookngFormFieldsSchema,

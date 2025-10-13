@@ -19,7 +19,7 @@ export const getOpenAiResponse = async (
       content: message,
     })) ?? [];
 
-  const stream = await openAi.beta.chat.completions.stream({
+  const stream = await openAi.chat.completions.stream({
     model: "gpt-4",
     messages: [
       ...contextMessages,

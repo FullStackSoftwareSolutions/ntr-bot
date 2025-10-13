@@ -23,8 +23,8 @@ import { BadgeToggle } from "@next/components/ui/badge-toggle";
 export const BookngFormFieldsSchema = z.object({
   name: z.string().min(4, "Must be at least 4 characters"),
   announceName: z.string().min(4, "Must be at least 4 characters"),
-  numPlayers: z.coerce.number().gt(0, "Must be greater than 0"),
-  numGoalies: z.coerce.number().gt(0, "Must be greater than 0"),
+  numPlayers: z.coerce.number<number>().gt(0, "Must be greater than 0"),
+  numGoalies: z.coerce.number<number>().gt(0, "Must be greater than 0"),
   location: z.string(),
   cost: z.string(),
   costPerPlayer: z.string(),
@@ -242,7 +242,7 @@ const BookingFields = ({ control, watch, setValue }: BookingFieldsProps) => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <div className="grid grid-cols-3 gap-1 md:grid-cols-5 ">
+                  <div className="grid grid-cols-3 gap-1 md:grid-cols-5">
                     {availableDates.map((date) => {
                       const dateString = formatDateDb(date);
                       const checked = field.value.includes(dateString);
