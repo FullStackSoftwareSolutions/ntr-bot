@@ -58,17 +58,18 @@ export const initialize = async (auth: {
   saveCreds = auth.saveCreds;
   resetCreds = auth.reset;
 
-  const { version, isLatest } = await fetchLatestBaileysVersion();
-  console.log(`using WA v${version.join(".")}, isLatest: ${isLatest}`);
-
   return connect();
 };
 
 const logger = pino({ level: "info" }) as any;
 
 export const connect = async () => {
+  const { version, isLatest } = await fetchLatestBaileysVersion();
+  console.log(`using WA v${version.join(".")}, isLatest: ${isLatest}`);
+
   sock = makeWASocket({
     //version: [2, 2413, 1],
+    version,
     auth: {
       creds: authState.creds,
       keys: makeCacheableSignalKeyStore(authState.keys, logger),
